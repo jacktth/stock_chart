@@ -13,6 +13,27 @@ export function Chart() {
   const [stockData, setStockData] = useState<any>();
   const [symbol, setSymbol] = useState("AAPL");
   const [error, setError] = useState<any>("no error");
+  const handleSubmit = (e) => {
+    axios
+      .post("http://localhost:3000/stock-data", {
+        symbol: symbol,
+        period1: "2022-02-01",
+      })
+      .then(
+        ({ data, status }) => {
+          setError(status);
+          const sortedData = dataSorting(data);
+          setStockData(sortedData);
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          setError(error);
+        }
+      );
+    e.preventDefault();
+  };
   useEffect(() => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -32,16 +53,20 @@ export function Chart() {
           setError(error);
         }
       );
-  }, [symbol]);
-  const onChangeSymbolHandler = (e) => {
+  }, []);
+  const symbolOnChange = (e) => {
     setSymbol(e.target.value);
+    e.preventDefault();
   };
+
   const options = {
     title: {
       text: symbol + " " + error,
     },
     series: [
       {
+        type: "candlestick",
+
         data: stockData,
       },
     ],
@@ -49,12 +74,24 @@ export function Chart() {
 
   return (
     <div>
-      <input
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input
+            type="text"
+            name="name"
+            value={symbol}
+            onChange={symbolOnChange}
+          />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+      {/* <input
         type="text"
         name="name"
         onChange={onChangeSymbolHandler}
         value={symbol}
-      />
+      /> */}
       <HighchartsReact
         highcharts={Highcharts}
         constructorType={"stockChart"}
