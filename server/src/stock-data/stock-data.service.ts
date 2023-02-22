@@ -6,7 +6,7 @@ import { getDataBody } from './stock-data.controller';
 @Injectable()
 export class StockDataService {
     async getStockData(getDataBody): Promise<HistoricalHistoryResult> {
-        console.log("this",getDataBody)
+        console.log("this",getDataBody," ",Date.now())
         const query = getDataBody.symbol;
         const queryOptions = { period1: getDataBody.period1, period2:getDataBody.period2/* ... */ };
         const result = await yahooFinance.historical(query, queryOptions);

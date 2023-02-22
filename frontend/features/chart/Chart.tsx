@@ -1,50 +1,54 @@
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import React, { useEffect, useState } from "react";
-import { HistoricalHistoryResult } from 'yahoo-finance2/dist/esm/src/modules/historical';
+import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { selectSymbol } from "./chartSlice";
+import axios from "axios";
+import dataSorting from "./dataSorting";
 
 export function Chart() {
   // const symbol = useAppSelector(selectSymbol);
   const dispatch = useAppDispatch();
-  const [stockData, setStockData] = useState<HistoricalHistoryResult>([]);
+  const [stockData, setStockData] = useState<any>();
   const [symbol, setSymbol] = useState("AAPL");
-
-const  onChangeSymbolHandler = async (e) => {
-  setSymbol(e.target.value);
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams({symbol:"AAPL",period1:'2023-02-01' })}
-    // body: JSON.stringify({symbol:"AAPL",period1:"2023-02-01" })}
-  try {
-    const response = await fetch('http://localhost:3000/stock-data',requestOptions)
-    const data = await response.json();
-    setStockData(data)
-  } catch (error) {
-    alert(error + requestOptions.body);
-  }
-  
-};
-  //   const [symbol, setSymbol] = useState('2');
+  const [error, setError] = useState<any>("no error");
+  useEffect(() => {
+    axios
+      .post("http://localhost:3000/stock-data", {
+        symbol: "AAPL",
+        period1: "2022-02-01",
+      })
+      .then(
+        ({ data, status }) => {
+          setError(status);
+          const sortedData = dataSorting(data);
+          setStockData(sortedData);
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          setError(error);
+        }
+      );
+  }, [symbol]);
+  const onChangeSymbolHandler = (e) => {
+    setSymbol(e.target.value);
+  };
   const options = {
     title: {
-      text: symbol,
+      text: symbol + " " + error,
     },
     series: [
       {
-        data: [1, 2, 1, 4, 3, 6, 7, 3, 8, 6, 9],
+        data: stockData,
       },
     ],
   };
- 
 
   return (
     <div>
-
       <input
         type="text"
         name="name"
