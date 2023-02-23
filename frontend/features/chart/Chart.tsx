@@ -6,13 +6,29 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { selectSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
+import { Listing, ListingBar } from "../listingBar/ListBar";
 
 export function Chart() {
   // const symbol = useAppSelector(selectSymbol);
   const dispatch = useAppDispatch();
   const [stockData, setStockData] = useState<any>();
   const [symbol, setSymbol] = useState("AAPL");
+  const [listings, setListing] = useState<Listing>();
   const [error, setError] = useState<any>("no error");
+  useEffect(()=>{
+    axios.get("http://localhost:3000/listing").then(
+      ({ data, status }) => {
+        setError(status);
+        setListing(data);
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        setError(error);
+      }
+    );
+  },[])
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -71,32 +87,40 @@ export function Chart() {
       },
     ],
   };
+const listBar = (listing)=>{
+  if (listing) {
+    return   <ListingBar listings={listing}/>
 
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={symbol}
-            onChange={symbolOnChange}
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-      {/* <input
-        type="text"
-        name="name"
-        onChange={onChangeSymbolHandler}
-        value={symbol}
-      /> */}
-      <HighchartsReact
-        highcharts={Highcharts}
-        constructorType={"stockChart"}
-        options={options}
-      />
-    </div>
-  );
+  }
+  return <div></div>
 }
+return (
+  <div>
+    {listBar(listings)}
+    <form onSubmit={handleSubmit}>
+      <label>
+        Name:
+        <input
+          type="text"
+          name="name"
+          value={symbol}
+          onChange={symbolOnChange}
+        />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>
+    {/* <input
+      type="text"
+      name="name"
+      onChange={onChangeSymbolHandler}
+      value={symbol}
+    /> */}
+    <HighchartsReact
+      highcharts={Highcharts}
+      constructorType={"stockChart"}
+      options={options}
+    />
+  </div>
+);
+}
+
