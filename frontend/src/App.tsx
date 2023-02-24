@@ -1,14 +1,8 @@
-import { useState } from "react";
-import "./App.css";
-import { Chart } from "../features/chart/Chart";
 import React from "react";
+import { Chart } from "./features/chart/Chart";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-      <Chart />
-  );
+  return <Chart />;
 }
 
 export default App;

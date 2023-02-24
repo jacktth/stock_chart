@@ -7,6 +7,7 @@ import { selectSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { Listing, ListingBar } from "../listingBar/ListBar";
+import "../../index.css";
 
 export function Chart() {
   // const symbol = useAppSelector(selectSymbol);
@@ -15,7 +16,7 @@ export function Chart() {
   const [symbol, setSymbol] = useState("AAPL");
   const [listings, setListing] = useState<Listing>();
   const [error, setError] = useState<any>("no error");
-  useEffect(()=>{
+  useEffect(() => {
     axios.get("http://localhost:3000/listing").then(
       ({ data, status }) => {
         setError(status);
@@ -28,7 +29,7 @@ export function Chart() {
         setError(error);
       }
     );
-  },[])
+  }, []);
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -77,7 +78,7 @@ export function Chart() {
 
   const options = {
     title: {
-      text: symbol + " " + error,
+      text: symbol + " " + error ,
     },
     series: [
       {
@@ -87,40 +88,41 @@ export function Chart() {
       },
     ],
   };
-const listBar = (listing)=>{
-  if (listing) {
-    return   <ListingBar listings={listing}/>
+  const listBar = (listing) => {
+    if (listing) {
+      return <ListingBar listings={listing} />;
+    }
+    return <div></div>;
+  };
+  return (
+    <div className="view-full">
+      <div className="flex view-full">
+     
 
-  }
-  return <div></div>
+        <div className="SearchBar">
+          <form className="w-full" onSubmit={handleSubmit}>
+            <label>
+              <input
+                className="inputSymbol"
+                type="text"
+                name="name"
+                value={symbol}
+                onChange={symbolOnChange}
+              />
+            </label>
+          </form>
+          {listBar(listings)}
+        </div>
+        <div className="chartContainer">
+          <HighchartsReact
+            containerProps={{ className: "h-screen" }}
+            highcharts={Highcharts}
+            constructorType={"stockChart"}
+            options={options}
+          />
+        </div>
+        
+      </div>
+    </div>
+  );
 }
-return (
-  <div>
-    {listBar(listings)}
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        <input
-          type="text"
-          name="name"
-          value={symbol}
-          onChange={symbolOnChange}
-        />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
-    {/* <input
-      type="text"
-      name="name"
-      onChange={onChangeSymbolHandler}
-      value={symbol}
-    /> */}
-    <HighchartsReact
-      highcharts={Highcharts}
-      constructorType={"stockChart"}
-      options={options}
-    />
-  </div>
-);
-}
-
