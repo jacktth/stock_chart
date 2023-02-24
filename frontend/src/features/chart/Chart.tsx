@@ -10,7 +10,7 @@ import { Listing, ListingBar } from "../listingBar/ListBar";
 import "../../index.css";
 
 export function Chart() {
-  // const symbol = useAppSelector(selectSymbol);
+  const globalSymbol = useAppSelector(selectSymbol);
   const dispatch = useAppDispatch();
   const [stockData, setStockData] = useState<any>();
   const [symbol, setSymbol] = useState("AAPL");
@@ -78,7 +78,7 @@ export function Chart() {
 
   const options = {
     title: {
-      text: symbol + " " + error ,
+      text: symbol + " " + error + globalSymbol ,
     },
     series: [
       {

@@ -8,7 +8,7 @@ interface chartState {
 
 // Define the initial state using that type
 const initialState: chartState = {
-    symbol: "AAPL"
+    symbol: "AAPLa"
 }
 
 export const chartSlice = createSlice({
