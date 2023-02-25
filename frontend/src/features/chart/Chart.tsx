@@ -3,7 +3,7 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useEffect, useState } from "react";
 import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { selectSymbol } from "./chartSlice";
+import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { Listing, ListingBar } from "../listingBar/ListBar";
@@ -11,9 +11,10 @@ import "../../index.css";
 
 export function Chart() {
   const globalSymbol = useAppSelector(selectSymbol);
+  const globalMarket = useAppSelector(selectMarket)
   const dispatch = useAppDispatch();
+  const [symbol,setSymbol] = useState<string>(globalSymbol)
   const [stockData, setStockData] = useState<any>();
-  const [symbol, setSymbol] = useState("AAPL");
   const [listings, setListing] = useState<Listing>();
   const [error, setError] = useState<any>("no error");
   useEffect(() => {
@@ -33,7 +34,7 @@ export function Chart() {
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
-        symbol: symbol,
+        symbol: globalSymbol,
         period1: "2022-02-01",
       })
       .then(
@@ -54,11 +55,13 @@ export function Chart() {
   useEffect(() => {
     axios
       .post("http://localhost:3000/stock-data", {
-        symbol: "AAPL",
+        symbol: globalSymbol,
+        market: globalMarket,
         period1: "2022-02-01",
       })
       .then(
         ({ data, status }) => {
+          setSymbol(globalSymbol)
           setError(status);
           const sortedData = dataSorting(data);
           setStockData(sortedData);
@@ -71,14 +74,39 @@ export function Chart() {
         }
       );
   }, []);
+
+  useEffect(() => {
+    axios
+      .post("http://localhost:3000/stock-data", {
+        symbol: globalSymbol,
+        market: globalMarket,
+        period1: "2022-02-01",
+      })
+      .then(
+        ({ data, status }) => {
+          setSymbol(globalSymbol)
+
+          setError(status);
+          const sortedData = dataSorting(data);
+          setStockData(sortedData);
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          setError(error);
+        }
+      );
+  }, [globalSymbol]);
+  
   const symbolOnChange = (e) => {
-    setSymbol(e.target.value);
+    dispatch(updateSymbol(e.target.value));
     e.preventDefault();
   };
 
   const options = {
     title: {
-      text: symbol + " " + error + globalSymbol ,
+      text:  error + symbol ,
     },
     series: [
       {
@@ -106,7 +134,7 @@ export function Chart() {
                 className="inputSymbol"
                 type="text"
                 name="name"
-                value={symbol}
+                value={globalSymbol}
                 onChange={symbolOnChange}
               />
             </label>

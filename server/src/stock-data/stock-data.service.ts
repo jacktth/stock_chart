@@ -5,11 +5,26 @@ import { getDataBody } from './stock-data.controller';
 
 @Injectable()
 export class StockDataService {
-    async getStockData(getDataBody): Promise<HistoricalHistoryResult> {
-        // console.log("this",getDataBody," ",Date.now())
+  async getStockData(
+    getDataBody: getDataBody,
+  ): Promise<HistoricalHistoryResult> {
+    // console.log("this",getDataBody," ",Date.now())
+    const queryOptions = {
+      period1: getDataBody.period1,
+      period2: getDataBody.period2 /* ... */,
+    };
+    switch (getDataBody.market) {
+      case 'HK':
+        const hkQuery = (getDataBody:getDataBody) =>{
+          const diff = 4 - +(getDataBody.symbol.length) 
+          console.log("0".repeat(diff) + getDataBody.symbol)
+          return  "0".repeat(diff) + getDataBody.symbol + "." + getDataBody.market
+        }
+        
+        return await yahooFinance.historical(hkQuery(getDataBody), queryOptions);
+      case 'US':
         const query = getDataBody.symbol;
-        const queryOptions = { period1: getDataBody.period1, period2:getDataBody.period2/* ... */ };
-        const result = await yahooFinance.historical(query, queryOptions);
-        return result;
-      }
+        return await yahooFinance.historical(query, queryOptions);
+    }
+  }
 }

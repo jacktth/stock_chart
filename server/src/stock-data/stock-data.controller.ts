@@ -4,6 +4,7 @@ import { StockDataService } from './stock-data.service';
 
 export class getDataBody{
     symbol:string
+    market:string
     period1:string
     period2?:string
 

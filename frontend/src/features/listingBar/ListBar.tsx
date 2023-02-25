@@ -17,7 +17,7 @@ export function ListingBar(listings: Listing) {
 
   return (
     <div className="listingBar">
-      <select onChange={e=>dispatch(updateSymbol(e.target.value))} multiple className="h-full w-full">
+      <select onChange={e=>dispatch(updateSymbol(e.target.value + ".HK"))} multiple className="h-full w-full">
         {listings.listings.map((x) => (
           <option key={x.symbol}>{x.symbol}</option>
         ))}
