@@ -34,6 +34,7 @@ export const chartSlice = createSlice({
 })
 
 export const {updateSymbol } = chartSlice.actions
+export const {updateViewing } = chartSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectSymbol = (state: RootState) => state.chart.symbol

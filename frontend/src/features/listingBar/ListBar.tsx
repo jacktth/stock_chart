@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectViewing, updateSymbol } from "../chart/chartSlice";
+import { selectViewing, updateSymbol, updateViewing } from "../chart/chartSlice";
 
 export interface ListingProp {
   hk: [
@@ -38,33 +38,19 @@ export function ListingBar(listings: ListingProp) {
 
   const hkListings = listings.hk;
   const usListings = listings.us;
-  // const renderSwitch = (globalViewing:string) => {
-  //   switch (globalViewing) {
-  //     case "hk":
-  //       return hkListings.map((x) => (
-  //         <option key={x.symbol}>{x.symbol}</option>
-
-  //       ));
-  //     case "us":
-  //       return usListings.map((x) => (
-  //         <option key={x.symbol}>{x.symbol}</option>
-  //       ));
-  //     default:
-  //       return <option>Server Error</option>;
-  //   }
-  // };
+  
   const renderSwitch = (globalViewing: string) => {
     switch (globalViewing) {
       case "hk":
-        const option = hkListings.map((x) => (
+        const hkOptions = hkListings.map((x) => (
           <option key={x.symbol}>{x.symbol}</option>
         ));
-        return option;
+        return hkOptions;
       case "us":
-        const option1 = usListings.map((x) => (
+        const usOptions = usListings.map((x) => (
           <option key={x.symbol}>{x.symbol}</option>
         ));
-        return option1;
+        return usOptions;
       default:
         return <option>Server Error</option>;
     }
@@ -84,6 +70,11 @@ export function ListingBar(listings: ListingProp) {
       >
         {renderSwitch(globalViewing)}
       </select>
+      <div className="flex">
+        <button onClick={()=>dispatch(updateViewing('hk'))}>hk</button>
+        <button onClick={()=>dispatch(updateViewing('us'))}>us</button>
+
+      </div>
     </div>
   );
 }
