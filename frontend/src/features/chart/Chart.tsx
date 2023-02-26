@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
-import { Listing, ListingBar } from "../listingBar/ListBar";
+import {  ListingBar, ListingProp } from "../listingBar/ListBar";
 import "../../index.css";
 
 export function Chart() {
@@ -15,7 +15,7 @@ export function Chart() {
   const dispatch = useAppDispatch();
   const [symbol,setSymbol] = useState<string>(globalSymbol)
   const [stockData, setStockData] = useState<any>();
-  const [listings, setListing] = useState<Listing>();
+  const [listings, setListing] = useState(null);
   const [error, setError] = useState<any>("no error");
   useEffect(() => {
     axios.get("http://localhost:3000/listing").then(
@@ -43,9 +43,6 @@ export function Chart() {
           const sortedData = dataSorting(data);
           setStockData(sortedData);
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           setError(error);
         }
@@ -66,9 +63,6 @@ export function Chart() {
           const sortedData = dataSorting(data);
           setStockData(sortedData);
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           setError(error);
         }
@@ -116,9 +110,9 @@ export function Chart() {
       },
     ],
   };
-  const listBar = (listing) => {
-    if (listing) {
-      return <ListingBar listings={listing} />;
+  const listBar = (list:ListingProp|null) => {
+    if (list) {
+      return <ListingBar hk={list.hk} us={list.us} />;
     }
     return <div></div>;
   };

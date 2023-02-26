@@ -8,7 +8,7 @@ export class StockDataService {
   async getStockData(
     getDataBody: getDataBody,
   ): Promise<HistoricalHistoryResult> {
-    // console.log("this",getDataBody," ",Date.now())
+    console.log("this",getDataBody.market," ",Date.now())
     const queryOptions = {
       period1: getDataBody.period1,
       period2: getDataBody.period2 /* ... */,
@@ -17,7 +17,6 @@ export class StockDataService {
       case 'HK':
         const hkQuery = (getDataBody:getDataBody) =>{
           const diff = 4 - +(getDataBody.symbol.length) 
-          console.log("0".repeat(diff) + getDataBody.symbol)
           return  "0".repeat(diff) + getDataBody.symbol + "." + getDataBody.market
         }
         

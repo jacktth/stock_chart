@@ -5,12 +5,15 @@ import type { RootState } from '../../app/store'
 interface chartState {
   symbol: string
   market: string
+  viewing:string
 }
 
 // Define the initial state using that type
 const initialState: chartState = {
     symbol: "AAPL",
-    market:"US"
+    market:"US",
+    viewing:"us",
+
 }
 
 export const chartSlice = createSlice({
@@ -23,6 +26,10 @@ export const chartSlice = createSlice({
       state.symbol = split[0]
       state.market = split[1]
     },
+    updateViewing: (state,action:PayloadAction<string>) => {
+ 
+      state.viewing = action.payload
+    },
   }
 })
 
@@ -31,6 +38,8 @@ export const {updateSymbol } = chartSlice.actions
 // Other code such as selectors can use the imported `RootState` type
 export const selectSymbol = (state: RootState) => state.chart.symbol
 export const selectMarket = (state: RootState) => state.chart.market
+export const selectViewing = (state: RootState) => state.chart.viewing
+
 
 
 export default chartSlice.reducer
