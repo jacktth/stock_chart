@@ -11,23 +11,23 @@ export class ListingService {
     const usListingData = async () => {
       const usListingURL =
         'https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true';
-        const res = await firstValueFrom(
-          this.httpService
-            .get(usListingURL)
-            .pipe(
-              catchError((error: AxiosError) => {
-                this.logger.error(error.response.data);
-                throw 'An error happened!';
-              }),
-            ),
-        );
+      const res = await firstValueFrom(
+        this.httpService.get(usListingURL).pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+      );
 
-        const row = res.data.data.rows
-        const dataContainer = []
-        for(let obj of row){
-          dataContainer.push({"symbol":obj.symbol,"engName":obj.name})
-        }
-        return dataContainer
+      const row = res.data.data.rows;
+      const dataContainer = [];
+      for (let obj of row) {
+        new String(obj.symbol).includes('^')
+          ? null
+          : dataContainer.push({ symbol: obj.symbol, engName: obj.name });
+      }
+      return dataContainer;
     };
     const hkListingData = async () => {
       const hkListingURL =
@@ -66,7 +66,7 @@ export class ListingService {
       }
       return dataContainer;
     };
-   
-    return {us:await usListingData(),hk:await hkListingData()}
+
+    return { us: await usListingData(), hk: await hkListingData() };
   }
 }

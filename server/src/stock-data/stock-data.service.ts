@@ -8,7 +8,7 @@ export class StockDataService {
   async getStockData(
     getDataBody: getDataBody,
   ): Promise<HistoricalHistoryResult> {
-    console.log("this",getDataBody.market," ",Date.now())
+    console.log("this",getDataBody.symbol," ",Date.now())
     const queryOptions = {
       period1: getDataBody.period1,
       period2: getDataBody.period2 /* ... */,
