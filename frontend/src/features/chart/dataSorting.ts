@@ -5,3 +5,4 @@ export default function(arr:HistoricalRowHistory[]){
     arr.forEach((obj:HistoricalRowHistory)=>{sortedArray.push([new Date(obj.date).getTime(),obj.open,obj.high,obj.low,obj.close])})
     return sortedArray
 }
+//
