@@ -3,15 +3,31 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useEffect, useState } from "react";
 import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
+import {
+  selectMarket,
+  selectMinMax,
+  selectSymbol,
+  updateMinMax,
+  updateSymbol,
+} from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { ListingBar, ListingProp } from "../listingBar/ListBar";
 import "../../index.css";
-
+import indicatorsAll from "highcharts/indicators/indicators-all";
+import annotationsAdvanced from "highcharts/modules/annotations-advanced";
+import priceIndicator from "highcharts/modules/price-indicator";
+import fullScreen from "highcharts/modules/full-screen";
+import stockTools from "highcharts/modules/stock-tools";
+indicatorsAll(Highcharts);
+annotationsAdvanced(Highcharts);
+priceIndicator(Highcharts);
+fullScreen(Highcharts);
+stockTools(Highcharts);
 export function Chart() {
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
+  const globalMinMax = useAppSelector(selectMinMax);
   const dispatch = useAppDispatch();
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [stockData, setStockData] = useState<any>();
@@ -21,56 +37,83 @@ export function Chart() {
     min: 1643846400000,
     max: 1644278400000,
   });
+  // const [selectMinMax, setSelectMinMax] = useState({ min: 0, max: 0 });
   const [options, setOptions] = useState<Highcharts.Options>({
     xAxis: {
       min: 1644278400000,
       max: 1664236800000,
+      //   plotBands: [{ // mark the weekend
+      //     color: '#FCFFC5',
+      //     from: Date.UTC(2010, 0, 2),
+      //     to: Date.UTC(2010, 0, 4),
+      //     events: {
+      //         click: e => {
+      //             report.innerHTML = e.;
+      //         },
+      //         mouseover: e => {
+      //             report.innerHTML = e.type;
+      //         },
+      //         mouseout: e => {
+      //             report.innerHTML = e.type;
+      //         }
+      //     }
+      // }],
     },
-
-    // chart: {
-    //   events: {
-    //     load: function () {
-    //       const chart = this;
-
-    //       chart.xAxis[0].setExtremes(1644278400000, 1651622400000, move);
-    //       setMove(false);
-    //     },
-    //   },
-    // },
+    chart: {
+      zooming: {
+        type: "x",
+      },
+      events: {
+        selection: (e) => {
+          // alert(e.xAxis[0].min)
+          // setSelectMinMax({...selectMinMax, min: e.xAxis[0].min, max: e.xAxis[0].max });
+          dispatch(updateMinMax({ min: e.xAxis[0].min, max: e.xAxis[0].max }));
+          // setOptions({
+          //   ...options,
+          //   title: {
+          //     text: error + symbol + globalMinMax.min + globalMinMax.min,
+          //   },
+          // });
+          return false; // Don't zoom
+        },
+      },
+      panning: {
+        enabled: false,
+      },
+    },
 
     plotOptions: {
       series: {
         cursor: "pointer",
+
         point: {
           events: {
-            click: function () {
-              alert("Category: " + this.category + ", value: " + this.x);
+            click: function (e) {
+              // alert("Category: " + this.category + ", value: " + this.x);
             },
           },
         },
       },
     },
     title: {
-      text: error + symbol,
+      text: error + symbol + globalMinMax.min + globalMinMax.min,
     },
-    // series: [
-    //   {
-    //     type: "candlestick",
-    //     // data: stockData,
-    //     //[[1644278400000, 174.830002,168.880005,142.880005,148.880005],
-    //     //   [1644364800000, 176.279999,168.880005,142.880005,148.880005],
-    //     //   [1644451200000, 172.119995,168.880005,142.880005,148.880005],
-    //     //   [1644537600000, 168.639999,168.880005,142.880005,148.880005],
-    //     //   [1644796800000, 168.880005,168.880005,142.880005,148.880005],
-    //     //   [1644883200000, 172.789993,168.880005,142.880005,148.880005],
-    //     //   [1644969600000, 172.550003,168.880005,142.880005,148.880005],
-    //     // [1645056000000, 168.880005,168.880005,142.880005,148.880005],
-    //     //   [1645142400000, 167.300003,168.880005,142.880005,148.880005],
-    //     //   [1645488000000,168.880005,168.880005,142.880005,148.880005,]
-    //     //  ]
-    //   },
-    // ],
   });
+  useEffect(() => {
+    setOptions({
+      ...options,
+      title: {
+        text: error + symbol + globalMinMax.min + globalMinMax.min,
+      },
+      xAxis:{
+        ...options.xAxis,
+        plotBands: [{ // mark the weekend
+              color: '#FCFFC5',
+              from: globalMinMax.min,
+              to: globalMinMax.max}]
+      }
+    });
+  }, [globalMinMax]);
 
   useEffect(() => {
     axios.get("http://localhost:3000/listing").then(
@@ -139,7 +182,9 @@ export function Chart() {
           setStockData(sortedData);
           setOptions({
             ...options,
-            series: [{type:"candlestick",data:sortedData}],
+            series: [
+              { type: "candlestick", data: sortedData, allowPointSelect: true },
+            ],
           });
         },
         // Note: it's important to handle errors here
@@ -180,13 +225,17 @@ export function Chart() {
           {listBar(listings)}
         </div>
         <div className="chartContainer">
-          {options.series ? <HighchartsReact
-            containerProps={{ className: "h-screen" }}
-            highcharts={Highcharts}
-            constructorType={"stockChart"}
-            options={options}
-          /> :null}
-         
+          {/* the conditions to prevent multi re-render until stock data is fetched from server*/}
+          {options.series ? (
+            <HighchartsReact
+              containerProps={{ className: "h-screen" }}
+              highcharts={Highcharts}
+              constructorType={"stockChart"}
+              options={options}
+            />
+          ) : (
+            "error"
+          )}
         </div>
       </div>
     </div>
