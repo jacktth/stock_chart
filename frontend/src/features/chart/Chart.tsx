@@ -3,11 +3,7 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useEffect, useState } from "react";
 import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import {
-  selectMarket,
-  selectSymbol,
-  updateSymbol,
-} from "./chartSlice";
+import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { ListingBar, ListingProp } from "../listingBar/ListBar";
@@ -34,9 +30,13 @@ export function Chart() {
     min: 1643846400000,
     max: 1644278400000,
   });
-  const [brandColor, setBrandColor] = useState({
-    min: null,
-    max: null,
+  const [dateArray, setDateArray] = useState<number[]>([]);
+  const [selectedDate, setSelectedDate] = useState<{
+    start: number;
+    end: number;
+  }>({
+    start: 0,
+    end: 0,
   });
   // const [selectMinMax, setSelectMinMax] = useState({ min: 0, max: 0 });
   const [options, setOptions] = useState<Highcharts.Options>({
@@ -52,17 +52,18 @@ export function Chart() {
         selection: (e) => {
           //in this function, it is not recommend to use any setState hook to update the state
           //because the setState  will only return init value
-          setMinMax({ min: e.xAxis[0].min, max: e.xAxis[0].max })
-          return false; // returning false will disable the default zooming function while dragging on the chart 
+          const min = e.xAxis[0].min;
+          const max = e.xAxis[0].max;
+          setMinMax({ min: min, max: max });
+
+          return false; // returning false will disable the default zooming function while dragging on the chart
         },
-        click: ()=>{
-        setMinMax({ min: 0, max: 0 })
-
-
-        }
+        click: () => {
+          setMinMax({ min: 0, max: 0 });
+        },
       },
       panning: {
-        enabled: false,//this disables the scrolling function on the chart but no effect to the scroll bar
+        enabled: false, //this disables the scrolling function on the chart but no effect to the scroll bar
       },
     },
 
@@ -73,7 +74,6 @@ export function Chart() {
         point: {
           events: {
             click: function (e) {
-
               alert("Category: " + this.category + ", value: " + this.x);
             },
           },
@@ -81,28 +81,55 @@ export function Chart() {
       },
     },
     title: {
-      text: error + symbol + minMax.min + minMax.min,
+      text: error + symbol,
     },
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
+    const max = minMax.max
+    const min = minMax.min
+    const start = min!=0 && min <=dateArray[0] ?dateArray[0] :  dateArray.reduce(
+      (acc, curr, i, arr) =>
+        i > 0 && min - curr < 0 && min - arr[i - 1] > 0
+          ? (arr[i - 1] + curr) / 2 <= min
+            ? curr
+            : arr[i - 1]
+          : acc,
+      0
+    );
+    const end = max>=dateArray.slice(-1)[0] ?dateArray.slice(-1)[0] :  dateArray.reduce(
+      (acc, curr, i, arr) =>
+        i > 0 && max - curr < 0 && max - arr[i - 1] > 0
+          ? (arr[i - 1] + curr) / 2 <= max
+            ? curr
+            : arr[i - 1]
+          : acc,
+      0
+    );
+    // const end = dateArray.reduce((acc,curr,i,arr) =>  ( i!==0 || (curr>minMax.min && arr[i-1]<minMax.max )) ?curr :acc ,0)
     setOptions({
       ...options,
       title: {
-        text: error + symbol + minMax.min + minMax.min,
+        text: error + symbol + start + " " + end,
       },
       xAxis: {
         ...options.xAxis,
         plotBands: [
           {
-            // mark the weekend
             color: "#FCFFC5",
-            from: minMax.min,
-            to: minMax.max,
+            from: start,
+            to: end,
           },
         ],
       },
     });
+
+    // setSelectedDate({
+    //   // start: selectedDate.date.reduce((acc,curr,i,arr) =>  ( i!==0 || (curr>min && arr[i-1]<max )) ?arr[i-1] :acc ,0),
+    //   start: dateArray[0],
+    //   end:dateArray[4]
+    //   // end: selectedDate.date.find((el, i,arr) =>   !i || (el>max && arr[i-1]<max ) )!,
+    // });
   }, [minMax]);
 
   useEffect(() => {
@@ -129,7 +156,8 @@ export function Chart() {
         ({ data, status }) => {
           setError(status);
           const sortedData = dataSorting(data);
-          setStockData(sortedData);
+          setStockData(sortedData.stockData);
+          setDateArray(sortedData.date);
         },
         (error) => {
           setError(error);
@@ -170,10 +198,15 @@ export function Chart() {
           setError(status);
           const sortedData = dataSorting(data);
           setStockData(sortedData);
+          setDateArray(sortedData.date);
           setOptions({
             ...options,
             series: [
-              { type: "candlestick", data: sortedData, allowPointSelect: true },
+              {
+                type: "candlestick",
+                data: sortedData.stockData,
+                allowPointSelect: true,
+              },
             ],
           });
         },
