@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "bdev":"cd ../server/ && nest start --watch",
+    "bdev": "cd ../server/ && nest start --watch",
     "build": "vite build",
     "preview": "vite preview"
   },

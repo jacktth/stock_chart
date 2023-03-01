@@ -5,9 +5,7 @@ import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/histor
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   selectMarket,
-  selectMinMax,
   selectSymbol,
-  updateMinMax,
   updateSymbol,
 } from "./chartSlice";
 import axios from "axios";
@@ -27,7 +25,6 @@ stockTools(Highcharts);
 export function Chart() {
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
-  const globalMinMax = useAppSelector(selectMinMax);
   const dispatch = useAppDispatch();
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [stockData, setStockData] = useState<any>();
@@ -37,27 +34,15 @@ export function Chart() {
     min: 1643846400000,
     max: 1644278400000,
   });
+  const [brandColor, setBrandColor] = useState({
+    min: null,
+    max: null,
+  });
   // const [selectMinMax, setSelectMinMax] = useState({ min: 0, max: 0 });
   const [options, setOptions] = useState<Highcharts.Options>({
     xAxis: {
       min: 1644278400000,
       max: 1664236800000,
-      //   plotBands: [{ // mark the weekend
-      //     color: '#FCFFC5',
-      //     from: Date.UTC(2010, 0, 2),
-      //     to: Date.UTC(2010, 0, 4),
-      //     events: {
-      //         click: e => {
-      //             report.innerHTML = e.;
-      //         },
-      //         mouseover: e => {
-      //             report.innerHTML = e.type;
-      //         },
-      //         mouseout: e => {
-      //             report.innerHTML = e.type;
-      //         }
-      //     }
-      // }],
     },
     chart: {
       zooming: {
@@ -65,20 +50,19 @@ export function Chart() {
       },
       events: {
         selection: (e) => {
-          // alert(e.xAxis[0].min)
-          // setSelectMinMax({...selectMinMax, min: e.xAxis[0].min, max: e.xAxis[0].max });
-          dispatch(updateMinMax({ min: e.xAxis[0].min, max: e.xAxis[0].max }));
-          // setOptions({
-          //   ...options,
-          //   title: {
-          //     text: error + symbol + globalMinMax.min + globalMinMax.min,
-          //   },
-          // });
-          return false; // Don't zoom
+          //in this function, it is not recommend to use any setState hook to update the state
+          //because the setState  will only return init value
+          setMinMax({ min: e.xAxis[0].min, max: e.xAxis[0].max })
+          return false; // returning false will disable the default zooming function while dragging on the chart 
         },
+        click: ()=>{
+        setMinMax({ min: 0, max: 0 })
+
+
+        }
       },
       panning: {
-        enabled: false,
+        enabled: false,//this disables the scrolling function on the chart but no effect to the scroll bar
       },
     },
 
@@ -89,31 +73,37 @@ export function Chart() {
         point: {
           events: {
             click: function (e) {
-              // alert("Category: " + this.category + ", value: " + this.x);
+
+              alert("Category: " + this.category + ", value: " + this.x);
             },
           },
         },
       },
     },
     title: {
-      text: error + symbol + globalMinMax.min + globalMinMax.min,
+      text: error + symbol + minMax.min + minMax.min,
     },
   });
   useEffect(() => {
+    //this hook is to update the selected data range on the chart
     setOptions({
       ...options,
       title: {
-        text: error + symbol + globalMinMax.min + globalMinMax.min,
+        text: error + symbol + minMax.min + minMax.min,
       },
-      xAxis:{
+      xAxis: {
         ...options.xAxis,
-        plotBands: [{ // mark the weekend
-              color: '#FCFFC5',
-              from: globalMinMax.min,
-              to: globalMinMax.max}]
-      }
+        plotBands: [
+          {
+            // mark the weekend
+            color: "#FCFFC5",
+            from: minMax.min,
+            to: minMax.max,
+          },
+        ],
+      },
     });
-  }, [globalMinMax]);
+  }, [minMax]);
 
   useEffect(() => {
     axios.get("http://localhost:3000/listing").then(
