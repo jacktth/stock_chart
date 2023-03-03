@@ -13,6 +13,7 @@ import annotationsAdvanced from "highcharts/modules/annotations-advanced";
 import priceIndicator from "highcharts/modules/price-indicator";
 import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
+import { supabase } from "../../api/supabaseClient";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
@@ -223,7 +224,9 @@ export function Chart() {
     dispatch(updateSymbol(e.target.value));
     e.preventDefault();
   };
-
+const  signOut = async() => {
+  const { error } = await supabase.auth.signOut()
+}
   const listBar = (list: ListingProp | null) => {
     if (list) {
       return <ListingBar hk={list.hk} us={list.us} />;
@@ -232,7 +235,7 @@ export function Chart() {
   };
   return (
     <div className="view-full">
-      <div className="flex view-full">
+      <div className="flex view-full">''
         <div className="SearchBar">
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
@@ -245,6 +248,7 @@ export function Chart() {
               />
             </label>
           </form>
+          <button onClick={signOut}>log out</button>
           {listBar(listings)}
         </div>
         <div className="chartContainer">
