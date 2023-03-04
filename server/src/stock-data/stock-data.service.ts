@@ -1,28 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import yahooFinance from 'yahoo-finance2';
 import { HistoricalHistoryResult } from 'yahoo-finance2/dist/esm/src/modules/historical';
-import { getDataBody } from './stock-data.controller';
+import { getDataParam } from './stock-data.controller';
 
 @Injectable()
 export class StockDataService {
   async getStockData(
-    getDataBody: getDataBody,
+    getDataParam: getDataParam,
   ): Promise<HistoricalHistoryResult> {
-    console.log("this",getDataBody.symbol," ",Date.now())
     const queryOptions = {
-      period1: getDataBody.period1,
-      period2: getDataBody.period2 /* ... */,
+      period1: getDataParam.period1,
+      period2: getDataParam.period2 /* ... */,
     };
-    switch (getDataBody.market) {
+    console.log("this",getDataParam," ",Date.now())
+
+    switch (getDataParam.market) {
       case 'HK':
-        const hkQuery = (getDataBody:getDataBody) =>{
+        const hkQuery = (getDataBody:getDataParam) =>{
           const diff = 4 - +(getDataBody.symbol.length) 
           return  "0".repeat(diff) + getDataBody.symbol + "." + getDataBody.market
         }
         
-        return await yahooFinance.historical(hkQuery(getDataBody), queryOptions);
+        return await yahooFinance.historical(hkQuery(getDataParam), queryOptions);
       case 'US':
-        const query = getDataBody.symbol;
+        const query = getDataParam.symbol;
+
         return await yahooFinance.historical(query, queryOptions);
     }
   }

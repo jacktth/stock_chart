@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Header, Param, Post } from '@nestjs/common';
+import { Query } from '@nestjs/common/decorators';
 import yahooFinance from 'yahoo-finance2';
 import { StockDataService } from './stock-data.service';
 
-export class getDataBody{
+export class getDataParam{
     symbol:string
     market:string
     period1:string
@@ -14,8 +15,8 @@ export class getDataBody{
 export class StockDataController {
   constructor(private readonly stockDataService: StockDataService) {}
 
-  @Post('stock-data')
-   getStockData(@Body()getDataBody:getDataBody) {
-    return this.stockDataService.getStockData(getDataBody);
+  @Get('stock-data')
+   getStockData(@Query()param:getDataParam) {
+    return this.stockDataService.getStockData(param);
   }
 }
