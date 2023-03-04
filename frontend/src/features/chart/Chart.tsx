@@ -14,25 +14,27 @@ import priceIndicator from "highcharts/modules/price-indicator";
 import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
+import { selectAuth, updateAuth } from "../auth/authSlice";
+import { SaveBar } from "../saveBar/SaveBar";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
 export function Chart() {
+  const dispatch = useAppDispatch();
+
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
-  const dispatch = useAppDispatch();
+  const globalAuth = useAppSelector(selectAuth);
+
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [stockData, setStockData] = useState<any>();
   const [listings, setListing] = useState(null);
   const [error, setError] = useState<any>("no error");
-  const [minMax, setMinMax] = useState({
-    min: 1643846400000,
-    max: 1644278400000,
-  });
+
   const [dateArray, setDateArray] = useState<number[]>([]);
-  const [selectedDate, setSelectedDate] = useState<{
+  const [selectedData, setSelectedData] = useState<{
     start: number;
     end: number;
   }>({
@@ -55,12 +57,12 @@ export function Chart() {
           //because the setState  will only return init value
           const min = e.xAxis[0].min;
           const max = e.xAxis[0].max;
-          setMinMax({ min: min, max: max });
+          setSelectedData({ start: min, end: max });
 
           return false; // returning false will disable the default zooming function while dragging on the chart
         },
         click: () => {
-          setMinMax({ min: 0, max: 0 });
+          setSelectedData({ start: 0, end: 0 });
         },
       },
       panning: {
@@ -87,26 +89,32 @@ export function Chart() {
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
-    const max = minMax.max
-    const min = minMax.min
-    const start = min!=0 && min <=dateArray[0] ?dateArray[0] :  dateArray.reduce(
-      (acc, curr, i, arr) =>
-        i > 0 && min - curr < 0 && min - arr[i - 1] > 0
-          ? (arr[i - 1] + curr) / 2 <= min
-            ? curr
-            : arr[i - 1]
-          : acc,
-      0
-    );
-    const end = max>=dateArray.slice(-1)[0] ?dateArray.slice(-1)[0] :  dateArray.reduce(
-      (acc, curr, i, arr) =>
-        i > 0 && max - curr < 0 && max - arr[i - 1] > 0
-          ? (arr[i - 1] + curr) / 2 <= max
-            ? curr
-            : arr[i - 1]
-          : acc,
-      0
-    );
+    const max = selectedData.end;
+    const min = selectedData.start;
+    const start =
+      min != 0 && min <= dateArray[0]
+        ? dateArray[0]
+        : dateArray.reduce(
+            (acc, curr, i, arr) =>
+              i > 0 && min - curr < 0 && min - arr[i - 1] > 0
+                ? (arr[i - 1] + curr) / 2 <= min
+                  ? curr
+                  : arr[i - 1]
+                : acc,
+            0
+          );
+    const end =
+      max >= dateArray.slice(-1)[0]
+        ? dateArray.slice(-1)[0]
+        : dateArray.reduce(
+            (acc, curr, i, arr) =>
+              i > 0 && max - curr < 0 && max - arr[i - 1] > 0
+                ? (arr[i - 1] + curr) / 2 <= max
+                  ? curr
+                  : arr[i - 1]
+                : acc,
+            0
+          );
     // const end = dateArray.reduce((acc,curr,i,arr) =>  ( i!==0 || (curr>minMax.min && arr[i-1]<minMax.max )) ?curr :acc ,0)
     setOptions({
       ...options,
@@ -124,14 +132,7 @@ export function Chart() {
         ],
       },
     });
-
-    // setSelectedDate({
-    //   // start: selectedDate.date.reduce((acc,curr,i,arr) =>  ( i!==0 || (curr>min && arr[i-1]<max )) ?arr[i-1] :acc ,0),
-    //   start: dateArray[0],
-    //   end:dateArray[4]
-    //   // end: selectedDate.date.find((el, i,arr) =>   !i || (el>max && arr[i-1]<max ) )!,
-    // });
-  }, [minMax]);
+  }, [selectedData]);
 
   useEffect(() => {
     axios.get("http://localhost:3000/listing").then(
@@ -146,6 +147,21 @@ export function Chart() {
         setError(error);
       }
     );
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      console.log(user);
+      supabase
+        .from("list")
+        .select().eq('user_id', user?.id)
+        .then((data) => console.log("fetch",data));
+      dispatch(
+        updateAuth({
+          id: user?.id,
+          createdAt: user?.created_at,
+          email: user?.email,
+          lastSignInAt: user?.last_sign_in_at,
+        })
+      );
+    });
   }, []);
   const handleSubmit = (e) => {
     axios
@@ -166,25 +182,6 @@ export function Chart() {
       );
     e.preventDefault();
   };
-  // useEffect(() => {
-  //   axios
-  //     .post("http://localhost:3000/stock-data", {
-  //       symbol: globalSymbol,
-  //       market: globalMarket,
-  //       period1: "2022-02-01",
-  //     })
-  //     .then(
-  //       ({ data, status }) => {
-  //         setSymbol(globalSymbol);
-  //         setError(status);
-  //         const sortedData = dataSorting(data);
-  //         setStockData(sortedData);
-  //       },
-  //       (error) => {
-  //         setError(error);
-  //       }
-  //     );
-  // }, []);
 
   useEffect(() => {
     axios
@@ -224,9 +221,9 @@ export function Chart() {
     dispatch(updateSymbol(e.target.value));
     e.preventDefault();
   };
-const  signOut = async() => {
-  const { error } = await supabase.auth.signOut()
-}
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+  };
   const listBar = (list: ListingProp | null) => {
     if (list) {
       return <ListingBar hk={list.hk} us={list.us} />;
@@ -235,7 +232,8 @@ const  signOut = async() => {
   };
   return (
     <div className="view-full">
-      <div className="flex view-full">''
+      <div className="flex view-full">
+        ''
         <div className="SearchBar">
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
@@ -253,6 +251,7 @@ const  signOut = async() => {
         </div>
         <div className="chartContainer">
           {/* the conditions to prevent multi re-render until stock data is fetched from server*/}
+          <SaveBar selectedData={selectedData} />
           {options.series ? (
             <HighchartsReact
               containerProps={{ className: "h-screen" }}

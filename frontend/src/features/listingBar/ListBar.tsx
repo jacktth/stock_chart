@@ -2,7 +2,7 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectViewing, updateSymbol, updateViewing } from "../chart/chartSlice";
 
-export interface ListingProp {
+export type ListingProp = {
   hk: [
     {
       symbol: number;
@@ -17,21 +17,6 @@ export interface ListingProp {
     }
   ];
 }
-type ListingInfo = {
-  hk: [
-    {
-      symbol: number;
-      enName: string;
-      zhNAme: string;
-    }
-  ];
-  us: [
-    {
-      symbol: number;
-      enName: string;
-    }
-  ];
-};
 export function ListingBar(listings: ListingProp) {
   const dispatch = useAppDispatch();
   const globalViewing = useAppSelector(selectViewing);
