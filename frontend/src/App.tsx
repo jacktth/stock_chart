@@ -22,7 +22,8 @@ function App() {
     })
   }, [])
 
-  return !session ?<Auth/> :<Chart /> ;
+  // return !session ?<Auth/> :<Chart /> ;
+  return<Chart /> ;
 }
 
 export default App;
