@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useMemo } from "react";
+import { useQuery } from "react-query";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectViewing,
@@ -21,18 +23,24 @@ export type ListingProp = {
     }
   ];
 };
-export function ListingBar(listings: ListingProp) {
+const fetchListings = () => axios.get("http://localhost:3000/listing");
+export function ListingBar() {
   const dispatch = useAppDispatch();
+  const { data, isLoading } = useQuery("listings", fetchListings);
+  
   const globalViewing = useAppSelector(selectViewing);
   const usListings = useMemo(
-    () => listings.us.map((x) => <option key={x.symbol}>{x.symbol}</option>),
-    [listings]
+    () => data?.data.us.map((x) => <option key={x.symbol}>{x.symbol}</option>),
+    [data]
   );
-  const hkListings = listings.hk.map(
+  const hkListings = data?.data.hk.map(
     (x) => <option key={x.symbol}>{x.symbol}</option>,
-    [listings]
+    [data]
   );
-
+  //isloading must be placed under hook
+  if(isLoading){
+    return <span>loading</span>
+  }
   const renderSwitch = (globalViewing: string) => {
     switch (globalViewing) {
       case "hk":
@@ -59,7 +67,6 @@ export function ListingBar(listings: ListingProp) {
         multiple
         className="h-full w-full"
       >
-        {/* {children} */}
         {renderSwitch(globalViewing)}
       </select>
       <div className="flex">

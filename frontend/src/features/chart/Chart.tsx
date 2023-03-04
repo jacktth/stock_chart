@@ -16,21 +16,22 @@ import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
 import { SaveBar } from "../saveBar/SaveBar";
+import { useQuery, useQueryClient } from "react-query";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
+
 export function Chart() {
   const dispatch = useAppDispatch();
-
+  const queryClient = useQueryClient()
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
   const globalAuth = useAppSelector(selectAuth);
-
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [stockData, setStockData] = useState<any>();
-  const [listings, setListing] = useState(null);
+  // const [listings, setListing] = useState(null);
   const [error, setError] = useState<any>("no error");
 
   const [dateArray, setDateArray] = useState<number[]>([]);
@@ -135,18 +136,18 @@ export function Chart() {
   }, [selectedData]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/listing").then(
-      ({ data, status }) => {
-        setError(status);
-        setListing(data);
-      },
-      // Note: it's important to handle errors here
-      // instead of a catch() block so that we don't swallow
-      // exceptions from actual bugs in components.
-      (error) => {
-        setError(error);
-      }
-    );
+    // axios.get("http://localhost:3000/listing").then(
+    //   ({ data, status }) => {
+    //     setError(status);
+    //     setListing(data);
+    //   },
+    //   // Note: it's important to handle errors here
+    //   // instead of a catch() block so that we don't swallow
+    //   // exceptions from actual bugs in components.
+    //   (error) => {
+    //     setError(error);
+    //   }
+    // );
     supabase.auth.getUser().then(({ data: { user } }) => {
       console.log(user);
       supabase
@@ -226,7 +227,7 @@ export function Chart() {
   };
   const listBar = (list: ListingProp | null) => {
     if (list) {
-      return <ListingBar hk={list.hk} us={list.us} />;
+      return ;
     }
     return <div></div>;
   };
@@ -247,7 +248,7 @@ export function Chart() {
             </label>
           </form>
           <button onClick={signOut}>log out</button>
-          {listBar(listings)}
+          <ListingBar />
         </div>
         <div className="chartContainer">
           {/* the conditions to prevent multi re-render until stock data is fetched from server*/}

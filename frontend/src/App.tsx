@@ -1,9 +1,10 @@
 import { AuthError, Session } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { supabase } from "./api/supabaseClient";
 import Auth from "./features/auth/Auth";
 import { Chart } from "./features/chart/Chart";
-
+const queryClient = new QueryClient()
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [error, setError] = useState<AuthError  | null>(null)
@@ -22,8 +23,8 @@ function App() {
     })
   }, [])
 
-  // return !session ?<Auth/> :<Chart /> ;
-  return<Chart /> ;
+  // return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
+  return <QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
 }
 
 export default App;
