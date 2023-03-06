@@ -1,4 +1,4 @@
-export function nameTextFilter(name: string) {
+export function usStockNameFilter(name: string) {
   const filter: (string | RegExp)[] = [
     ' LP Cheniere',
     ' Common Units',

@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
-import { nameTextFilter } from './utils';
+import { usStockNameFilter } from './utils';
 
 type usResponseRow = {
   symbol:string
@@ -31,7 +31,7 @@ export class ListingService {
       for (let obj of row) {
         new String(obj.symbol).includes('^')
           ? null
-          : dataContainer.push({ symbol: obj.symbol, engName: nameTextFilter(obj.name) });
+          : dataContainer.push({ symbol: obj.symbol, engName: usStockNameFilter(obj.name) });
       }
       return dataContainer;
     };

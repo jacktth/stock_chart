@@ -18,27 +18,7 @@ import {
   updateViewing,
 } from "../chart/chartSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
-export type ListingResponse = {
-  hk: [
-    {
-      symbol: string;
-      engName: string;
-      zhNAme: string;
-    }
-  ];
-  us: [
-    {
-      symbol: string;
-      engName: string;
-    }
-  ];
-};
-export type AllListings = {
-  symbol: string;
-  engName: string;
-  label: string;
-  zhNAme?: string;
-};
+
 
 const fetchListings = () =>
   axios.get<ListingResponse>("http://localhost:3000/listing");
@@ -91,7 +71,7 @@ export function ListingBar() {
           </div>
       );
       return (
-        <div>
+        <>
           <div className="flex text-sm">
             <img
               src={`https://flagcdn.com/${globalViewing.toLocaleLowerCase()}.svg`}
@@ -110,7 +90,7 @@ export function ListingBar() {
           >
             {Row}
           </List>
-        </div>
+        </>
       );
     } else {
       return <div>ss</div>;
@@ -120,7 +100,6 @@ export function ListingBar() {
 
   return (
     <div className="listingBar">
-  
       <div className="flex">
         <button onClick={() => dispatch(updateViewing("hk"))}>hk</button>
         <button onClick={() => dispatch(updateViewing("us"))}>us</button>
@@ -129,3 +108,25 @@ export function ListingBar() {
     </div>
   );
 }
+
+export type ListingResponse = {
+  hk: [
+    {
+      symbol: string;
+      engName: string;
+      zhNAme: string;
+    }
+  ];
+  us: [
+    {
+      symbol: string;
+      engName: string;
+    }
+  ];
+};
+export type AllListings = {
+  symbol: string;
+  engName: string;
+  label: string;
+  zhNAme?: string;
+};
