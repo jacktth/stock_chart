@@ -12,31 +12,30 @@ import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { FixedSizeList as List } from "react-window";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import {
-  selectViewing,
-  updateSymbol,
-  updateViewing,
-} from "../chart/chartSlice";
+import { selectViewing, updateSymbol } from "../chart/chartSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
-
+import { categoricalList } from "./categoricalList";
+import { selectClip, selectCategories } from "./listSlice";
 
 const fetchListings = () =>
   axios.get<ListingResponse>("http://localhost:3000/listing");
 
 export function ListingBar() {
   const dispatch = useAppDispatch();
+  const globalClip = useAppSelector(selectClip);
+  const globalCategories = useAppSelector(selectCategories);
   const globalViewing = useAppSelector(selectViewing);
-
-  const [listData, setListData] = useState<AllListings[]>([]);
   const { data, isLoading } = useQuery("listings", fetchListings, {
     onSuccess(data) {
       const container: AllListings[] = [];
       data.data.hk.forEach((el) => container.push({ ...el, label: "HK" }));
       data.data.us.forEach((el) => container.push({ ...el, label: "US" }));
-      setListData(container);
     },
   });
-  function autoComplete(data: AxiosResponse<ListingResponse, any> | undefined) {
+  function symbolList(
+    globalViewing: string,
+    data: AxiosResponse<ListingResponse, any> | undefined
+  ) {
     if (data) {
       const container: AllListings[] = [];
       switch (globalViewing) {
@@ -52,23 +51,23 @@ export function ListingBar() {
           break;
       }
       const Row = ({ index, style }) => (
-          <div
+        <div
           style={style}
-            className="hover:bg-sky-300 leading-3 border-2 border-solid p-2"
-            onClick={() =>
-              dispatch(
-                updateSymbol(
-                  globalViewing === "hk"
-                    ? container[index].symbol + ".HK"
-                    : container[index].symbol + ".US"
-                )
+          className="hover:bg-sky-300 leading-3 border-2 border-solid p-2"
+          onClick={() =>
+            dispatch(
+              updateSymbol(
+                globalViewing === "hk"
+                  ? container[index].symbol + ".HK"
+                  : container[index].symbol + ".US"
               )
-            }
-          >
-            <span >{container[index].symbol}</span>
-            <br />
-            <span className="text-xs ">{container[index].engName}</span>
-          </div>
+            )
+          }
+        >
+          <span>{container[index].symbol}</span>
+          <br />
+          <span className="text-xs ">{container[index].engName}</span>
+        </div>
       );
       return (
         <>
@@ -82,7 +81,7 @@ export function ListingBar() {
           </div>
           <List
             className=""
-            height={500}
+            height={300}
             width={"100%"}
             itemSize={70}
             itemCount={container.length}
@@ -92,23 +91,18 @@ export function ListingBar() {
           </List>
         </>
       );
-    } else {
-      return <div>ss</div>;
     }
   }
 
+  if (isLoading) <div>loading...</div>;
 
   return (
     <div className="listingBar">
-      <div className="flex">
-        <button onClick={() => dispatch(updateViewing("hk"))}>hk</button>
-        <button onClick={() => dispatch(updateViewing("us"))}>us</button>
-      </div>
-      <div>{autoComplete(data)}</div>
+      <>{categoricalList()}</>
+      <>{symbolList(globalViewing, data)}</>
     </div>
   );
 }
-
 export type ListingResponse = {
   hk: [
     {

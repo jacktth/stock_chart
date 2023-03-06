@@ -17,6 +17,7 @@ import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
 import { SaveBar } from "../saveBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { addCategories, initCategories, initClip } from "../listingBar/listSlice";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
@@ -158,24 +159,35 @@ export function Chart() {
     });
   }, [selectedData]);
   //Need to use react query to improve
-  // useEffect(() => {
-  //   supabase.auth.getUser().then(({ data: { user } }) => {
-  //     console.log(user);
-  //     supabase
-  //       .from("list")
-  //       .select()
-  //       .eq("user_id", user?.id)
-  //       .then((data) => console.log("fetch", data));
-  //     dispatch(
-  //       updateAuth({
-  //         id: user?.id,
-  //         createdAt: user?.created_at,
-  //         email: user?.email,
-  //         lastSignInAt: user?.last_sign_in_at,
-  //       })
-  //     );
-  //   });
-  // }, []);
+  const fet = supabase.auth.getUser()
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      console.log(user);
+      dispatch(updateAuth({id: user?.id,
+      createdAt: user?.created_at,
+      email: user?.email,
+      lastSignInAt: user?.last_sign_in_at,}))
+      supabase
+        .from("categories")
+        .select()
+        .eq("user_id", user?.id)
+        .then((data:{}) => {
+          dispatch(initCategories(data["data"]))
+
+          console.log("fetch", data)});
+          supabase
+        .from("clip")
+        .select()
+        .eq("user_id", user?.id)
+        .then((data:{}) => {
+          
+          dispatch(initClip(data["data"]))
+
+          console.log("fetch", data)});
+      
+    });
+    
+  }, []);
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -211,7 +223,7 @@ export function Chart() {
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
               <input
-                className="inputSymbol"
+                className="input"
                 type="text"
                 name="name"
                 value={globalSymbol}
@@ -237,3 +249,4 @@ export function Chart() {
     </div>
   );
 }
+

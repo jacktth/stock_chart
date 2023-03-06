@@ -1,12 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
 import chartReducer from '../features/chart/chartSlice'
 import authReducer from '../features/auth/authSlice'
+import listReducer from '../features/listingBar/listSlice'
+
 
 
 export const store = configureStore({
   reducer: {
    chart:chartReducer,
-   auth:authReducer
+   auth:authReducer,
+   list:listReducer
   }
 })
 

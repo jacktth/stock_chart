@@ -23,8 +23,8 @@ function App() {
     })
   }, [])
 
-  // return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
-  return <QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
+  return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
+  // return <QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
 }
 
 export default App;
