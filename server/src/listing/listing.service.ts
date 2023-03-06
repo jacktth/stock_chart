@@ -3,6 +3,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
+import { nameTextFilter } from './utils';
+
+type usResponseRow = {
+  symbol:string
+  name:string
+}[]
 @Injectable()
 export class ListingService {
   private readonly logger = new Logger(ListingService.name);
@@ -20,12 +26,12 @@ export class ListingService {
         ),
       );
 
-      const row = res.data.data.rows;
+      const row:usResponseRow = res.data.data.rows;
       const dataContainer = [];
       for (let obj of row) {
         new String(obj.symbol).includes('^')
           ? null
-          : dataContainer.push({ symbol: obj.symbol, engName: obj.name });
+          : dataContainer.push({ symbol: obj.symbol, engName: nameTextFilter(obj.name) });
       }
       return dataContainer;
     };

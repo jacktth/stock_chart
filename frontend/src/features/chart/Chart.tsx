@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
-import { ListingBar, ListingProp } from "../listingBar/ListBar";
+import { ListingBar } from "../listingBar/ListBar";
 import "../../index.css";
 import indicatorsAll from "highcharts/indicators/indicators-all";
 import annotationsAdvanced from "highcharts/modules/annotations-advanced";
@@ -157,7 +157,7 @@ export function Chart() {
       },
     });
   }, [selectedData]);
-//Need to use react query to improve
+  //Need to use react query to improve
   // useEffect(() => {
   //   supabase.auth.getUser().then(({ data: { user } }) => {
   //     console.log(user);
@@ -206,7 +206,7 @@ export function Chart() {
   return (
     <div className="view-full">
       <div className="flex view-full">
-        ''
+        
         <div className="SearchBar">
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
@@ -223,18 +223,7 @@ export function Chart() {
           <ListingBar />
         </div>
         <div className="chartContainer">
-          {/* the conditions to prevent multi re-render until stock data is fetched from server*/}
           <SaveBar selectedData={selectedData} />
-          {/* {options.series ? (
-            <HighchartsReact
-              containerProps={{ className: "h-screen" }}
-              highcharts={Highcharts}
-              constructorType={"stockChart"}
-              options={options}
-            />
-          ) : (
-            "error"
-          )} */}
           {
             <HighchartsReact
               containerProps={{ className: "h-screen" }}

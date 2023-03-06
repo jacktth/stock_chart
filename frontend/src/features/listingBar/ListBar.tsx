@@ -1,78 +1,131 @@
-import axios from "axios";
-import React, { useMemo } from "react";
+import {
+  Autocomplete,
+  Box,
+  createFilterOptions,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  TextField,
+} from "@mui/material";
+import axios, { AxiosResponse } from "axios";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { FixedSizeList as List } from "react-window";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectViewing,
   updateSymbol,
   updateViewing,
 } from "../chart/chartSlice";
-
-export type ListingProp = {
+import AutoSizer from "react-virtualized-auto-sizer";
+export type ListingResponse = {
   hk: [
     {
-      symbol: number;
-      enName: string;
+      symbol: string;
+      engName: string;
       zhNAme: string;
     }
   ];
   us: [
     {
-      symbol: number;
-      enName: string;
+      symbol: string;
+      engName: string;
     }
   ];
 };
-const fetchListings = () => axios.get("http://localhost:3000/listing");
+export type AllListings = {
+  symbol: string;
+  engName: string;
+  label: string;
+  zhNAme?: string;
+};
+
+const fetchListings = () =>
+  axios.get<ListingResponse>("http://localhost:3000/listing");
+
 export function ListingBar() {
   const dispatch = useAppDispatch();
-  const { data, isLoading } = useQuery("listings", fetchListings);
-  
   const globalViewing = useAppSelector(selectViewing);
-  const usListings = useMemo(
-    () => data?.data.us.map((x) => <option key={x.symbol}>{x.symbol}</option>),
-    [data]
-  );
-  const hkListings = data?.data.hk.map(
-    (x) => <option key={x.symbol}>{x.symbol}</option>,
-    [data]
-  );
-  //isloading must be placed under hook
-  if(isLoading){
-    return <span>loading</span>
-  }
-  const renderSwitch = (globalViewing: string) => {
-    switch (globalViewing) {
-      case "hk":
-        return hkListings;
-      case "us":
-        return usListings;
-      default:
-        return <option>Server Error</option>;
+
+  const [listData, setListData] = useState<AllListings[]>([]);
+  const { data, isLoading } = useQuery("listings", fetchListings, {
+    onSuccess(data) {
+      const container: AllListings[] = [];
+      data.data.hk.forEach((el) => container.push({ ...el, label: "HK" }));
+      data.data.us.forEach((el) => container.push({ ...el, label: "US" }));
+      setListData(container);
+    },
+  });
+  function autoComplete(data: AxiosResponse<ListingResponse, any> | undefined) {
+    if (data) {
+      const container: AllListings[] = [];
+      switch (globalViewing) {
+        case "hk":
+          data.data.hk.forEach((el) => container.push({ ...el, label: "HK" }));
+
+          break;
+        case "us":
+          data.data.us.forEach((el) => container.push({ ...el, label: "US" }));
+
+          break;
+        default:
+          break;
+      }
+      const Row = ({ index, style }) => (
+          <div
+          style={style}
+            className="hover:bg-sky-300 leading-3 border-2 border-solid p-2"
+            onClick={() =>
+              dispatch(
+                updateSymbol(
+                  globalViewing === "hk"
+                    ? container[index].symbol + ".HK"
+                    : container[index].symbol + ".US"
+                )
+              )
+            }
+          >
+            <span >{container[index].symbol}</span>
+            <br />
+            <span className="text-xs ">{container[index].engName}</span>
+          </div>
+      );
+      return (
+        <div>
+          <div className="flex text-sm">
+            <img
+              src={`https://flagcdn.com/${globalViewing.toLocaleLowerCase()}.svg`}
+              width="20%"
+              height="20%"
+            />
+            <span>{globalViewing.toLocaleUpperCase()} Market</span>
+          </div>
+          <List
+            className=""
+            height={500}
+            width={"100%"}
+            itemSize={70}
+            itemCount={container.length}
+            overscanCount={10}
+          >
+            {Row}
+          </List>
+        </div>
+      );
+    } else {
+      return <div>ss</div>;
     }
-  };
+  }
+
 
   return (
     <div className="listingBar">
-      <select
-        onChange={(e) =>
-          dispatch(
-            updateSymbol(
-              globalViewing === "hk"
-                ? e.target.value + ".HK"
-                : e.target.value + ".US"
-            )
-          )
-        }
-        multiple
-        className="h-full w-full"
-      >
-        {renderSwitch(globalViewing)}
-      </select>
+  
       <div className="flex">
         <button onClick={() => dispatch(updateViewing("hk"))}>hk</button>
         <button onClick={() => dispatch(updateViewing("us"))}>us</button>
       </div>
+      <div>{autoComplete(data)}</div>
     </div>
   );
 }

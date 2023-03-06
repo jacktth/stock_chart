@@ -12,7 +12,6 @@ export class StockDataService {
       period1: getDataParam.period1,
       period2: getDataParam.period2 /* ... */,
     };
-    console.log("this",getDataParam," ",Date.now())
 
     switch (getDataParam.market) {
       case 'HK':
@@ -24,6 +23,7 @@ export class StockDataService {
         return await yahooFinance.historical(hkQuery(getDataParam), queryOptions);
       case 'US':
         const query = getDataParam.symbol;
+        console.log("this",query," ",Date.now())
 
         return await yahooFinance.historical(query, queryOptions);
     }
