@@ -1,9 +1,21 @@
-import Highcharts from "highcharts/highstock";
+import Highcharts, { StockChart } from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
-import React, { useEffect, useState } from "react";
+import React, {
+  MutableRefObject,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { selectFocus, selectMarket, selectSymbol, updateFocus, updateSymbol } from "./chartSlice";
+import {
+  selectFocus,
+  selectMarket,
+  selectSymbol,
+  updateFocus,
+  updateSymbol,
+} from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { ListingBar } from "../listingBar/ListBar";
@@ -40,6 +52,7 @@ export function Chart() {
   const globalFocus = useAppSelector(selectFocus);
   const queryClient = useQueryClient();
   const { data } = useUserQuery();
+  const chartComponent = useRef<HighchartsReact.RefObject>(null);
 
   const fetchStockData = () =>
     axios.get("http://localhost:3000/stock-data", {
@@ -49,14 +62,15 @@ export function Chart() {
         period1: "2022-02-01",
       },
     });
-  useQuery(["stockData", globalSymbol,globalFocus], fetchStockData, {
+  useQuery(["stockData", globalSymbol, globalFocus], fetchStockData, {
     onSuccess(data) {
       setDateArray(dataSorting(data.data).date);
       setOptions({
         ...options,
         xAxis: {
-          min:globalFocus.min,
-          max: globalFocus.max},
+          min: globalFocus.min,
+          max: globalFocus.max,
+        },
         series: [
           {
             type: "candlestick",
@@ -65,6 +79,13 @@ export function Chart() {
           },
         ],
       });
+      if (chartComponent.current !== null) {
+        const chart = chartComponent.current.chart;
+        chart.xAxis[0].setExtremes(
+          globalFocus.min ? globalFocus.min : undefined,
+          globalFocus.max ? globalFocus.max : undefined
+        );
+      }
     },
   });
   const [symbol, setSymbol] = useState<string>(globalSymbol);
@@ -79,8 +100,8 @@ export function Chart() {
   });
   const [options, setOptions] = useState<Highcharts.Options>({
     xAxis: {
-      min:1644278400000,
-      max:1664236800000,
+      min: 1644278400000,
+      max: 1664236800000,
     },
     chart: {
       zooming: {
@@ -122,17 +143,16 @@ export function Chart() {
       text: error + symbol,
     },
   });
-// useEffect(()=>{
-//   setOptions(
-//     {...options,xAxis: {
-//       min:globalFocus? globalFocus.min: null,
-//       max: globalFocus? globalFocus.max: null,
-//     },}
-//   )
-//   console.log("change")
-  
-  
-// },[globalFocus])
+  // useEffect(()=>{
+  //   setOptions(
+  //     {...options,xAxis: {
+  //       min:globalFocus? globalFocus.min: null,
+  //       max: globalFocus? globalFocus.max: null,
+  //     },}
+  //   )
+  //   console.log("change")
+
+  // },[globalFocus])
   useEffect(() => {
     //this hook is to update the selected data range on the chart
     const max = selectedData.end;
@@ -191,11 +211,11 @@ export function Chart() {
         })
       );
       getUserCategoriesQuery(supabase, data.id).then((data: {}) => {
-        console.log("data[",data["data"])
+        console.log("data[", data["data"]);
         dispatch(initCategories(data["data"]));
       });
       getUserClipQuery(supabase, data.id).then((data: {}) => {
-        dispatch(initClip(data["data"]))
+        dispatch(initClip(data["data"]));
       });
     }
   }, [data]);
@@ -230,7 +250,6 @@ export function Chart() {
     <div className="view-full">
       <div className="flex view-full">
         <div className="SearchBar">
-
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
               <input
@@ -249,10 +268,11 @@ export function Chart() {
           <SaveBar selectedData={selectedData} />
           {
             <HighchartsReact
+              ref={chartComponent}
               containerProps={{ className: "h-screen" }}
               highcharts={Highcharts}
               constructorType={"stockChart"}
-              immutable={true}
+              // immutable={true}
               options={options}
             />
           }
