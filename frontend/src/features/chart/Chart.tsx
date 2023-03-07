@@ -143,16 +143,6 @@ export function Chart() {
       text: error + symbol,
     },
   });
-  // useEffect(()=>{
-  //   setOptions(
-  //     {...options,xAxis: {
-  //       min:globalFocus? globalFocus.min: null,
-  //       max: globalFocus? globalFocus.max: null,
-  //     },}
-  //   )
-  //   console.log("change")
-
-  // },[globalFocus])
   useEffect(() => {
     //this hook is to update the selected data range on the chart
     const max = selectedData.end;
@@ -206,12 +196,12 @@ export function Chart() {
         updateAuth({
           id: data.id,
           createdAt: data.created_at,
-          email: data.email,
-          lastSignInAt: data.last_sign_in_at,
+          email: data.email ?data.email :"",
+          lastSignInAt: data.last_sign_in_at? data.last_sign_in_at :"" ,
         })
       );
+      
       getUserCategoriesQuery(supabase, data.id).then((data: {}) => {
-        console.log("data[", data["data"]);
         dispatch(initCategories(data["data"]));
       });
       getUserClipQuery(supabase, data.id).then((data: {}) => {
@@ -262,6 +252,7 @@ export function Chart() {
             </label>
           </form>
           <button onClick={signOut}>log out</button>
+          
           <ListingBar />
         </div>
         <div className="chartContainer">

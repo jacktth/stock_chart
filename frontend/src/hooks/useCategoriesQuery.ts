@@ -4,9 +4,8 @@ import useSupabase from "./useSupabase";
 
 export function useCategoriesQuery(userId: string) {
   const client = useSupabase();
-  const key = ["userId"];
-
-  return useQuery(key, () => {
+  const key = ["categories"];
+  return useQuery(key,async  () => {
     getUserCategoriesQuery(client, userId).then((result) => result.data);
   });
 }

@@ -16,6 +16,7 @@ import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { categoricalList } from "./categoricalList";
 import { selectClip, selectCategories } from "./listSlice";
+import { selectAuth } from "../auth/authSlice";
 
 const fetchListings = () =>
   axios.get<ListingResponse>("http://localhost:3000/listing");
@@ -24,6 +25,7 @@ export function ListingBar() {
   const dispatch = useAppDispatch();
   const globalClip = useAppSelector(selectClip);
   const globalViewing = useAppSelector(selectViewing);
+
   const { data, isLoading } = useQuery("listings", fetchListings, {
     onSuccess(data) {
       const container: AllListings[] = [];
