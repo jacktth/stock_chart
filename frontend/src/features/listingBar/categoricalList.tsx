@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { FixedSizeList as List } from "react-window";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { updateViewing } from "../chart/chartSlice";
+import { selectCategories } from "./listSlice";
 
 export function categoricalList() {
   const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
-  const categories = ["hk", "us"];
+  const globalCategories = useAppSelector(selectCategories);
+
 
   function inputBox() {
     return (
@@ -32,14 +34,14 @@ export function categoricalList() {
       <button
         style={style}
         className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
-          categories[index] === selectedCategory ? "bg-sky-200" : null
-        } flex justify-between`}
+          globalCategories[index] === selectedCategory ? "bg-sky-200" : null
+        } flex justify-between text-sm`}
         onClick={() => {
-          dispatch(updateViewing(categories[index]));
-          setSelectedCategory(categories[index]);
+          dispatch(updateViewing(globalCategories[index]));
+          setSelectedCategory(globalCategories[index]);
         }}
       >
-        <span>{categories[index]}</span>
+        <span>{globalCategories[index]}</span>
         
         <img className="h-4" src="https://img.icons8.com/material-rounded/256/delete-trash.png" alt="" />
 
@@ -61,7 +63,7 @@ export function categoricalList() {
         height={100}
         width={"100%"}
         itemSize={30}
-        itemCount={categories.length}
+        itemCount={globalCategories.length}
         overscanCount={10}
       >
         {Row}

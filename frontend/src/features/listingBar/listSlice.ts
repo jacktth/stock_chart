@@ -7,30 +7,32 @@ interface listState {
   clip: Clip[];
 }
 
-type Clip = 
-  {
-    symbol: string;
-    starting: number;
-    ending: number;
-  }
-;
+type Clip = {
+  symbol: string;
+  starting: number;
+  ending: number;
+  market: string;
+  category: string;
+};
 
-export type ResponseCategoriesArray = [{
-    id:number
-    created_at:string
-    name:string
-}]
+export type ResponseCategoriesArray = [
+  {
+    id: number;
+    created_at: string;
+    name: string;
+  }
+];
 
 export type ResponseClipArray = {
-    id:number
-    created_at:string
-    symbol:string
-    starting:number
-    ending: number;
-    list:string
-    user_id:string
-
-}
+  id: number;
+  created_at: string;
+  symbol: string;
+  starting: number;
+  ending: number;
+  user_id: string;
+  category: string;
+  market: string;
+};
 
 // Define the initial state using that type
 const initialState: listState = {
@@ -44,34 +46,43 @@ export const listSlice = createSlice({
   initialState,
   reducers: {
     initClip: (state, action: PayloadAction<ResponseClipArray[]>) => {
-        let obj = state
-        action.payload.forEach((el:ResponseClipArray)=>{
-            obj = {...obj,clip:[...obj.clip,{symbol:el.symbol,starting:el.starting,ending:el.ending}]}
-        })
-        return obj;
-      },
+      action.payload.forEach((el: ResponseClipArray) => {
+        state.clip.push({
+          symbol: el.symbol,
+          starting: el.starting,
+          ending: el.ending,
+          category: el.category,
+          market: el.market,
+        });
+      });
+    },
     initCategories: (state, action: PayloadAction<ResponseCategoriesArray>) => {
-        let obj = state
-        action.payload.forEach((el)=>{
-            obj = {...obj,categories:[...state.categories,el.name]}
-        })
-        return obj;
-      },
+      action.payload.forEach((el) => {
+        state.categories.push(el.name);
+      });
+    },
     addCategories: (state, action: PayloadAction<string>) => {
       return { ...state, categories: [...state.categories, action.payload] };
     },
     removeCategories: (state, action: PayloadAction<string>) => {
-        const newCategories = [...state.categories].filter((c)=> c!== action.payload)
-        return { ...state, categories: newCategories };
-      },
+      const newCategories = [...state.categories].filter(
+        (c) => c !== action.payload
+      );
+      return { ...state, categories: newCategories };
+    },
     addClip: (state, action: PayloadAction<Clip>) => {
-      return {...state, state:[...state.clip,action.payload]}
+      return { ...state, state: [...state.clip, action.payload] };
     },
   },
 });
 
-export const { addCategories, removeCategories,addClip,initCategories,initClip } = listSlice.actions;
-
+export const {
+  addCategories,
+  removeCategories,
+  addClip,
+  initCategories,
+  initClip,
+} = listSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectClip = (state: RootState) => state.list.clip;

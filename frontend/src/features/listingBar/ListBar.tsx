@@ -12,7 +12,7 @@ import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { FixedSizeList as List } from "react-window";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectViewing, updateSymbol } from "../chart/chartSlice";
+import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { categoricalList } from "./categoricalList";
 import { selectClip, selectCategories } from "./listSlice";
@@ -23,13 +23,12 @@ const fetchListings = () =>
 export function ListingBar() {
   const dispatch = useAppDispatch();
   const globalClip = useAppSelector(selectClip);
-  const globalCategories = useAppSelector(selectCategories);
   const globalViewing = useAppSelector(selectViewing);
   const { data, isLoading } = useQuery("listings", fetchListings, {
     onSuccess(data) {
       const container: AllListings[] = [];
-      data.data.hk.forEach((el) => container.push({ ...el, label: "HK" }));
-      data.data.us.forEach((el) => container.push({ ...el, label: "US" }));
+      data.data.hk.forEach((el) => container.push({ ...el, market: "HK" }));
+      data.data.us.forEach((el) => container.push({ ...el, market: "US" }));
     },
   });
   function symbolList(
@@ -40,29 +39,38 @@ export function ListingBar() {
       const container: AllListings[] = [];
       switch (globalViewing) {
         case "hk":
-          data.data.hk.forEach((el) => container.push({ ...el, label: "HK" }));
+          data.data.hk.forEach((el) => container.push({ ...el, market: "HK" }));
 
           break;
         case "us":
-          data.data.us.forEach((el) => container.push({ ...el, label: "US" }));
+          data.data.us.forEach((el) => container.push({ ...el, market: "US" }));
 
           break;
         default:
+          globalClip.forEach((el) => {
+            if (el.category === globalViewing) container.push(el);
+          });
           break;
       }
       const Row = ({ index, style }) => (
         <div
           style={style}
           className="hover:bg-sky-300 leading-3 border-2 border-solid p-2"
-          onClick={() =>
+          onClick={() => {
             dispatch(
               updateSymbol(
-                globalViewing === "hk"
-                  ? container[index].symbol + ".HK"
-                  : container[index].symbol + ".US"
+                container[index].symbol + "." + container[index].market
               )
-            )
-          }
+            );
+
+            dispatch(
+              updateFocus({
+                min:
+                  (!container[index].starting) ?null :container[index].starting!,
+                max: (!container[index].ending) ?null :container[index].ending!
+              })
+            );
+          }}
         >
           <span>{container[index].symbol}</span>
           <br />
@@ -71,14 +79,14 @@ export function ListingBar() {
       );
       return (
         <>
-          <div className="flex text-sm">
+          {/* <div className="flex text-sm">
             <img
               src={`https://flagcdn.com/${globalViewing.toLocaleLowerCase()}.svg`}
               width="20%"
               height="20%"
             />
             <span>{globalViewing.toLocaleUpperCase()} Market</span>
-          </div>
+          </div> */}
           <List
             className=""
             height={300}
@@ -120,7 +128,9 @@ export type ListingResponse = {
 };
 export type AllListings = {
   symbol: string;
-  engName: string;
-  label: string;
+  engName?: string;
+  market: string;
   zhNAme?: string;
+  starting?: number;
+  ending?: number;
 };

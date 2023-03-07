@@ -3,7 +3,7 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useEffect, useState } from "react";
 import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { selectMarket, selectSymbol, updateSymbol } from "./chartSlice";
+import { selectFocus, selectMarket, selectSymbol, updateFocus, updateSymbol } from "./chartSlice";
 import axios from "axios";
 import dataSorting from "./dataSorting";
 import { ListingBar } from "../listingBar/ListBar";
@@ -17,7 +17,15 @@ import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
 import { SaveBar } from "../saveBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { addCategories, initCategories, initClip } from "../listingBar/listSlice";
+import {
+  addCategories,
+  initCategories,
+  initClip,
+} from "../listingBar/listSlice";
+import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
+import { useUserQuery } from "../../hooks/useUserQuery";
+import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery";
+import { getUserClipQuery } from "../../api/queries/getUserClipQuery";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
@@ -29,7 +37,10 @@ export function Chart() {
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
   const globalAuth = useAppSelector(selectAuth);
+  const globalFocus = useAppSelector(selectFocus);
   const queryClient = useQueryClient();
+  const { data } = useUserQuery();
+
   const fetchStockData = () =>
     axios.get("http://localhost:3000/stock-data", {
       params: {
@@ -38,25 +49,24 @@ export function Chart() {
         period1: "2022-02-01",
       },
     });
-  const { data, isLoading } = useQuery(
-    ["stockData", globalSymbol],
-    fetchStockData,
-    {
-      onSuccess(data) {
-        setDateArray(dataSorting(data.data).date);
-        setOptions({
-          ...options,
-          series: [
-            {
-              type: "candlestick",
-              data: dataSorting(data.data).stockData,
-              allowPointSelect: true,
-            },
-          ],
-        });
-      },
-    }
-  );
+  useQuery(["stockData", globalSymbol,globalFocus], fetchStockData, {
+    onSuccess(data) {
+      setDateArray(dataSorting(data.data).date);
+      setOptions({
+        ...options,
+        xAxis: {
+          min:globalFocus.min,
+          max: globalFocus.max},
+        series: [
+          {
+            type: "candlestick",
+            data: dataSorting(data.data).stockData,
+            allowPointSelect: true,
+          },
+        ],
+      });
+    },
+  });
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [dateArray, setDateArray] = useState<number[]>([]);
   const [error, setError] = useState<any>("no error");
@@ -69,8 +79,8 @@ export function Chart() {
   });
   const [options, setOptions] = useState<Highcharts.Options>({
     xAxis: {
-      min: 1644278400000,
-      max: 1664236800000,
+      min:1644278400000,
+      max:1664236800000,
     },
     chart: {
       zooming: {
@@ -112,7 +122,17 @@ export function Chart() {
       text: error + symbol,
     },
   });
-
+// useEffect(()=>{
+//   setOptions(
+//     {...options,xAxis: {
+//       min:globalFocus? globalFocus.min: null,
+//       max: globalFocus? globalFocus.max: null,
+//     },}
+//   )
+//   console.log("change")
+  
+  
+// },[globalFocus])
   useEffect(() => {
     //this hook is to update the selected data range on the chart
     const max = selectedData.end;
@@ -159,35 +179,26 @@ export function Chart() {
     });
   }, [selectedData]);
   //Need to use react query to improve
-  const fet = supabase.auth.getUser()
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      console.log(user);
-      dispatch(updateAuth({id: user?.id,
-      createdAt: user?.created_at,
-      email: user?.email,
-      lastSignInAt: user?.last_sign_in_at,}))
-      supabase
-        .from("categories")
-        .select()
-        .eq("user_id", user?.id)
-        .then((data:{}) => {
-          dispatch(initCategories(data["data"]))
-
-          console.log("fetch", data)});
-          supabase
-        .from("clip")
-        .select()
-        .eq("user_id", user?.id)
-        .then((data:{}) => {
-          
-          dispatch(initClip(data["data"]))
-
-          console.log("fetch", data)});
-      
-    });
-    
-  }, []);
+    console.log("data", data);
+    if (data) {
+      dispatch(
+        updateAuth({
+          id: data.id,
+          createdAt: data.created_at,
+          email: data.email,
+          lastSignInAt: data.last_sign_in_at,
+        })
+      );
+      getUserCategoriesQuery(supabase, data.id).then((data: {}) => {
+        console.log("data[",data["data"])
+        dispatch(initCategories(data["data"]));
+      });
+      getUserClipQuery(supabase, data.id).then((data: {}) => {
+        dispatch(initClip(data["data"]))
+      });
+    }
+  }, [data]);
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -218,8 +229,8 @@ export function Chart() {
   return (
     <div className="view-full">
       <div className="flex view-full">
-        
         <div className="SearchBar">
+
           <form className="w-full" onSubmit={handleSubmit}>
             <label>
               <input
@@ -241,6 +252,7 @@ export function Chart() {
               containerProps={{ className: "h-screen" }}
               highcharts={Highcharts}
               constructorType={"stockChart"}
+              immutable={true}
               options={options}
             />
           }
@@ -249,4 +261,3 @@ export function Chart() {
     </div>
   );
 }
-
