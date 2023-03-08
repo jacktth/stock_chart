@@ -72,7 +72,7 @@ export const listSlice = createSlice({
       return { ...state, categories: newCategories };
     },
     addClip: (state, action: PayloadAction<Clip>) => {
-      return { ...state, state: [...state.clip, action.payload] };
+      state.clip.push(action.payload)
     },
   },
 });

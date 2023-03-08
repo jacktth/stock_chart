@@ -9,55 +9,89 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useUpdateUserClipMutation } from "../../hooks/useUpdateUserClipMutation";
+import { selectAuth } from "../auth/authSlice";
+import { selectMarket, selectSelectedData, selectSymbol } from "../chart/chartSlice";
+import { addClip, selectCategories } from "../listingBar/listSlice";
 
-type SaveBarProp = {
-  selectedData: { start: number; end: number };
+export type SelectedData = {
+  starting: number ;
+  ending: number ;
 };
 
-export function SaveBar({ selectedData }: SaveBarProp) {
-  const list = [{ title: "The Shawshank Redemption", year: 1994 }];
-  const options = list.map((option) => {
-    const firstLetter = option.title[0].toUpperCase();
-    return {
-      firstLetter: /[0-9]/.test(firstLetter) ? "0-9" : firstLetter,
-      ...option,
-    };
-  });
-  function generateDateFormat(date: number) {
-    const dateTime = new Date(date);
-    const day = dateTime.getDay();
-    const month = dateTime.getMonth();
-    const year = dateTime.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-  const { start, end } = {
-    start: generateDateFormat(selectedData.start),
-    end: generateDateFormat(selectedData.end),
+export function SaveBar() {
+  const dispatch = useAppDispatch();
+
+  const globalCategories = useAppSelector(selectCategories);
+  const globalAuth = useAppSelector(selectAuth);
+  const globalMarket = useAppSelector(selectMarket);
+  const globalSymbol = useAppSelector(selectSymbol);
+  const globalSelectedData = useAppSelector(selectSelectedData);
+  const updateClipMutation = useUpdateUserClipMutation();
+  const [selectCategory, setSelectCategory] = useState("");
+  useEffect(() => {
+    setSelectCategory(globalCategories[0])
+    
+  }, [globalCategories])
+  
+  const options = (categories: string[]) => {
+    return categories.map((el) => {
+      return <option key={el} value={el}>{el}</option>;
+    });
   };
-  const handleSave = (e) => {
+  function insertClip(e) {
     e.preventDefault();
-  };
+    console.log(globalAuth.id ,
+      selectCategory ,
+      globalSymbol ,
+      globalSelectedData.ending ,
+      globalSelectedData.starting ,
+      globalMarket);
+    
+    if (
+      globalAuth.id &&
+      selectCategory &&
+      globalSymbol &&
+      globalSelectedData.ending !== 0 &&
+      globalSelectedData.starting !== 0 && 
+      globalMarket
+      
+    ) {
+      updateClipMutation.mutate({
+        selectedData: {
+          starting: globalSelectedData.starting,
+          ending: globalSelectedData.ending,
+        },
+        userId: globalAuth.id,
+        category: selectCategory,
+        symbol: globalSymbol,
+        market:globalMarket
+      },{onSuccess(data, variables, context) {
+        dispatch(addClip({ symbol: variables.symbol,
+          starting: variables.selectedData.starting,
+          ending: variables.selectedData.ending,
+          market: variables.market,
+          category: variables.category}))
+      },});
+    } else if( globalSelectedData.ending == (null||0) &&
+    globalSelectedData.starting == (null||0)){
+      alert("Please select data after saving")
+    } else {
+      alert("State error")
+    }
+    
+  }
   return (
-    <Box sx={{ minWidth: 190, display: "flex" }}>
-      <span>
-        Selected from: <b>{start}</b> to: <b>{end}</b>
-      </span>
-      <Autocomplete
-        id="grouped-demo"
-        options={options.sort(
-          (a, b) => -b.firstLetter.localeCompare(a.firstLetter)
-        )}
-        groupBy={(option) => option.firstLetter}
-        getOptionLabel={(option) => option.title}
-        sx={{ width: 300 }}
-        renderInput={(params) => (
-          <TextField {...params} label="With categories" />
-        )}
-      />
-      <Button variant="contained" onClick={(e) => handleSave(e)}>
-        Save
-      </Button>
-    </Box>
+    <form onSubmit={(e) => insertClip(e)}>
+      <select
+
+        onSelect={(e) => setSelectCategory(e.currentTarget.value)}
+      >
+        {options(globalCategories)}
+      </select>
+      <button>Save</button>
+    </form>
   );
 }

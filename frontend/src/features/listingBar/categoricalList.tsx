@@ -3,7 +3,7 @@ import { useMutation } from "react-query";
 import { FixedSizeList as List } from "react-window";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
-import { useUpdateCategoryMutation } from "../../hooks/useUpdateCategoyMutation";
+import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyMutation";
 import { authState, selectAuth } from "../auth/authSlice";
 import { updateViewing } from "../chart/chartSlice";
 import { addCategories, initCategories, selectCategories } from "./listSlice";
@@ -15,7 +15,7 @@ export function categoricalList() {
   const globalCategories = useAppSelector(selectCategories);
   const globalAuth = useAppSelector(selectAuth);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
-  const updateCategoryMutation = useUpdateCategoryMutation();
+  const updateCategoryMutation = useUpdateUserCategoryMutation();
 
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

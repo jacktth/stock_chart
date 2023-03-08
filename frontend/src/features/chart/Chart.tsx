@@ -14,6 +14,7 @@ import {
   selectMarket,
   selectSymbol,
   updateFocus,
+  updateSelectedData,
   updateSymbol,
 } from "./chartSlice";
 import axios from "axios";
@@ -27,7 +28,7 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import { SaveBar } from "../saveBar/SaveBar";
+import { SaveBar, SelectedData } from "../saveBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   addCategories,
@@ -91,18 +92,12 @@ export function Chart() {
   const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [dateArray, setDateArray] = useState<number[]>([]);
   const [error, setError] = useState<any>("no error");
-  const [selectedData, setSelectedData] = useState<{
-    start: number;
-    end: number;
-  }>({
-    start: 0,
-    end: 0,
+  const [selectedData, setSelectedData] = useState<SelectedData>({
+    starting: 0,
+    ending: 0,
   });
   const [options, setOptions] = useState<Highcharts.Options>({
-    xAxis: {
-      min: 1644278400000,
-      max: 1664236800000,
-    },
+ 
     chart: {
       zooming: {
         type: "x",
@@ -113,12 +108,24 @@ export function Chart() {
           //because the setState won't update anything about itself
           const min = e.xAxis[0].min;
           const max = e.xAxis[0].max;
-          setSelectedData({ start: min, end: max });
+          const start =
+      min != 0 && min <= dateArray[0]
+        ? dateArray[0]
+        : dateArray.reduce(
+            (acc, curr, i, arr) =>
+              i > 0 && min - curr < 0 && min - arr[i - 1] > 0
+                ? (arr[i - 1] + curr) / 2 <= min
+                  ? curr
+                  : arr[i - 1]
+                : acc,
+            0
+          );
+          setSelectedData({ starting: min, ending: max });
 
           return false; // returning false will disable the default zooming function while dragging on the chart
         },
         click: () => {
-          setSelectedData({ start: 0, end: 0 });
+          setSelectedData({ starting: 0, ending: 0 });
         },
       },
       panning: {
@@ -145,8 +152,8 @@ export function Chart() {
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
-    const max = selectedData.end;
-    const min = selectedData.start;
+    const max = selectedData.ending!==null ?selectedData.ending :0 ;
+    const min = selectedData.starting!==null ?selectedData.starting :0;
     const start =
       min != 0 && min <= dateArray[0]
         ? dateArray[0]
@@ -187,6 +194,7 @@ export function Chart() {
         ],
       },
     });
+    dispatch(updateSelectedData({starting:start,ending:end}))
   }, [selectedData]);
   //Need to use react query to improve
   useEffect(() => {
@@ -256,7 +264,7 @@ export function Chart() {
           <ListingBar />
         </div>
         <div className="chartContainer">
-          <SaveBar selectedData={selectedData} />
+          {SaveBar()}
           {
             <HighchartsReact
               ref={chartComponent}
