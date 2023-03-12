@@ -39,13 +39,14 @@ import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
 import { useUserQuery } from "../../hooks/useUserQuery";
 import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery";
 import { getUserClipQuery } from "../../api/queries/getUserClipQuery";
+import { Session } from "@supabase/supabase-js";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
 
-export function Chart() {
+export function Chart(session: Session) {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
@@ -54,7 +55,6 @@ export function Chart() {
   const queryClient = useQueryClient();
   const { data } = useUserQuery();
   const chartComponent = useRef<HighchartsReact.RefObject>(null);
-
   const fetchStockData = () =>
     axios.get("http://localhost:3000/stock-data", {
       params: {
@@ -63,7 +63,7 @@ export function Chart() {
         period1: "2022-02-01",
       },
     });
-  useQuery(["stockData", globalSymbol, globalFocus], fetchStockData, {
+  useQuery(["stockData"], fetchStockData, {
     onSuccess(data) {
       setDateArray(dataSorting(data.data).date);
       setOptions({
@@ -89,7 +89,6 @@ export function Chart() {
       }
     },
   });
-  const [symbol, setSymbol] = useState<string>(globalSymbol);
   const [dateArray, setDateArray] = useState<number[]>([]);
   const [error, setError] = useState<any>("no error");
   const [selectedData, setSelectedData] = useState<SelectedData>({
@@ -97,7 +96,6 @@ export function Chart() {
     ending: 0,
   });
   const [options, setOptions] = useState<Highcharts.Options>({
- 
     chart: {
       zooming: {
         type: "x",
@@ -109,17 +107,17 @@ export function Chart() {
           const min = e.xAxis[0].min;
           const max = e.xAxis[0].max;
           const start =
-      min != 0 && min <= dateArray[0]
-        ? dateArray[0]
-        : dateArray.reduce(
-            (acc, curr, i, arr) =>
-              i > 0 && min - curr < 0 && min - arr[i - 1] > 0
-                ? (arr[i - 1] + curr) / 2 <= min
-                  ? curr
-                  : arr[i - 1]
-                : acc,
-            0
-          );
+            min != 0 && min <= dateArray[0]
+              ? dateArray[0]
+              : dateArray.reduce(
+                  (acc, curr, i, arr) =>
+                    i > 0 && min - curr < 0 && min - arr[i - 1] > 0
+                      ? (arr[i - 1] + curr) / 2 <= min
+                        ? curr
+                        : arr[i - 1]
+                      : acc,
+                  0
+                );
           setSelectedData({ starting: min, ending: max });
 
           return false; // returning false will disable the default zooming function while dragging on the chart
@@ -147,13 +145,13 @@ export function Chart() {
       },
     },
     title: {
-      text: error + symbol,
+      text: error 
     },
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
-    const max = selectedData.ending!==null ?selectedData.ending :0 ;
-    const min = selectedData.starting!==null ?selectedData.starting :0;
+    const max = selectedData.ending !== null ? selectedData.ending : 0;
+    const min = selectedData.starting !== null ? selectedData.starting : 0;
     const start =
       min != 0 && min <= dateArray[0]
         ? dateArray[0]
@@ -181,7 +179,7 @@ export function Chart() {
     setOptions({
       ...options,
       title: {
-        text: error + symbol + start + " " + end,
+        text: error  + start + " " + end,
       },
       xAxis: {
         ...options.xAxis,
@@ -194,7 +192,7 @@ export function Chart() {
         ],
       },
     });
-    dispatch(updateSelectedData({starting:start,ending:end}))
+    dispatch(updateSelectedData({ starting: start, ending: end }));
   }, [selectedData]);
   //Need to use react query to improve
   useEffect(() => {
@@ -204,19 +202,24 @@ export function Chart() {
         updateAuth({
           id: data.id,
           createdAt: data.created_at,
-          email: data.email ?data.email :"",
-          lastSignInAt: data.last_sign_in_at? data.last_sign_in_at :"" ,
+          email: data.email ? data.email : "",
+          lastSignInAt: data.last_sign_in_at ? data.last_sign_in_at : "",
         })
       );
-      
-      getUserCategoriesQuery(supabase, data.id).then((data: {}) => {
-        dispatch(initCategories(data["data"]));
-      });
-      getUserClipQuery(supabase, data.id).then((data: {}) => {
-        dispatch(initClip(data["data"]));
-      });
     }
   }, [data]);
+  useEffect(() => {
+    if (chartComponent.current) {
+      const chart = chartComponent.current.chart;
+      chart.xAxis[0].setExtremes(
+        globalFocus.min ? globalFocus.min : undefined,
+        globalFocus.max ? globalFocus.max : undefined
+      );
+    }
+    console.log("test");
+    
+  }, [globalFocus]);
+
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
@@ -260,11 +263,11 @@ export function Chart() {
             </label>
           </form>
           <button onClick={signOut}>log out</button>
-          
-          <ListingBar />
+
+          <ListingBar {...session} />
         </div>
         <div className="chartContainer">
-          {SaveBar()}
+          {SaveBar(session)}
           {
             <HighchartsReact
               ref={chartComponent}

@@ -9,8 +9,11 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
+import { Session } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
+import { Database } from "../../api/types/supabase";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
 import { useUpdateUserClipMutation } from "../../hooks/useUpdateUserClipMutation";
 import { selectAuth } from "../auth/authSlice";
 import { selectMarket, selectSelectedData, selectSymbol } from "../chart/chartSlice";
@@ -21,9 +24,8 @@ export type SelectedData = {
   ending: number ;
 };
 
-export function SaveBar() {
+export function SaveBar(session:Session) {
   const dispatch = useAppDispatch();
-
   const globalCategories = useAppSelector(selectCategories);
   const globalAuth = useAppSelector(selectAuth);
   const globalMarket = useAppSelector(selectMarket);
@@ -31,14 +33,19 @@ export function SaveBar() {
   const globalSelectedData = useAppSelector(selectSelectedData);
   const updateClipMutation = useUpdateUserClipMutation();
   const [selectCategory, setSelectCategory] = useState("");
+  const {data,isLoading} = useCategoriesQuery(session.user.id);
+
   useEffect(() => {
     setSelectCategory(globalCategories[0])
     
   }, [globalCategories])
-  
-  const options = (categories: string[]) => {
-    return categories.map((el) => {
-      return <option key={el} value={el}>{el}</option>;
+  if(isLoading){
+    return <span>Loading...</span>
+  }
+ 
+  const options = (categories:Database['public']['Tables']['categories']['Row'][]) => {
+     if(categories) return categories.map((el) => {
+      return <option key={el.name} value={el.name}>{el.name}</option>;
     });
   };
   function insertClip(e) {
@@ -87,9 +94,10 @@ export function SaveBar() {
     <form onSubmit={(e) => insertClip(e)}>
       <select
 
-        onSelect={(e) => setSelectCategory(e.currentTarget.value)}
+        onChange={(e) => {setSelectCategory(e.target.value)
+        }}
       >
-        {options(globalCategories)}
+        {data ?options(data) :null}
       </select>
       <button>Save</button>
     </form>

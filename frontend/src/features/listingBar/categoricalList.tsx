@@ -1,41 +1,47 @@
+import { Session } from "@supabase/supabase-js";
 import React, { useEffect, useRef, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { FixedSizeList as List } from "react-window";
+import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery";
+import { supabase } from "../../api/supabaseClient";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
+import useSupabase from "../../hooks/useSupabase";
 import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyMutation";
+import { useUserQuery } from "../../hooks/useUserQuery";
 import { authState, selectAuth } from "../auth/authSlice";
 import { updateViewing } from "../chart/chartSlice";
 import { addCategories, initCategories, selectCategories } from "./listSlice";
 
-export function categoricalList() {
+export function categoricalList(session: Session) {
   const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
   const globalCategories = useAppSelector(selectCategories);
   const globalAuth = useAppSelector(selectAuth);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
-
-  function insertCategory(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (inputCategoryRef.current?.value && globalAuth.id) {
-      updateCategoryMutation.mutate(
-        {
-          name: inputCategoryRef.current?.value,
-          userId: globalAuth.id,
-        },
-        {
-          onSuccess(data, variables, context) {
-            dispatch(addCategories(variables.name));
-          },
-        }
-      );
-    }
-  }
-
+  const {data} = useCategoriesQuery(session.user.id);
   function inputBox() {
+    function insertCategory(e: React.FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+
+      if (inputCategoryRef.current?.value && globalAuth.id) {
+        updateCategoryMutation.mutate(
+          {
+            name: inputCategoryRef.current?.value,
+            userId: globalAuth.id,
+          },
+          {
+            onSuccess(data, variables, context) {
+              // dispatch(addCategories(variables.name));
+              queryClient.invalidateQueries({ queryKey: ["categories"] });
+            },
+          }
+        );
+      }
+    }
     return (
       <div>
         <form
@@ -55,28 +61,35 @@ export function categoricalList() {
       </div>
     );
   }
-  const Row = ({ index, style }) => (
-    <div>
-      <button
-        style={style}
-        className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
-          globalCategories[index] === selectedCategory ? "bg-sky-200" : null
-        } flex justify-between text-sm`}
-        onClick={() => {
-          dispatch(updateViewing(globalCategories[index]));
-          setSelectedCategory(globalCategories[index]);
-        }}
-      >
-        <span>{globalCategories[index]}</span>
 
-        <img
-          className="h-4"
-          src="https://img.icons8.com/material-rounded/256/delete-trash.png"
-          alt=""
-        />
-      </button>
-    </div>
-  );
+  const Row = ({ index, style }) => {
+    if (data) {
+      return (
+        <div>
+          <button
+            style={style}
+            className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
+              data[index].name === selectedCategory ? "bg-sky-200" : null
+            } flex justify-between text-sm`}
+            onClick={() => {
+              dispatch(updateViewing(data[index].name));
+              setSelectedCategory(data[index].name);
+            }}
+          >
+            <span>{data[index].name}</span>
+
+            <img
+              className="h-4"
+              src="https://img.icons8.com/material-rounded/256/delete-trash.png"
+              alt=""
+            />
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
   return (
     <>
       <div className="flex">
@@ -87,16 +100,20 @@ export function categoricalList() {
       </div>
       <>{creating ? inputBox() : null}</>
 
-      <List
-        className=""
-        height={100}
-        width={"100%"}
-        itemSize={30}
-        itemCount={globalCategories.length}
-        overscanCount={10}
-      >
-        {Row}
-      </List>
+
+    {
+      data ?   <List
+      className=""
+      height={100}
+      width={"100%"}
+      itemSize={30}
+      itemCount={data.length}
+      overscanCount={10}
+    >
+      {Row}
+    </List> :null
+    }
+    
     </>
   );
 }

@@ -10,7 +10,7 @@ type updateClipParam = {
   category: string;
   symbol: string;
   userId: string;
-  market:string
+  market: string;
 };
 export function useUpdateUserClipMutation() {
   const queryClient = useQueryClient();
@@ -24,13 +24,17 @@ export function useUpdateUserClipMutation() {
         param.userId,
         param.category,
         param.symbol,
-        
+
         param.market
       ).then((result: any) => {
         console.log("result", result);
         return result.data;
       });
     },
-
+    {
+      onSuccess() {
+        queryClient.invalidateQueries({ queryKey: ["clips"] });
+      },
+    }
   );
 }

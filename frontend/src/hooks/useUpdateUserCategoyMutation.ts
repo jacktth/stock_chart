@@ -20,9 +20,8 @@ export function useUpdateUserCategoryMutation() {
       });
     },
     {
-      onSuccess(data, variables, context) {
-        queryClient.refetchQueries(["categories"]);
-        queryClient.invalidateQueries(["categories"]);
+      onSuccess() {
+        queryClient.invalidateQueries({ queryKey:["categories"] });
       },
     }
   );
