@@ -53,7 +53,7 @@ export function Chart(session: Session) {
   const globalAuth = useAppSelector(selectAuth);
   const globalFocus = useAppSelector(selectFocus);
   const queryClient = useQueryClient();
-  const { data } = useUserQuery();
+  // const { data } = useUserQuery();
   const chartComponent = useRef<HighchartsReact.RefObject>(null);
   const fetchStockData = () =>
     axios.get("http://localhost:3000/stock-data", {
@@ -63,15 +63,19 @@ export function Chart(session: Session) {
         period1: "2022-02-01",
       },
     });
-  useQuery(["stockData"], fetchStockData, {
+    //globalSymbol in useQuery is necessary
+  useQuery(["stockData",globalSymbol], fetchStockData, {
     onSuccess(data) {
+      console.log("stockData onSuccess", dataSorting(data.data).stockData);
+      console.log("stockData onSuccess symbol", globalSymbol);
+      
       setDateArray(dataSorting(data.data).date);
       setOptions({
         ...options,
-        xAxis: {
-          min: globalFocus.min,
-          max: globalFocus.max,
-        },
+        // xAxis: {
+        //   min: globalFocus.min,
+        //   max: globalFocus.max,
+        // },
         series: [
           {
             type: "candlestick",
@@ -86,6 +90,7 @@ export function Chart(session: Session) {
           globalFocus.min ? globalFocus.min : undefined,
           globalFocus.max ? globalFocus.max : undefined
         );
+        chart.series[0].data
       }
     },
   });
@@ -194,32 +199,6 @@ export function Chart(session: Session) {
     });
     dispatch(updateSelectedData({ starting: start, ending: end }));
   }, [selectedData]);
-  //Need to use react query to improve
-  useEffect(() => {
-    console.log("data", data);
-    if (data) {
-      dispatch(
-        updateAuth({
-          id: data.id,
-          createdAt: data.created_at,
-          email: data.email ? data.email : "",
-          lastSignInAt: data.last_sign_in_at ? data.last_sign_in_at : "",
-        })
-      );
-    }
-  }, [data]);
-  useEffect(() => {
-    if (chartComponent.current) {
-      const chart = chartComponent.current.chart;
-      chart.xAxis[0].setExtremes(
-        globalFocus.min ? globalFocus.min : undefined,
-        globalFocus.max ? globalFocus.max : undefined
-      );
-    }
-    console.log("test");
-    
-  }, [globalFocus]);
-
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {

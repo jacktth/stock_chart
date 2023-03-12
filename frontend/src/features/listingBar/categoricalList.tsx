@@ -18,20 +18,19 @@ export function categoricalList(session: Session) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
   const globalCategories = useAppSelector(selectCategories);
-  const globalAuth = useAppSelector(selectAuth);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
-  const {data} = useCategoriesQuery(session.user.id);
+  const { data } = useCategoriesQuery(session.user.id);
   function inputBox() {
     function insertCategory(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
 
-      if (inputCategoryRef.current?.value && globalAuth.id) {
+      if (inputCategoryRef.current?.value && session.user.id) {
         updateCategoryMutation.mutate(
           {
             name: inputCategoryRef.current?.value,
-            userId: globalAuth.id,
+            userId: session.user.id,
           },
           {
             onSuccess(data, variables, context) {
@@ -65,19 +64,23 @@ export function categoricalList(session: Session) {
   const Row = ({ index, style }) => {
     if (data) {
       return (
-        <div>
+        <div
+          className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
+            data[index].name === selectedCategory ? "bg-sky-200" : null
+          } flex justify-between text-sm`}
+          onClick={() => {
+            dispatch(updateViewing(data[index].name));
+            setSelectedCategory(data[index].name);
+          }}
+        >
           <button
-            style={style}
-            className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
-              data[index].name === selectedCategory ? "bg-sky-200" : null
-            } flex justify-between text-sm`}
-            onClick={() => {
-              dispatch(updateViewing(data[index].name));
-              setSelectedCategory(data[index].name);
-            }}
+            // style={style}
+            className={``}
+            
           >
-            <span>{data[index].name}</span>
-
+            {data[index].name}
+          </button>
+          <button className=""  onClick={() => alert("s")}>
             <img
               className="h-4"
               src="https://img.icons8.com/material-rounded/256/delete-trash.png"
@@ -100,20 +103,18 @@ export function categoricalList(session: Session) {
       </div>
       <>{creating ? inputBox() : null}</>
 
-
-    {
-      data ?   <List
-      className=""
-      height={100}
-      width={"100%"}
-      itemSize={30}
-      itemCount={data.length}
-      overscanCount={10}
-    >
-      {Row}
-    </List> :null
-    }
-    
+      {data ? (
+        <List
+          className=""
+          height={100}
+          width={"100%"}
+          itemSize={30}
+          itemCount={data.length}
+          overscanCount={10}
+        >
+          {Row}
+        </List>
+      ) : null}
     </>
   );
 }
