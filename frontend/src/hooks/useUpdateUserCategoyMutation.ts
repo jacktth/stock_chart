@@ -15,7 +15,6 @@ export function useUpdateUserCategoryMutation() {
   return useMutation(
     async (form: addForm) => {
       return updateCategoriesQuery(client, form).then((result: any) => {
-        console.log("result", result);
         return result.data;
       });
     },

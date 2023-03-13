@@ -6,43 +6,60 @@ import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery
 import { supabase } from "../../api/supabaseClient";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
+import { useDeleteUserCategoriesMutation } from "../../hooks/useDeleteUserCategoriesMutation";
 import useSupabase from "../../hooks/useSupabase";
 import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyMutation";
 import { useUserQuery } from "../../hooks/useUserQuery";
 import { authState, selectAuth } from "../auth/authSlice";
-import { updateViewing } from "../chart/chartSlice";
+import { selectViewing, updateViewing } from "../chart/chartSlice";
 import { addCategories, initCategories, selectCategories } from "./listSlice";
 
 export function categoricalList(session: Session) {
   const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
-  const globalCategories = useAppSelector(selectCategories);
+  const globalViewing = useAppSelector(selectViewing);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
   const { data } = useCategoriesQuery(session.user.id);
-  function inputBox() {
-    function insertCategory(e: React.FormEvent<HTMLFormElement>) {
-      e.preventDefault();
+  const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
+  function insertCategory(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-      if (inputCategoryRef.current?.value && session.user.id) {
-        updateCategoryMutation.mutate(
-          {
-            name: inputCategoryRef.current?.value,
-            userId: session.user.id,
+    if (inputCategoryRef.current?.value && session.user.id) {
+      updateCategoryMutation.mutate(
+        {
+          name: inputCategoryRef.current?.value,
+          userId: session.user.id,
+        },
+        {
+          onSuccess(data, variables, context) {
+            // dispatch(addCategories(variables.name));
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
           },
-          {
-            onSuccess(data, variables, context) {
-              // dispatch(addCategories(variables.name));
-              queryClient.invalidateQueries({ queryKey: ["categories"] });
-            },
-          }
-        );
-      }
+        }
+      );
     }
+  }
+  function deleteCategory(userId: string, categoryName: string) {
+    if (window.confirm(`Are you sure to delete ${categoryName} category?`)) {
+      deleteCategoriesQuery.mutate(
+        { userId, categoryName },
+        {
+          
+          onSuccess(data, variables, context) {
+            if(categoryName === globalViewing)
+            dispatch(updateViewing(""));
+          },
+        }
+      );
+    }
+  }
+
+  function inputBox() {
     return (
-      <div>
+      <div className="flex items-start">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -57,6 +74,7 @@ export function categoricalList(session: Session) {
             type="text"
           />
         </form>
+        <button onClick={()=>{setCreating(false);}}>x</button>
       </div>
     );
   }
@@ -65,22 +83,26 @@ export function categoricalList(session: Session) {
     if (data) {
       return (
         <div
+          style={style}
           className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
             data[index].name === selectedCategory ? "bg-sky-200" : null
           } flex justify-between text-sm`}
-          onClick={() => {
-            dispatch(updateViewing(data[index].name));
-            setSelectedCategory(data[index].name);
-          }}
         >
           <button
-            // style={style}
-            className={``}
-            
+            className={"w-11/12"}
+            onClick={() => {
+              dispatch(updateViewing(data[index].name));
+              setSelectedCategory(data[index].name);
+            }}
           >
             {data[index].name}
           </button>
-          <button className=""  onClick={() => alert("s")}>
+          <button
+            className=""
+            onClick={() => {
+              deleteCategory(data[index].user_id, data[index].name);
+            }}
+          >
             <img
               className="h-4"
               src="https://img.icons8.com/material-rounded/256/delete-trash.png"

@@ -35,10 +35,7 @@ import {
   initCategories,
   initClip,
 } from "../listingBar/listSlice";
-import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
-import { useUserQuery } from "../../hooks/useUserQuery";
-import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery";
-import { getUserClipQuery } from "../../api/queries/getUserClipQuery";
+
 import { Session } from "@supabase/supabase-js";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
@@ -66,8 +63,6 @@ export function Chart(session: Session) {
     //globalSymbol in useQuery is necessary
   useQuery(["stockData",globalSymbol], fetchStockData, {
     onSuccess(data) {
-      console.log("stockData onSuccess", dataSorting(data.data).stockData);
-      console.log("stockData onSuccess symbol", globalSymbol);
       
       setDateArray(dataSorting(data.data).date);
       setOptions({

@@ -13,15 +13,14 @@ export function symbolList(session, UsHkData) {
   const dispatch = useAppDispatch();
   const globalClip = useAppSelector(selectClip);
   const globalViewing = useAppSelector(selectViewing);
-  const { data } = useClipsQuery(session.user.id);
+  const { data,isLoading } = useClipsQuery(session.user.id);
   function clickEventHandler(container: AllListings[], index: any) {
     dispatch(
       updateSymbol(container[index].symbol + "." + container[index].market)
     );
-    
-    queryClient.invalidateQueries("stockData")
+
+    queryClient.invalidateQueries("stockData");
     if (container[index].starting && container[index].ending) {
-        
       dispatch(
         updateFocus({
           min: container[index].starting,
@@ -38,8 +37,9 @@ export function symbolList(session, UsHkData) {
       );
     }
   }
-  if (data && UsHkData)  {
-    
+  if(isLoading){
+    return <span>Loading...</span>
+  }else if(data && UsHkData) {
     const container: AllListings[] = [];
     switch (globalViewing) {
       case "hk":
@@ -54,6 +54,9 @@ export function symbolList(session, UsHkData) {
         );
 
         break;
+      case "":
+        
+        break
       default:
         data.forEach((el) => {
           if (el.category === globalViewing && el.starting && el.ending)
@@ -99,5 +102,5 @@ export function symbolList(session, UsHkData) {
         </List>
       </>
     );
-  }
+  } 
 }

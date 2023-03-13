@@ -28,11 +28,13 @@ export function ListingBar(session:Session) {
   const globalViewing = useAppSelector(selectViewing);
 
   const { data, isLoading } = useQuery("listings", fetchListings, {
-    // onSuccess(data) {
-    //   const container: AllListings[] = [];
-    //   data.data.hk.forEach((el) => container.push({ ...el, market: "HK" }));
-    //   data.data.us.forEach((el) => container.push({ ...el, market: "US" }));
-    // },
+    onSuccess(data) {
+      const container: AllListings[] = [];
+      // data.data.hk.forEach((el) => container.push({ ...el, market: "HK" }));
+      // data.data.us.forEach((el) => container.push({ ...el, market: "US" }));
+    console.log("data",data.data);
+    
+    },
   });
 
 

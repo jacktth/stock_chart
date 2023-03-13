@@ -33,7 +33,7 @@ export function useUpdateUserClipMutation() {
     },
     {
       onSuccess() {
-        queryClient.invalidateQueries({ queryKey: ["clips"] });
+        queryClient.invalidateQueries({ queryKey: ["clip"] });
       },
     }
   );
