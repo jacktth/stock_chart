@@ -15,15 +15,18 @@ import { selectViewing, updateViewing } from "../chart/chartSlice";
 import { addCategories, initCategories, selectCategories } from "./listSlice";
 
 export function categoricalList(session: Session) {
-  const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
+
+  const dispatch = useAppDispatch();
   const globalViewing = useAppSelector(selectViewing);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
-  const queryClient = useQueryClient();
-  const updateCategoryMutation = useUpdateUserCategoryMutation();
+
   const { data } = useCategoriesQuery(session.user.id);
+  const queryClient = useQueryClient();
   const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
+  const updateCategoryMutation = useUpdateUserCategoryMutation();
+
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -35,7 +38,6 @@ export function categoricalList(session: Session) {
         },
         {
           onSuccess(data, variables, context) {
-            // dispatch(addCategories(variables.name));
             queryClient.invalidateQueries({ queryKey: ["categories"] });
           },
         }

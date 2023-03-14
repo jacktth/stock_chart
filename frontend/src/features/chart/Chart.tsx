@@ -63,7 +63,6 @@ export function Chart(session: Session) {
     //globalSymbol in useQuery is necessary
   useQuery(["stockData",globalSymbol], fetchStockData, {
     onSuccess(data) {
-      
       setDateArray(dataSorting(data.data).date);
       setOptions({
         ...options,
@@ -85,7 +84,6 @@ export function Chart(session: Session) {
           globalFocus.min ? globalFocus.min : undefined,
           globalFocus.max ? globalFocus.max : undefined
         );
-        chart.series[0].data
       }
     },
   });

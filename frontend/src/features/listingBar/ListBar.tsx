@@ -13,11 +13,11 @@ import { useQuery } from "react-query";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { categoricalList } from "./categoricalList";
 import { selectClip, selectCategories } from "./listSlice";
 import { selectAuth } from "../auth/authSlice";
 import { Session } from "@supabase/supabase-js";
 import { symbolList } from "./symbolsList";
+import { categoricalList } from "./userCategoricalList";
 
 const fetchListings = () =>
   axios.get<ListingResponse>("http://localhost:3000/listing");
