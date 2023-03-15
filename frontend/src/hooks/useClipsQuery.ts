@@ -5,10 +5,12 @@ import useSupabase from "./useSupabase";
 export function useClipsQuery(userId: string){
   const client = useSupabase();
   const key = ["clip"];
-  console.log("clip query");
   
   return useQuery({
     queryKey: key,
     queryFn: () => getUserClipQuery(client, userId),
-  });
+    onSuccess(data) {
+      console.log("success useCategoriesQuery",data)
+      
+    }},);
 }

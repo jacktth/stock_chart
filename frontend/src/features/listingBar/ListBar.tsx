@@ -69,4 +69,5 @@ export type AllListings = {
   zhNAme?: string;
   starting: number|null;
   ending: number|null;
+  id?:number
 };

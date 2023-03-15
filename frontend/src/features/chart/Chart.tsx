@@ -239,7 +239,7 @@ export function Chart(session: Session) {
           <ListingBar {...session} />
         </div>
         <div className="chartContainer">
-          {SaveBar(session)}
+          {SaveBar(session,dateArray)}
           {
             <HighchartsReact
               ref={chartComponent}

@@ -6,7 +6,7 @@ import { addCategories } from "../features/listingBar/listSlice";
 import useSupabase from "./useSupabase";
 
 type updateClipParam = {
-  selectedData: { starting: number; ending: number };
+  selectedData: { starting: number|null; ending: number |null};
   category: string;
   symbol: string;
   userId: string;
@@ -18,6 +18,7 @@ export function useUpdateUserClipMutation() {
   const client = useSupabase();
   return useMutation(
     async (param: updateClipParam) => {
+      
       return updateUserClipQuery(
         client,
         param.selectedData,

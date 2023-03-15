@@ -49,10 +49,8 @@ export function categoricalList(session: Session) {
       deleteCategoriesQuery.mutate(
         { userId, categoryName },
         {
-          
           onSuccess(data, variables, context) {
-            if(categoryName === globalViewing)
-            dispatch(updateViewing(""));
+            if (categoryName === globalViewing) dispatch(updateViewing(""));
           },
         }
       );
@@ -76,7 +74,13 @@ export function categoricalList(session: Session) {
             type="text"
           />
         </form>
-        <button onClick={()=>{setCreating(false);}}>x</button>
+        <button
+          onClick={() => {
+            setCreating(false);
+          }}
+        >
+          x
+        </button>
       </div>
     );
   }

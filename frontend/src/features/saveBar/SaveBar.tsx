@@ -22,14 +22,15 @@ import {
   selectSelectedData,
   selectSymbol,
 } from "../chart/chartSlice";
+import { defaultCategories } from "../listingBar/defaultCategories";
 import { addClip, selectCategories } from "../listingBar/listSlice";
 
 export type SelectedData = {
-  starting: number;
-  ending: number;
+  starting: number | null;
+  ending: number | null;
 };
 
-export function SaveBar(session: Session) {
+export function SaveBar(session: Session, dateArray: number[]) {
   const dispatch = useAppDispatch();
   const globalCategories = useAppSelector(selectCategories);
   const globalMarket = useAppSelector(selectMarket);
@@ -55,11 +56,15 @@ export function SaveBar(session: Session) {
   ) => {
     if (categories)
       return categories.map((el) => {
-        return (
-          <option key={el.name} value={el.name}>
-            {el.name}
-          </option>
-        );
+        if (defaultCategories().some((defaults) => el.name === defaults)) {
+          return 
+        } else {
+          return (
+            <option key={el.name} value={el.name}>
+              {el.name}
+            </option>
+          );
+        }
       });
   };
   function insertClip(e) {
@@ -97,6 +102,16 @@ export function SaveBar(session: Session) {
       globalSelectedData.ending == (null || 0) &&
       globalSelectedData.starting == (null || 0)
     ) {
+      updateClipMutation.mutate({
+        selectedData: {
+          starting: null,
+          ending: null,
+        },
+        userId: session.user.id,
+        category: selectCategory,
+        symbol: globalSymbol,
+        market: globalMarket,
+      });
       alert("Please select data after saving");
     } else {
       alert("State error");
