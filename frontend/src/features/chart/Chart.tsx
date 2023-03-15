@@ -60,16 +60,16 @@ export function Chart(session: Session) {
         period1: "2022-02-01",
       },
     });
-    //globalSymbol in useQuery is necessary
-  useQuery(["stockData",globalSymbol], fetchStockData, {
+  //globalSymbol in useQuery is necessary
+  useQuery(["stockData", globalSymbol], fetchStockData, {
     onSuccess(data) {
       setDateArray(dataSorting(data.data).date);
       setOptions({
         ...options,
-        // xAxis: {
-        //   min: globalFocus.min,
-        //   max: globalFocus.max,
-        // },
+        xAxis: {
+          ...options.xAxis,
+          plotBands: [{}],
+        },
         series: [
           {
             type: "candlestick",
@@ -143,7 +143,7 @@ export function Chart(session: Session) {
       },
     },
     title: {
-      text: error 
+      text: error,
     },
   });
   useEffect(() => {
@@ -177,7 +177,7 @@ export function Chart(session: Session) {
     setOptions({
       ...options,
       title: {
-        text: error  + start + " " + end,
+        text: error + start + " " + end,
       },
       xAxis: {
         ...options.xAxis,
@@ -239,7 +239,7 @@ export function Chart(session: Session) {
           <ListingBar {...session} />
         </div>
         <div className="chartContainer">
-          {SaveBar(session,dateArray)}
+          {SaveBar(session, dateArray)}
           {
             <HighchartsReact
               ref={chartComponent}

@@ -103,7 +103,7 @@ export function symbolList(session: Session, UsHkData) {
         return <></>;
       } else {
         return (
-          <button
+          <div
             style={style}
             className={`flex hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
               container[index].id === selectedSymbolId ? "bg-sky-200" : null
@@ -135,7 +135,7 @@ export function symbolList(session: Session, UsHkData) {
                 alt=""
               />
             </button>
-          </button>
+          </div>
         );
       }
     };
