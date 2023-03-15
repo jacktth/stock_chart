@@ -3,16 +3,15 @@ import { Database } from "../types/supabase";
 
 export async function deleteUserClipQuery(
   client: SupabaseClient<Database>,
-  userId: string,
-  name: string
+  id: number,
+  userId: string
 ) {
-
   const { status: clipStatus } = await client
     .from("clip")
     .delete()
-    .eq("category", name)
+    .eq("id", id)
     .eq("user_id", userId);
-console.log("status ",{ clipStatus: clipStatus});
+  console.log("status ", { clipStatus: clipStatus });
 
-  return { clipStatus: clipStatus, };
+  return { clipStatus: clipStatus };
 }

@@ -2,12 +2,12 @@ import { useMutation, useQueryClient,  } from "react-query";
 import { deleteUserClipQuery } from "../api/queries/deleteUserClipQuery";
 import useSupabase from "./useSupabase";
 
-type deleteCategoryParam = {
-  categoryName: string;
-  userId: string;
+type deleteClipParam = {
+  userId:string;
+  clipId:number;
 };
 
-export function useDeleteUserCategoriesMutation(){
+export function useDeleteUserClipMutation(){
   const client = useSupabase();
   const queryClient = useQueryClient();
 
@@ -15,8 +15,8 @@ export function useDeleteUserCategoriesMutation(){
   
 
   return useMutation(
-     ({userId,categoryName}:deleteCategoryParam) => {
-      return deleteUserClipQuery(client,userId, categoryName).then((result)=>result);
+     ({userId ,clipId}:deleteClipParam) => {
+      return deleteUserClipQuery(client ,clipId,userId).then((result)=>result);
     },
     {
       onSuccess() {

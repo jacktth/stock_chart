@@ -7,8 +7,10 @@ import { FixedSizeList as List } from "react-window";
 import { useClipsQuery } from "../../hooks/useClipsQuery";
 import { useQueryClient } from "react-query";
 import { defaultCategories } from "./defaultCategories";
+import { Session } from "@supabase/supabase-js";
+import { useDeleteUserClipMutation } from "../../hooks/UseDeleteUserClipMutation";
 
-export function symbolList(session, UsHkData) {
+export function symbolList(session: Session, UsHkData) {
   const queryClient = useQueryClient();
   const [selectedSymbolId, setSelectedSymbolId] = useState<number>();
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
@@ -16,6 +18,7 @@ export function symbolList(session, UsHkData) {
   const dispatch = useAppDispatch();
   const globalViewing = useAppSelector(selectViewing);
   const { data, isLoading } = useClipsQuery(session.user.id);
+  const deleteUserClip = useDeleteUserClipMutation();
   function clickEventHandler(container: AllListings[], index: any) {
     dispatch(
       updateSymbol(container[index].symbol + "." + container[index].market)
@@ -37,6 +40,12 @@ export function symbolList(session, UsHkData) {
           max: null,
         })
       );
+    }
+  }
+
+  function deleteCategory(userId: string, clipId: number) {
+    if (window.confirm(`Are you sure to delete the record?`)) {
+      deleteUserClip.mutate({ userId, clipId });
     }
   }
   if (isLoading) {
@@ -82,7 +91,7 @@ export function symbolList(session, UsHkData) {
             }`}
             onClick={() => {
               clickEventHandler(container, index);
-              setSelectedSymbol(container[index].symbol)
+              setSelectedSymbol(container[index].symbol);
             }}
           >
             <span className="text-base">{container[index].symbol}</span>
@@ -94,9 +103,9 @@ export function symbolList(session, UsHkData) {
         return <></>;
       } else {
         return (
-          <div
+          <button
             style={style}
-            className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
+            className={`flex hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
               container[index].id === selectedSymbolId ? "bg-sky-200" : null
             }`}
           >
@@ -104,7 +113,9 @@ export function symbolList(session, UsHkData) {
               className={"w-11/12"}
               onClick={() => {
                 clickEventHandler(container, index);
-                container[index].id ?setSelectedSymbolId(container[index].id) :null;
+                container[index].id
+                  ? setSelectedSymbolId(container[index].id)
+                  : null;
               }}
             >
               {container[index].symbol}
@@ -112,14 +123,19 @@ export function symbolList(session, UsHkData) {
             <br />
             {/* <span className="text-xs ">{container[index].engName}</span> */}
 
-            <button className="" onClick={() => {}}>
+            <button
+              className=""
+              onClick={() => {
+                  deleteCategory(session.user.id, container[index].id!);
+              }}
+            >
               <img
                 className="h-4"
                 src="https://img.icons8.com/material-rounded/256/delete-trash.png"
                 alt=""
               />
             </button>
-          </div>
+          </button>
         );
       }
     };
