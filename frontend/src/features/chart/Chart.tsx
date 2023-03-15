@@ -80,9 +80,12 @@ export function Chart(session: Session) {
       });
       if (chartComponent.current !== null) {
         const chart = chartComponent.current.chart;
+        //function to focus the range of selected data from the record
+        //default focus 100 days
+        //change it to undefined if you want to view all data
         chart.xAxis[0].setExtremes(
-          globalFocus.min ? globalFocus.min : undefined,
-          globalFocus.max ? globalFocus.max : undefined
+          globalFocus.min ? globalFocus.min : dataSorting(data.data).date.at(-100),
+          globalFocus.max ? globalFocus.max : dataSorting(data.data).date.at(-1)
         );
       }
     },
@@ -100,22 +103,11 @@ export function Chart(session: Session) {
       },
       events: {
         selection: (e) => {
-          //in this function, it is no use to use its setState hook to update the its state
+          //in this function, it is useless to use its setState hook to update the its state
           //because the setState won't update anything about itself
           const min = e.xAxis[0].min;
           const max = e.xAxis[0].max;
-          const start =
-            min != 0 && min <= dateArray[0]
-              ? dateArray[0]
-              : dateArray.reduce(
-                  (acc, curr, i, arr) =>
-                    i > 0 && min - curr < 0 && min - arr[i - 1] > 0
-                      ? (arr[i - 1] + curr) / 2 <= min
-                        ? curr
-                        : arr[i - 1]
-                      : acc,
-                  0
-                );
+
           setSelectedData({ starting: min, ending: max });
 
           return false; // returning false will disable the default zooming function while dragging on the chart
@@ -192,6 +184,7 @@ export function Chart(session: Session) {
     });
     dispatch(updateSelectedData({ starting: start, ending: end }));
   }, [selectedData]);
+
   const handleSubmit = (e) => {
     axios
       .post("http://localhost:3000/stock-data", {
