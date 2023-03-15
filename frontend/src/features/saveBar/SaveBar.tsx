@@ -40,93 +40,94 @@ export function SaveBar(session: Session, dateArray: number[]) {
   const [selectCategory, setSelectCategory] = useState("");
   const { data, isLoading } = useCategoriesQuery(session.user.id);
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (data) {
-      setSelectCategory(data[0].name);
-      console.log("setSelectCategory");
-    }
-  }, [data]);
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  const options = (
-    categories: Database["public"]["Tables"]["categories"]["Row"][]
-  ) => {
-    if (categories)
-      return categories.map((el) => {
-        if (defaultCategories().some((defaults) => el.name === defaults)) {
-          return 
+      const container: Database["public"]["Tables"]["categories"]["Row"][] = [];
+      data.map((cate) => {
+        if (defaultCategories().some((defaults) => cate.name === defaults)) {
+          return;
         } else {
-          return (
-            <option key={el.name} value={el.name}>
-              {el.name}
-            </option>
-          );
+          container.push(cate);
         }
       });
-  };
-  function insertClip(e) {
-    e.preventDefault();
-    console.log(
-      session.user.id,
-      selectCategory,
-      globalSymbol,
-      globalSelectedData.ending,
-      globalSelectedData.starting,
-      globalMarket
-    );
-
-    if (
-      session.user.id &&
-      selectCategory &&
-      globalSymbol &&
-      globalSelectedData.ending !== 0 &&
-      globalSelectedData.starting !== 0 &&
-      globalMarket
-    ) {
-      console.log("updateClipMutation");
-
-      updateClipMutation.mutate({
-        selectedData: {
-          starting: globalSelectedData.starting,
-          ending: globalSelectedData.ending,
-        },
-        userId: session.user.id,
-        category: selectCategory,
-        symbol: globalSymbol,
-        market: globalMarket,
-      });
-    } else if (
-      globalSelectedData.ending == (null || 0) &&
-      globalSelectedData.starting == (null || 0)
-    ) {
-      updateClipMutation.mutate({
-        selectedData: {
-          starting: null,
-          ending: null,
-        },
-        userId: session.user.id,
-        category: selectCategory,
-        symbol: globalSymbol,
-        market: globalMarket,
-      });
-      alert("Please select data after saving");
-    } else {
-      alert("State error");
+      setSelectCategory(container[0].name);
     }
+    
+  }, [data])
+  
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  } else {
+    const options = (
+      categories: Database["public"]["Tables"]["categories"]["Row"][]
+    ) => {
+      if (categories)
+        return categories.map((el) => {
+          if (defaultCategories().some((defaults) => el.name === defaults)) {
+            return;
+          } else {
+            return (
+              <option key={el.name} value={el.name}>
+                {el.name}
+              </option>
+            );
+          }
+        });
+    };
+    function insertClip(e) {
+      e.preventDefault();
+      console.log("selectCategory", selectCategory);
+
+      if (
+        session.user.id &&
+        selectCategory &&
+        globalSymbol &&
+        globalSelectedData.ending !== 0 &&
+        globalSelectedData.starting !== 0 &&
+        globalMarket
+      ) {
+        updateClipMutation.mutate({
+          selectedData: {
+            starting: globalSelectedData.starting,
+            ending: globalSelectedData.ending,
+          },
+          userId: session.user.id,
+          category: selectCategory,
+          symbol: globalSymbol,
+          market: globalMarket,
+        });
+      } else if (
+        globalSelectedData.ending == (null || 0) &&
+        globalSelectedData.starting == (null || 0)
+      ) {
+        updateClipMutation.mutate({
+          selectedData: {
+            starting: null,
+            ending: null,
+          },
+          userId: session.user.id,
+          category: selectCategory,
+          symbol: globalSymbol,
+          market: globalMarket,
+        });
+      } else {
+        alert("State error");
+      }
+    }
+    return (
+      <form onSubmit={(e) => insertClip(e)}>
+        <select
+          onChange={(e) => {
+            console.log(e.target.value);
+            
+            setSelectCategory(e.target.value);
+          }}
+        >
+          {data ? options(data) : null}
+        </select>
+        <button>Save</button>
+      </form>
+    );
   }
-  return (
-    <form onSubmit={(e) => insertClip(e)}>
-      <select
-        onChange={(e) => {
-          setSelectCategory(e.target.value);
-        }}
-      >
-        {data ? options(data) : null}
-      </select>
-      <button>Save</button>
-    </form>
-  );
 }
