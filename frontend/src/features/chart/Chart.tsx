@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   selectFocus,
@@ -30,13 +29,9 @@ import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
 import { SaveBar, SelectedData } from "../saveBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import {
-  addCategories,
-  initCategories,
-  initClip,
-} from "../listingBar/listSlice";
 
 import { Session } from "@supabase/supabase-js";
+import { createPortal } from "react-dom";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
@@ -84,7 +79,9 @@ export function Chart(session: Session) {
         //default focus 100 days
         //change it to undefined if you want to view all data
         chart.xAxis[0].setExtremes(
-          globalFocus.min ? globalFocus.min : dataSorting(data.data).date.at(-100),
+          globalFocus.min
+            ? globalFocus.min
+            : dataSorting(data.data).date.at(-100),
           globalFocus.max ? globalFocus.max : dataSorting(data.data).date.at(-1)
         );
       }
@@ -134,8 +131,12 @@ export function Chart(session: Session) {
         },
       },
     },
-    title: {
-      text: error,
+  
+    rangeSelector: {
+      buttons: [
+        
+    
+      ],
     },
   });
   useEffect(() => {
@@ -169,7 +170,7 @@ export function Chart(session: Session) {
     setOptions({
       ...options,
       title: {
-        text: error + start + " " + end,
+        text:   `Selected from ${start===0 ? "___" :new Date(start).toISOString().slice(0, 10)} to ${end===0 ? "___" :new Date(end).toISOString().slice(0, 10)}`,
       },
       xAxis: {
         ...options.xAxis,
@@ -233,6 +234,7 @@ export function Chart(session: Session) {
         </div>
         <div className="chartContainer">
           {SaveBar(session, dateArray)}
+
           {
             <HighchartsReact
               ref={chartComponent}

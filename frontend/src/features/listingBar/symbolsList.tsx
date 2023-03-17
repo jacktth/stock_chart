@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
-import { AllListings } from "./ListBar";
-import { selectClip } from "./listSlice";
+import { AllListings, ListingResponse } from "./ListBar";
 import { FixedSizeList as List } from "react-window";
 import { useClipsQuery } from "../../hooks/useClipsQuery";
 import { useQueryClient } from "react-query";
@@ -10,7 +9,15 @@ import { defaultCategories } from "./defaultCategories";
 import { Session } from "@supabase/supabase-js";
 import { useDeleteUserClipMutation } from "../../hooks/UseDeleteUserClipMutation";
 
-export function symbolList(session: Session, UsHkData) {
+import { Clip } from "../../api/queries/getUserClipQuery";
+import { AxiosResponse } from "axios";
+
+type UserSymbolData = Omit<Clip, "user_id" | "created_at" | "category">;
+
+export function symbolList(
+  session: Session,
+  UsHkData: AxiosResponse<ListingResponse, any> | undefined
+) {
   const queryClient = useQueryClient();
   const [selectedSymbolId, setSelectedSymbolId] = useState<number>();
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
@@ -19,25 +26,26 @@ export function symbolList(session: Session, UsHkData) {
   const globalViewing = useAppSelector(selectViewing);
   const { data, isLoading } = useClipsQuery(session.user.id);
   const deleteUserClip = useDeleteUserClipMutation();
-  function clickEventHandler(container: AllListings[], index: any) {
+  function clickPublicSymbol(container: AllListings) {
+    dispatch(updateSymbol(container.symbol + "." + container.market));
+
     dispatch(
-      updateSymbol(container[index].symbol + "." + container[index].market)
+      updateFocus({
+        min: null,
+        max: null,
+      })
     );
+  }
+
+  function clickUserSymbol(container: UserSymbolData) {
+    dispatch(updateSymbol(container.symbol + "." + container.market));
 
     queryClient.invalidateQueries("stockData");
-
-    if (container[index].starting && container[index].ending) {
+    if (container.starting !== undefined && container.ending) {
       dispatch(
         updateFocus({
-          min: container[index].starting,
-          max: container[index].ending,
-        })
-      );
-    } else {
-      dispatch(
-        updateFocus({
-          min: null,
-          max: null,
+          min: container.starting,
+          max: container.ending,
         })
       );
     }
@@ -51,82 +59,103 @@ export function symbolList(session: Session, UsHkData) {
   if (isLoading) {
     return <span>Loading...</span>;
   } else if (data && UsHkData) {
-    const container: AllListings[] = [];
+
+    const userContainer: UserSymbolData[] = [];
+    const publicContainer: AllListings[] = [];
+
     switch (globalViewing) {
       case "HK market":
         UsHkData.data.hk.forEach((el) =>
-          container.push({ ...el, market: "HK" })
+          publicContainer.push({ ...el, market: "HK" })
         );
 
         break;
       case "US market":
         UsHkData.data.us.forEach((el) =>
-          container.push({ ...el, market: "US" })
+          publicContainer.push({ ...el, market: "US" })
         );
 
         break;
       case "":
         break;
       default:
-        data.forEach((el) => {
+        data.forEach((el: Clip) => {
           if (el.category === globalViewing)
-            container.push({
+            userContainer.push({
               symbol: el.symbol,
-              market: el.market,
               starting: el.starting,
               ending: el.ending,
               id: el.id,
+              market: el.market,
             });
         });
         break;
     }
 
-    const Row = ({ index, style }) => {
+    const Row = ({ index, style }: { index: number; style: any }) => {
       if (defaultCategories().some((el) => globalViewing === el)) {
+        //return default market symbol
         return (
           <button
             style={style}
-            className={`text-left hover:bg-sky-300 leading-3 border-2 border-solid ${
-              container[index].symbol === selectedSymbol ? "bg-sky-200" : null
+            className={`text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
+              publicContainer[index].symbol === selectedSymbol
+                ? "bg-sky-200"
+                : null
             }`}
             onClick={() => {
-              clickEventHandler(container, index);
-              setSelectedSymbol(container[index].symbol);
+              clickPublicSymbol(publicContainer[index]);
+              setSelectedSymbol(publicContainer[index].symbol);
             }}
           >
-            <span className="text-base">{container[index].symbol}</span>
+            <span className="text-base">{publicContainer[index].symbol}</span>
             <br />
-            <span className="text-xs ">{container[index].engName}</span>
+            <span className="text-xs ">{publicContainer[index].engName}</span>
           </button>
         );
       } else if (globalViewing === "") {
         return <></>;
       } else {
         return (
+          //return user's record symbol
+
           <div
             style={style}
             className={`flex hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
-              container[index].id === selectedSymbolId ? "bg-sky-200" : null
+              userContainer[index].id === selectedSymbolId ? "bg-sky-200" : null
             }`}
           >
             <button
               className={"w-11/12"}
               onClick={() => {
-                clickEventHandler(container, index);
-                container[index].id
-                  ? setSelectedSymbolId(container[index].id)
+                clickUserSymbol(userContainer[index]);
+                userContainer[index].id
+                  ? setSelectedSymbolId(userContainer[index].id)
                   : null;
               }}
             >
-              {container[index].symbol}
+              <span className={"text-base"}>{userContainer[index].symbol}</span>
+              <br />
+              {userContainer[index].starting && userContainer[index].ending ? (
+                <div className={"text-xs"}>
+                  <span>{`From ${new Date(userContainer[index].starting!)
+                    .toISOString()
+                    .slice(0, 10)}`}</span>
+                  <br />
+                  <span>{`to ${new Date(userContainer[index].ending!)
+                    .toISOString()
+                    .slice(0, 10)}`}</span>
+                </div>
+              ) : (
+                null
+              )}
             </button>
             <br />
-            {/* <span className="text-xs ">{container[index].engName}</span> */}
 
             <button
               className=""
               onClick={() => {
-                  deleteCategory(session.user.id, container[index].id!);
+                deleteCategory(session.user.id, userContainer[index].id!);
               }}
             >
               <img
@@ -141,20 +170,16 @@ export function symbolList(session: Session, UsHkData) {
     };
     return (
       <>
-        {/* <div className="flex text-sm">
-            <img
-              src={`https://flagcdn.com/${globalViewing.toLocaleLowerCase()}.svg`}
-              width="20%"
-              height="20%"
-            />
-            <span>{globalViewing.toLocaleUpperCase()} Market</span>
-          </div> */}
         <List
           className=""
           height={300}
           width={"100%"}
           itemSize={70}
-          itemCount={container.length}
+          itemCount={
+            publicContainer.length > 0
+              ? publicContainer.length
+              : userContainer.length
+          }
           overscanCount={10}
         >
           {Row}

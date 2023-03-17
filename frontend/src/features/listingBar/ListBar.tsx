@@ -22,52 +22,40 @@ import { categoricalList } from "./userCategoricalList";
 const fetchListings = () =>
   axios.get<ListingResponse>("http://localhost:3000/listing");
 
-export function ListingBar(session:Session) {
-  const dispatch = useAppDispatch();
-  const globalClip = useAppSelector(selectClip);
-  const globalViewing = useAppSelector(selectViewing);
-
-  const { data, isLoading } = useQuery("listings", fetchListings, {
-    onSuccess(data) {
-      const container: AllListings[] = [];
-      // data.data.hk.forEach((el) => container.push({ ...el, market: "HK" }));
-      // data.data.us.forEach((el) => container.push({ ...el, market: "US" }));
-    console.log("data",data.data);
-    
-    },
-  });
-
+export function ListingBar(session: Session) {
+  const { data, isLoading } = useQuery("listings", fetchListings, {});
 
   if (isLoading) <div>loading...</div>;
 
   return (
     <div className="listingBar">
       <>{categoricalList(session)}</>
-      <>{symbolList(session,data)}</>
+      <>{symbolList(session, data)}</>
     </div>
   );
 }
 export type ListingResponse = {
-  hk: [
-    {
-      symbol: string;
-      engName: string;
-      zhNAme: string;
-    }
-  ];
-  us: [
-    {
-      symbol: string;
-      engName: string;
-    }
-  ];
+
+    hk: [
+      {
+        symbol: string;
+        engName: string;
+        zhNAme: string;
+      }
+    ];
+    us: [
+      {
+        symbol: string;
+        engName: string;
+      }
+    ];
+  
+  status: number;
 };
 export type AllListings = {
   symbol: string;
   engName?: string;
   market: string;
-  zhNAme?: string;
-  starting: number|null;
-  ending: number|null;
-  id?:number
+  zhName?: string;
+
 };

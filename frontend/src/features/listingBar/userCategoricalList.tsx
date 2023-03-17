@@ -90,16 +90,16 @@ export function categoricalList(session: Session) {
       return (
         <div
           style={style}
-          className={`hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
+          className={`hover:bg-sky-300 leading-3 border-2 border-solid  ${
             data[index].name === selectedCategory ? "bg-sky-200" : null
           } flex justify-between text-sm`}
+          onClick={() => {
+            dispatch(updateViewing(data[index].name));
+            setSelectedCategory(data[index].name);
+          }}
         >
           <button
             className={"w-11/12"}
-            onClick={() => {
-              dispatch(updateViewing(data[index].name));
-              setSelectedCategory(data[index].name);
-            }}
           >
             {data[index].name}
           </button>
