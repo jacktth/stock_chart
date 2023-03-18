@@ -1,12 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ListingService } from './listing.service';
 
-@Controller('listing')
-export class ListingController {
-    constructor(private readonly listingService: ListingService) {}
+export class getListingParam {
+  market: string;
+}
 
-  @Get()
-  getList() {
-    return this.listingService.getList();
+@Controller()
+export class ListingController {
+  constructor(private readonly listingService: ListingService) {}
+
+  @Get('listing')
+  getList(@Query()param:getListingParam) {    
+    return this.listingService.getList(param);
   }
 }

@@ -22,7 +22,7 @@ type SelectedData = {
 const initialState: chartState = {
   symbol: "AAPL",
   market: "US",
-  viewing: "us",
+  viewing: "US market",
   focus: { min: null, max: null },
   selectedData: { starting: 0, ending: 0 },
 };

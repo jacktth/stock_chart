@@ -12,7 +12,6 @@ export function useClipsQuery(userId: string){
     queryKey: key,
     queryFn: () => getUserClipQuery(client, userId),
     onSuccess(data) {
-      console.log("success useCategoriesQuery",data)
       
     }},);
 }

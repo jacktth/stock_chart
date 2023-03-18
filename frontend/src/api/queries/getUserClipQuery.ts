@@ -7,7 +7,7 @@ export async function getUserClipQuery(
   client: SupabaseClient<Database>,
   userId: string
 ) {
-  const { data }:{data:Clip[]} = await client.from("clip").select().eq("user_id", userId);
+  const  data  = await client.from("clip").select().eq("user_id", userId);
 
   return data;
 }

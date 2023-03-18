@@ -19,39 +19,20 @@ import { Session } from "@supabase/supabase-js";
 import { symbolList } from "./symbolsList";
 import { categoricalList } from "./userCategoricalList";
 
-const fetchListings = () =>
-  axios.get<ListingResponse>("http://localhost:3000/listing");
+
 
 export function ListingBar(session: Session) {
-  const { data, isLoading } = useQuery("listings", fetchListings, {});
 
-  if (isLoading) <div>loading...</div>;
 
   return (
     <div className="listingBar">
       <>{categoricalList(session)}</>
-      <>{symbolList(session, data)}</>
+      <>{symbolList(session)}</>
     </div>
   );
 }
-export type ListingResponse = {
 
-    hk: [
-      {
-        symbol: string;
-        engName: string;
-        zhNAme: string;
-      }
-    ];
-    us: [
-      {
-        symbol: string;
-        engName: string;
-      }
-    ];
-  
-  status: number;
-};
+
 export type AllListings = {
   symbol: string;
   engName?: string;

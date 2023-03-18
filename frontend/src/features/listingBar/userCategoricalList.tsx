@@ -12,6 +12,7 @@ import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyM
 import { useUserQuery } from "../../hooks/useUserQuery";
 import { authState, selectAuth } from "../auth/authSlice";
 import { selectViewing, updateViewing } from "../chart/chartSlice";
+import { defaultCategories } from "./defaultCategories";
 import { addCategories, initCategories, selectCategories } from "./listSlice";
 
 export function categoricalList(session: Session) {
@@ -26,7 +27,14 @@ export function categoricalList(session: Session) {
   const queryClient = useQueryClient();
   const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
-
+  function updateViewingCategory(name:string){
+    dispatch(updateViewing(name));
+    if(defaultCategories().includes(name)){
+      queryClient.invalidateQueries("listings");
+      console.log("invalidateQueries",name);
+      
+    }
+  }
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -94,7 +102,7 @@ export function categoricalList(session: Session) {
             data[index].name === selectedCategory ? "bg-sky-200" : null
           } flex justify-between text-sm`}
           onClick={() => {
-            dispatch(updateViewing(data[index].name));
+            updateViewingCategory(data[index].name)
             setSelectedCategory(data[index].name);
           }}
         >
