@@ -1,21 +1,16 @@
 import { Session } from "@supabase/supabase-js";
-import React, { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import React, { useRef, useState } from "react";
+import { useQueryClient } from "react-query";
 import { FixedSizeList as List } from "react-window";
-import { getUserCategoriesQuery } from "../../api/queries/getUserCategoriesQuery";
-import { supabase } from "../../api/supabaseClient";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
 import { useDeleteUserCategoriesMutation } from "../../hooks/useDeleteUserCategoriesMutation";
-import useSupabase from "../../hooks/useSupabase";
 import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyMutation";
-import { useUserQuery } from "../../hooks/useUserQuery";
-import { authState, selectAuth } from "../auth/authSlice";
 import { selectViewing, updateViewing } from "../chart/chartSlice";
 import { defaultCategories } from "./defaultCategories";
-import {  changeCategory } from "./listSlice";
+import { changeCategory } from "./listSlice";
 
-export function CategoricalList({session}: {session:Session}) {
+export function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
   const queryClient = useQueryClient();
@@ -27,12 +22,12 @@ export function CategoricalList({session}: {session:Session}) {
   const { data } = useCategoriesQuery(session.user.id);
   const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
-  function updateSelectedCategory(name:string){
+  function updateSelectedCategory(name: string) {
     dispatch(changeCategory(name));
     //listings must be invalidated to update symbol data
-   if(defaultCategories().includes(name)){
-    queryClient.invalidateQueries("listings")
-   }
+    if (defaultCategories().includes(name)) {
+      queryClient.invalidateQueries("listings");
+    }
   }
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -101,15 +96,11 @@ export function CategoricalList({session}: {session:Session}) {
             data[index].name === selectedCategory ? "bg-sky-200" : null
           } flex justify-between text-sm`}
           onClick={() => {
-            updateSelectedCategory(data[index].name)
+            updateSelectedCategory(data[index].name);
             setSelectedCategory(data[index].name);
           }}
         >
-          <button
-            className={"w-11/12"}
-          >
-            {data[index].name}
-          </button>
+          <button className={"w-11/12"}>{data[index].name}</button>
           <button
             className=""
             onClick={() => {

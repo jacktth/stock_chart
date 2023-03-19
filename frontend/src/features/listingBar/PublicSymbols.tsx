@@ -1,8 +1,5 @@
-import { Session } from "@supabase/gotrue-js/dist/module/lib/types";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import axios from "axios";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import { AllListings } from "./ListBar";
