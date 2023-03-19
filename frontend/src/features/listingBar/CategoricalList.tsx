@@ -13,27 +13,26 @@ import { useUserQuery } from "../../hooks/useUserQuery";
 import { authState, selectAuth } from "../auth/authSlice";
 import { selectViewing, updateViewing } from "../chart/chartSlice";
 import { defaultCategories } from "./defaultCategories";
-import { addCategories, initCategories, selectCategories } from "./listSlice";
+import {  changeCategory } from "./listSlice";
 
-export function categoricalList(session: Session) {
+export function CategoricalList({session}: {session:Session}) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
+  const queryClient = useQueryClient();
 
   const dispatch = useAppDispatch();
   const globalViewing = useAppSelector(selectViewing);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
 
   const { data } = useCategoriesQuery(session.user.id);
-  const queryClient = useQueryClient();
   const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
-  function updateViewingCategory(name:string){
-    dispatch(updateViewing(name));
-    if(defaultCategories().includes(name)){
-      queryClient.invalidateQueries("listings");
-      console.log("invalidateQueries",name);
-      
-    }
+  function updateSelectedCategory(name:string){
+    dispatch(changeCategory(name));
+    //listings must be invalidated to update symbol data
+   if(defaultCategories().includes(name)){
+    queryClient.invalidateQueries("listings")
+   }
   }
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -102,7 +101,7 @@ export function categoricalList(session: Session) {
             data[index].name === selectedCategory ? "bg-sky-200" : null
           } flex justify-between text-sm`}
           onClick={() => {
-            updateViewingCategory(data[index].name)
+            updateSelectedCategory(data[index].name)
             setSelectedCategory(data[index].name);
           }}
         >

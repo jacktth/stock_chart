@@ -5,6 +5,7 @@ import type { RootState } from "../../app/store";
 interface listState {
   categories: string[];
   clip: Clip[];
+  selectedCategory: string;
 }
 
 type Clip = {
@@ -39,6 +40,7 @@ export type ResponseClipArray = {
 const initialState: listState = {
   categories: [],
   clip: [],
+  selectedCategory:"US market"
 };
 
 export const listSlice = createSlice({
@@ -74,6 +76,9 @@ export const listSlice = createSlice({
     addClip: (state, action: PayloadAction<Clip>) => {
       state.clip.push(action.payload)
     },
+    changeCategory: (state, action: PayloadAction<string>) => {
+      state.selectedCategory = action.payload
+    },
   },
 });
 
@@ -83,10 +88,12 @@ export const {
   addClip,
   initCategories,
   initClip,
+  changeCategory
 } = listSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectClip = (state: RootState) => state.list.clip;
 export const selectCategories = (state: RootState) => state.list.categories;
+export const selectedCategory = (state: RootState) => state.list.selectedCategory;
 
 export default listSlice.reducer;

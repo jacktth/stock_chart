@@ -24,7 +24,6 @@ function App() {
   }, [])
 
   return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Chart {...session} /></QueryClientProvider> ;
-  // return <QueryClientProvider client={queryClient}><Chart /></QueryClientProvider> ;
 }
 
 export default App;

@@ -230,7 +230,7 @@ export function Chart(session: Session) {
           </form>
           <button onClick={signOut}>log out</button>
 
-          <ListingBar {...session}/>
+          <ListingBar session={session}/>
         </div>
         <div className="chartContainer">
           {SaveBar(session, dateArray)}

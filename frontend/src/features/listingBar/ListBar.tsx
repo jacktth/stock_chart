@@ -16,18 +16,18 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { selectClip, selectCategories } from "./listSlice";
 import { selectAuth } from "../auth/authSlice";
 import { Session } from "@supabase/supabase-js";
-import { symbolList } from "./symbolsList";
-import { categoricalList } from "./userCategoricalList";
+import { CategoricalList } from "./CategoricalList";
+import { SymbolList } from "./symbolsList";
 
 
 
-export function ListingBar(session: Session) {
+export function ListingBar({session}: {session:Session}) {
 
 
   return (
     <div className="listingBar">
-      <>{categoricalList(session)}</>
-      <>{symbolList(session)}</>
+      <CategoricalList session={session}/>
+      <SymbolList session={session}/>
     </div>
   );
 }

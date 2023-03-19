@@ -17,7 +17,6 @@ export function UserSymbols({userSymbols}:{userSymbols:Clip[]}) {
   const parentRef = React.useRef(null);
   const [selectedSymbolId, setSelectedSymbolId] = useState<number>();
 
-
   function clickUserSymbol(container: UserSymbolData) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
 
@@ -34,8 +33,8 @@ export function UserSymbols({userSymbols}:{userSymbols:Clip[]}) {
   const rowVirtualizer = useVirtualizer({
     count: userSymbols.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: (i) => userSymbols[i].symbol.length * 10,
-    overscan: 5,
+    estimateSize: (i)=>50,
+    overscan: 15,
   });
   function deleteUserSymbol(userId: string, clipId: number) {
     if (window.confirm(`Are you sure to delete the record?`)) {
@@ -49,8 +48,8 @@ export function UserSymbols({userSymbols}:{userSymbols:Clip[]}) {
         ref={parentRef}
         className="List"
         style={{
-          height: `200px`,
-          width: `400px`,
+          height: `70%`,
+          width: `100%`,
           overflow: "auto"
         }}
       >
@@ -72,7 +71,7 @@ export function UserSymbols({userSymbols}:{userSymbols:Clip[]}) {
                 top: 0,
                 left: 0,
                 width: "100%",
-                height: `10px`,
+                height: `50px`,
                 transform: `translateY(${virtualRow.start}px)`
               }}
               onClick={() => {
