@@ -5,9 +5,11 @@ import { Clip } from "../../api/queries/getUserClipQuery";
 import { useAppDispatch } from "../../app/hooks";
 import { useDeleteUserClipMutation } from "../../hooks/UseDeleteUserClipMutation";
 import { updateFocus, updateSymbol } from "../chart/chartSlice";
+import ClearIcon from '@mui/icons-material/Clear';
+import { Session } from "@supabase/supabase-js";
 type UserSymbolData = Omit<Clip, "user_id" | "created_at" | "category">;
 
-export function UserSymbols({ userSymbols }: { userSymbols: Clip[] }) {
+export function UserSymbols({ userSymbols,session }: { userSymbols: Clip[],session:Session }) {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const deleteUserClip = useDeleteUserClipMutation();
@@ -25,11 +27,11 @@ export function UserSymbols({ userSymbols }: { userSymbols: Clip[] }) {
           max: symbols.ending,
         })
       );
-    }else if(!symbols.starting && !symbols.ending){
+    } else if (!symbols.starting && !symbols.ending) {
       dispatch(
         updateFocus({
           min: null,
-          max:null,
+          max: null,
         })
       );
     }
@@ -67,7 +69,7 @@ export function UserSymbols({ userSymbols }: { userSymbols: Clip[] }) {
           {rowVirtualizer.getVirtualItems().map((virtualRow) => (
             <div
               key={virtualRow.index}
-              className={`${
+              className={`flex justify-between ${
                 virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
               }  hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
                 userSymbols[virtualRow.index].id === selectedSymbolId
@@ -93,7 +95,7 @@ export function UserSymbols({ userSymbols }: { userSymbols: Clip[] }) {
                 <span className={"text-base"}>
                   {userSymbols[virtualRow.index].symbol}
                 </span>
-              </div>
+              
               {userSymbols[virtualRow.index].starting &&
               userSymbols[virtualRow.index].ending ? (
                 <div className={"text-xs"}>
@@ -108,8 +110,16 @@ export function UserSymbols({ userSymbols }: { userSymbols: Clip[] }) {
                     .slice(0, 10)}`}</span>
                 </div>
               ) : null}
+              </div>
+              <button className="flex h-1" onClick={()=>deleteUserSymbol(session.user.id,userSymbols[virtualRow.index].id)}>
+              <ClearIcon fontSize="small" className="self-start"/>
+              </button>
             </div>
           ))}
+        </div>
+
+        <div>
+         
         </div>
       </div>
     </>

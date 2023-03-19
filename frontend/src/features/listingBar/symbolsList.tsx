@@ -46,7 +46,7 @@ export function SymbolList({ session }: { session: Session }) {
   } else if (!defaultCategories().includes(globalSelectedCategory)) {
     if (userSymbolsLoading) return <>loading...</>;
     if (userSymbols && userSymbols.data) {
-      return <UserSymbols userSymbols={userSymbols.data} />;
+      return <UserSymbols userSymbols={userSymbols.data} session={session}/>;
     }
   }
 
