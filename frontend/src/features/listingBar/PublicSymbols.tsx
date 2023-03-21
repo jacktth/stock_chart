@@ -28,12 +28,10 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
     );
   }
   return (
-    <>
       <div
         ref={parentRef}
-        className="List"
         style={{
-          height: `70%`,
+          height: "65vh",
           width: "100%",
           overflow: "auto",
         }}
@@ -73,6 +71,5 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
           ))}
         </div>
       </div>
-    </>
   );
 }

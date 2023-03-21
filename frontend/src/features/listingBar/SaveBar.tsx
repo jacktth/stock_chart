@@ -22,22 +22,25 @@ import {
   selectSelectedData,
   selectSymbol,
 } from "../chart/chartSlice";
-import { defaultCategories } from "../listingBar/defaultCategories";
-import { addClip, selectCategories } from "../listingBar/listSlice";
+import { defaultCategories } from "./defaultCategories";
+import { addClip, selectCategories } from "./listSlice";
 
 export type SelectedData = {
   starting: number | null;
   ending: number | null;
 };
 
-export function SaveBar(session: Session, dateArray: number[]) {
+export function SaveBar({
+  session,
+}: {
+  session: Session;
+}) {
   const dispatch = useAppDispatch();
-  const globalCategories = useAppSelector(selectCategories);
   const globalMarket = useAppSelector(selectMarket);
   const globalSymbol = useAppSelector(selectSymbol);
   const globalSelectedData = useAppSelector(selectSelectedData);
   const updateClipMutation = useUpdateUserClipMutation();
-  const [selectCategory, setSelectCategory] = useState("");
+  const [selectCategory, setSelectCategory] = useState("123");
   const { data, isLoading } = useCategoriesQuery(session.user.id);
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -52,9 +55,50 @@ export function SaveBar(session: Session, dateArray: number[]) {
       });
       setSelectCategory(container[0].name);
     }
-    
-  }, [data])
+  }, [data]);
+
+
   
+  function insertClip(e) {
+    e.preventDefault();
+    console.log("selectCategory", selectCategory);
+
+    if (
+      session.user.id &&
+      selectCategory &&
+      globalSymbol &&
+      globalSelectedData.ending !== 0 &&
+      globalSelectedData.starting !== 0 &&
+      globalMarket
+    ) {
+      updateClipMutation.mutate({
+        selectedData: {
+          starting: globalSelectedData.starting,
+          ending: globalSelectedData.ending,
+        },
+        userId: session.user.id,
+        category: selectCategory,
+        symbol: globalSymbol,
+        market: globalMarket,
+      });
+    } else if (
+      globalSelectedData.ending == (null || 0) &&
+      globalSelectedData.starting == (null || 0)
+    ) {
+      updateClipMutation.mutate({
+        selectedData: {
+          starting: null,
+          ending: null,
+        },
+        userId: session.user.id,
+        category: selectCategory,
+        symbol: globalSymbol,
+        market: globalMarket,
+      });
+    } else {
+      alert("State error");
+    }
+  }
 
   if (isLoading) {
     return <span>Loading...</span>;
@@ -68,66 +112,30 @@ export function SaveBar(session: Session, dateArray: number[]) {
             return;
           } else {
             return (
-              <option key={el.name} value={el.name}>
+              <option key={el.name} value={el.name} >
                 {el.name}
               </option>
             );
           }
         });
     };
-    function insertClip(e) {
-      e.preventDefault();
-      console.log("selectCategory", selectCategory);
-
-      if (
-        session.user.id &&
-        selectCategory &&
-        globalSymbol &&
-        globalSelectedData.ending !== 0 &&
-        globalSelectedData.starting !== 0 &&
-        globalMarket
-      ) {
-        updateClipMutation.mutate({
-          selectedData: {
-            starting: globalSelectedData.starting,
-            ending: globalSelectedData.ending,
-          },
-          userId: session.user.id,
-          category: selectCategory,
-          symbol: globalSymbol,
-          market: globalMarket,
-        });
-      } else if (
-        globalSelectedData.ending == (null || 0) &&
-        globalSelectedData.starting == (null || 0)
-      ) {
-        updateClipMutation.mutate({
-          selectedData: {
-            starting: null,
-            ending: null,
-          },
-          userId: session.user.id,
-          category: selectCategory,
-          symbol: globalSymbol,
-          market: globalMarket,
-        });
-      } else {
-        alert("State error");
-      }
-    }
+    
     return (
-      <form onSubmit={(e) => insertClip(e)}>
-        <select
-          onChange={(e) => {
-            console.log(e.target.value);
-            
-            setSelectCategory(e.target.value);
-          }}
-        >
-          {data ? options(data) : null}
-        </select>
-        <button>Save</button>
-      </form>
+      <div className="border-dotted border-2 border-sky-500">
+        <form className="flex justify-evenly" onSubmit={(e) => insertClip(e)}>
+          <select
+          value={selectCategory}
+            onChange={(e) => {
+              console.log(e.target.value);
+              
+              setSelectCategory(e.target.value);
+            }}
+          >
+            {data ? options(data) : null}
+          </select>
+          <button className="rounded bg-sky-300">Save</button>
+        </form>
+      </div>
     );
   }
 }

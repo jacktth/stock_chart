@@ -27,18 +27,20 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import { SaveBar, SelectedData } from "../saveBar/SaveBar";
+import { SaveBar, SelectedData } from "../listingBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
 import { createPortal } from "react-dom";
+import { dateDiff, ymd } from "./utils";
+import { TopBar } from "../topBar/TopBar";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
 
-export function Chart(session: Session) {
+export function Chart() {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
@@ -88,7 +90,6 @@ export function Chart(session: Session) {
     },
   });
   const [dateArray, setDateArray] = useState<number[]>([]);
-  const [error, setError] = useState<any>("no error");
   const [selectedData, setSelectedData] = useState<SelectedData>({
     starting: 0,
     ending: 0,
@@ -123,20 +124,17 @@ export function Chart(session: Session) {
         cursor: "pointer",
 
         point: {
-          events: {
-            click: function (e) {
-              alert("Category: " + this.category + ", value: " + this.x);
-            },
-          },
+          // events: {
+          //   click: function (e) {
+          //     alert("Category: " + this.category + ", value: " + this.x);
+          //   },
+          // },
         },
       },
     },
-  
+
     rangeSelector: {
-      buttons: [
-        
-    
-      ],
+      buttons: [],
     },
   });
   useEffect(() => {
@@ -170,7 +168,9 @@ export function Chart(session: Session) {
     setOptions({
       ...options,
       title: {
-        text:   `Selected from ${start===0 ? "___" :new Date(start).toISOString().slice(0, 10)} to ${end===0 ? "___" :new Date(end).toISOString().slice(0, 10)}`,
+        text: `Selected from ${start === 0 ? "___" : ymd(start)} to ${
+          end === 0 ? "___" : ymd(end)
+        } (${dateDiff(start, end)})days`,
       },
       xAxis: {
         ...options.xAxis,
@@ -186,67 +186,21 @@ export function Chart(session: Session) {
     dispatch(updateSelectedData({ starting: start, ending: end }));
   }, [selectedData]);
 
-  const handleSubmit = (e) => {
-    axios
-      .post("http://localhost:3000/stock-data", {
-        symbol: globalSymbol,
-        period1: "2022-02-01",
-      })
-      .then(
-        ({ data, status }) => {
-          setError(status);
-          const sortedData = dataSorting(data);
-          setDateArray(sortedData.date);
-        },
-        (error) => {
-          setError(error);
-        }
-      );
-    e.preventDefault();
-  };
-
-  const symbolOnChange = (e) => {
-    dispatch(updateSymbol(e.target.value));
-    e.preventDefault();
-  };
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-  };
-
   return (
-    <div className="view-full">
-      <div className="flex view-full">
-        <div className="SearchBar">
-          <form className="w-full" onSubmit={handleSubmit}>
-            <label>
-              <input
-                className="input"
-                type="text"
-                name="name"
-                value={globalSymbol}
-                onChange={symbolOnChange}
-              />
-            </label>
-          </form>
-          <button onClick={signOut}>log out</button>
+  
 
-          <ListingBar session={session}/>
-        </div>
-        <div className="chartContainer">
-          {SaveBar(session, dateArray)}
-
-          {
-            <HighchartsReact
-              ref={chartComponent}
-              containerProps={{ className: "h-screen" }}
-              highcharts={Highcharts}
-              constructorType={"stockChart"}
-              // immutable={true}
-              options={options}
-            />
-          }
-        </div>
-      </div>
-    </div>
+          
+       <HighchartsReact
+            
+            ref={chartComponent}
+            containerProps={{ style:{ height: "93vh" } }}
+            highcharts={Highcharts}
+            constructorType={"stockChart"}
+            // immutable={true}
+            options={options}
+          />
+     
+          
+  
   );
 }

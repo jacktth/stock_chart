@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { supabase } from "./api/supabaseClient";
 import Auth from "./features/auth/Auth";
 import { Chart } from "./features/chart/Chart";
+import { Page } from "./features/Page/Page";
 const queryClient = new QueryClient()
 function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -23,7 +24,7 @@ function App() {
     })
   }, [])
 
-  return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Chart {...session} /></QueryClientProvider> ;
+  return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Page session={session} /></QueryClientProvider> ;
 }
 
 export default App;

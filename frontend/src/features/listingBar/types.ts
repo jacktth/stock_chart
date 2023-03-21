@@ -1,3 +1,5 @@
+import { Database } from "../../api/types/supabase";
+
 export type ListingData = {
 
         symbol: string;
@@ -7,3 +9,7 @@ export type ListingData = {
  
 
 };
+
+
+
+export type CategoriesQueryData = Database["public"]["Tables"]["categories"]["Row"]

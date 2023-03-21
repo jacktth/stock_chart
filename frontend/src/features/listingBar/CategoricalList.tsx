@@ -9,7 +9,12 @@ import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyM
 import { selectViewing, updateViewing } from "../chart/chartSlice";
 import { defaultCategories } from "./defaultCategories";
 import { changeCategory } from "./listSlice";
-
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { CategoriesQueryData } from "./types";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 export function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
@@ -24,10 +29,6 @@ export function CategoricalList({ session }: { session: Session }) {
   const updateCategoryMutation = useUpdateUserCategoryMutation();
   function updateSelectedCategory(name: string) {
     dispatch(changeCategory(name));
-    //listings must be invalidated to update symbol data
-    if (defaultCategories().includes(name)) {
-      queryClient.invalidateQueries("listings");
-    }
   }
   function insertCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,9 +60,9 @@ export function CategoricalList({ session }: { session: Session }) {
     }
   }
 
-  function inputBox() {
+  const inputBox = () => {
     return (
-      <div className="flex items-start">
+      <div className="flex justify-center  h-6 w-12/12">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -71,76 +72,95 @@ export function CategoricalList({ session }: { session: Session }) {
         >
           <input
             ref={inputCategoryRef}
-            className="input"
+            className="input justify-self-center self-center text-center"
             placeholder="New category name"
             type="text"
           />
         </form>
-        <button
-          onClick={() => {
-            setCreating(false);
-          }}
-        >
-          x
-        </button>
+        
+    
       </div>
     );
-  }
+  };
 
-  const Row = ({ index, style }) => {
-    if (data) {
-      return (
+  const CategoriesList = ({ data }: { data: CategoriesQueryData[] }) => {
+    const parentRef = React.useRef(null);
+
+    // The virtualizer
+    const rowVirtualizer = useVirtualizer({
+      count: data.length,
+      getScrollElement: () => parentRef.current,
+      estimateSize: () => 20,
+      overscan: 15,
+    });
+
+    return (
+      <>
         <div
-          style={style}
-          className={`hover:bg-sky-300 leading-3 border-2 border-solid  ${
-            data[index].name === selectedCategory ? "bg-sky-200" : null
-          } flex justify-between text-sm`}
-          onClick={() => {
-            updateSelectedCategory(data[index].name);
-            setSelectedCategory(data[index].name);
+          ref={parentRef}
+          style={{
+            height: `25vh`,
+            width: `100%`,
+            overflow: "auto",
           }}
         >
-          <button className={"w-11/12"}>{data[index].name}</button>
-          <button
-            className=""
-            onClick={() => {
-              deleteCategory(data[index].user_id, data[index].name);
+          <div
+            style={{
+              position: "relative",
             }}
           >
-            <img
-              className="h-4"
-              src="https://img.icons8.com/material-rounded/256/delete-trash.png"
-              alt=""
-            />
-          </button>
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+              <div
+              key={virtualRow.index}
+                className={`hover:bg-sky-300 leading-3 border-2 border-solid  ${
+                  data[virtualRow.index].name === selectedCategory
+                    ? "bg-sky-200"
+                    : null
+                } flex justify-between text-sm`}
+                onClick={() => {
+                  updateSelectedCategory(data[virtualRow.index].name);
+                  setSelectedCategory(data[virtualRow.index].name);
+                }}
+              >
+                <button className={"w-11/12 h-5"}>
+                  {data[virtualRow.index].name}
+                </button>
+                {!defaultCategories().includes(data[virtualRow.index].name) ? (
+                  <button
+                    className=""
+                    onClick={() => {
+                      deleteCategory(
+                        data[virtualRow.index].user_id,
+                        data[virtualRow.index].name
+                      );
+                    }}
+                  >
+                    <DeleteOutlineIcon />
+                  </button>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
-      );
-    } else {
-      return null;
-    }
+      </>
+    );
   };
   return (
     <>
-      <div className="flex">
-        <span className="text-center">Categories</span>
-        <button title="Add new Categories " onClick={() => setCreating(true)}>
-          +
+      <div className="w-full flex justify-center border-dotted border-2 border-sky-500">
+        <button
+          className=" leading-5 "
+          
+          title="Add new Categories"
+          onClick={() => setCreating(creating ? false :true)}
+        >
+          <span>Add categories</span>
+          {creating ?<ArrowDropUpIcon/> :<ArrowDropDownIcon/>}
         </button>
       </div>
-      <>{creating ? inputBox() : null}</>
+      {creating ? inputBox() : null}
 
-      {data ? (
-        <List
-          className=""
-          height={100}
-          width={"100%"}
-          itemSize={30}
-          itemCount={data.length}
-          overscanCount={10}
-        >
-          {Row}
-        </List>
-      ) : null}
+      {data ? <CategoriesList data={data} /> : null}
     </>
   );
 }

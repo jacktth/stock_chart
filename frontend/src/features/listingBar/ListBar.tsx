@@ -18,25 +18,21 @@ import { selectAuth } from "../auth/authSlice";
 import { Session } from "@supabase/supabase-js";
 import { CategoricalList } from "./CategoricalList";
 import { SymbolList } from "./symbolsList";
+import { SaveBar } from "./SaveBar";
 
-
-
-export function ListingBar({session}: {session:Session}) {
-
-
+export function ListingBar({ session }: { session: Session }) {
   return (
-    <div className="listingBar">
-      <CategoricalList session={session}/>
-      <SymbolList session={session}/>
+    <div className="">
+        <CategoricalList session={session} />
+        <SaveBar session={session}  />
+        <SymbolList session={session} />
     </div>
   );
 }
-
 
 export type AllListings = {
   symbol: string;
   engName?: string;
   market: string;
   zhName?: string;
-
 };
