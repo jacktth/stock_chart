@@ -121,7 +121,7 @@ export function SaveBar({
     };
     
     return (
-      <div className="border-dotted border-2 border-sky-500">
+      <div className=" border-2 border-sky-500">
         <form className="flex justify-evenly" onSubmit={(e) => insertClip(e)}>
           <select
           value={selectCategory}
@@ -133,7 +133,7 @@ export function SaveBar({
           >
             {data ? options(data) : null}
           </select>
-          <button className="rounded bg-sky-300">Save</button>
+          <button className="rounded bg-sky-300" title="Save the selected range of stock data">Save</button>
         </form>
       </div>
     );

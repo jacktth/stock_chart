@@ -13,8 +13,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CategoriesQueryData } from "./types";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 export function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
@@ -77,8 +77,6 @@ export function CategoricalList({ session }: { session: Session }) {
             type="text"
           />
         </form>
-        
-    
       </div>
     );
   };
@@ -111,7 +109,7 @@ export function CategoricalList({ session }: { session: Session }) {
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => (
               <div
-              key={virtualRow.index}
+                key={virtualRow.index}
                 className={`hover:bg-sky-300 leading-3 border-2 border-solid  ${
                   data[virtualRow.index].name === selectedCategory
                     ? "bg-sky-200"
@@ -147,16 +145,19 @@ export function CategoricalList({ session }: { session: Session }) {
   };
   return (
     <>
-      <div className="w-full flex justify-center border-dotted border-2 border-sky-500">
-        <button
-          className=" leading-5 "
-          
+      <div className="w-full flex justify-between border-2 border-sky-500">
+        <div></div>
+        <div>
+          <span>Your categories</span>
+        </div>
+      
+        <div className="">  <button
+          className=" leading-5  justify-self-end"
           title="Add new Categories"
-          onClick={() => setCreating(creating ? false :true)}
+          onClick={() => setCreating(creating ? false : true)}
         >
-          <span>Add categories</span>
-          {creating ?<ArrowDropUpIcon/> :<ArrowDropDownIcon/>}
-        </button>
+          <AddCircleOutlineIcon />
+        </button></div>
       </div>
       {creating ? inputBox() : null}
 
