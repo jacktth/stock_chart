@@ -61,7 +61,8 @@ export default function Auth() {
               <h1 className="header">Supabase + React</h1>
 
               <p className="description font-bold text-lg">
-                Sign in to your account
+                {signUpPage ?"Sign up" : "Sign in to your account"}
+                
               </p>
             </div>
 

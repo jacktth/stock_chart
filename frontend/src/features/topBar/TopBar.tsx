@@ -6,6 +6,7 @@ import dataSorting from "../chart/dataSorting";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectSymbol, updateSymbol } from "../chart/chartSlice";
 import { Session } from "@supabase/supabase-js";
+import { changePage } from "../Page/pageSlice";
 
 export const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
@@ -57,7 +58,9 @@ export const TopBar = ({ session }: { session: Session }) => {
             </label>
           </form>
         </div>
-
+    <div>
+      <button onClick={() => dispatch(changePage("apiPage"))}>Your record Api</button>
+    </div>
         <div className="flex flex-col  w-1/12  ">
           <button className="">
             <AccountCircleIcon />

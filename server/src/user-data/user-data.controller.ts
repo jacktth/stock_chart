@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { UserDataService } from './user-data.service';
 import { CreateUserDatumDto } from './dto/create-user-datum.dto';
 import { UpdateUserDatumDto } from './dto/update-user-datum.dto';
+import {  ApiQuery } from '@nestjs/swagger';
 
 @Controller('user-data')
 export class UserDataController {
@@ -17,13 +27,24 @@ export class UserDataController {
     return this.userDataService.findAll();
   }
 
-  @Get(':id/:number')
-  findOne(@Param('id') id: string) {
-    return this.userDataService.findOne(+id);
+  @Get('categories')
+  @ApiQuery({
+    name: 'apiKey',
+    required: true,
+    description:
+      'This is your Api key',
+  })
+  findAllCategories(@Query('apiKey') query: string) {
+    console.log("query",query);
+    
+    return this.userDataService.findAllCategories(query);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDatumDto: UpdateUserDatumDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDatumDto: UpdateUserDatumDto,
+  ) {
     return this.userDataService.update(+id, updateUserDatumDto);
   }
 
@@ -32,3 +53,4 @@ export class UserDataController {
     return this.userDataService.remove(+id);
   }
 }
+

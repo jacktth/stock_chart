@@ -19,7 +19,7 @@
     width: 100%;
   }
   .auth-input {
-    @apply border-2 mt-1 px-3 py-2  border-stone-500	 bg-stone-200 rounded-md w-full
+    @apply border-2 mt-1 px-3 py-2  border-stone-400	 bg-stone-100 rounded-md w-full
   }
   .input {
     height: 5%;
