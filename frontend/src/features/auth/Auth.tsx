@@ -45,63 +45,78 @@ export default function Auth() {
 
   return (
     <div className=" flex bg-gray-100 justify-center  h-screen w-screen">
-      <div className="bg-white border-4 self-center justify-center flex flex-col w-7/12 h-3/6 ">
-        <div className="self-center justify-self-center" aria-live="polite">
-          <h1 className="header">Supabase + React</h1>
-
-          <p className="description">Sign in to your account</p>
-          {loading ? (
-            signUpPage ? (
-              "Sending magic link..."
-            ) : (
-              "logging in"
-            )
+      <div
+        className=" bg-white border-4  w-5/12 h-5/6 self-center flex justify-center"
+        aria-live="polite"
+      >
+        {loading ? (
+          signUpPage ? (
+            "Sending magic link..."
           ) : (
-            <div className="flex">
-              <form onSubmit={handleLogin}>
-                <div
-                  className="flex-col
-                  justify-center
-                "
-                >
-                  <div>
-                    <label htmlFor="email">Your email</label>
-                    <br />
-                    <input
-                      id="email"
-                      className="inputField login-input"
-                      type="email"
-                      placeholder="Your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div></div>
+            "logging in"
+          )
+        ) : (
+          <div className="flex flex-col self-center w-4/5 ">
+            <div className="">
+              <h1 className="header">Supabase + React</h1>
 
-                  <label htmlFor="password">Password</label>
+              <p className="description font-bold text-lg">
+                Sign in to your account
+              </p>
+            </div>
+
+            <br />
+            <form onSubmit={handleLogin}>
+              <div className="flex flex-col ">
+                <div className="">
+                  <label htmlFor="email">Your email</label>
                   <br />
+                  <input
+                    id="email"
+                    className="inputField auth-input"
+                    type="email"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <br />
+                <div>
+                  <label htmlFor="password">Password</label>
+                <br />
 
                   <input
                     id="password"
-                    className="inputField login-input"
+                    className="inputField auth-input"
                     type="password"
                     placeholder="Your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-
-                <button className="button block" aria-live="polite">
-                  {signUpPage ? "Sign Up" : "Login"}
-                </button>
-              </form>
-
-            </div>
-          )}
-        </div>
-        <button className="text-center self-center" onClick={() => setSignUpPage(signUpPage ? false : true)}>
-                {signUpPage ? "Login" : "Go to sign Up"}
+              </div>
+              <br />
+              <button
+                className="button block bg-sky-400 text-white border-sky-200 rounded-md p-1 w-full"
+                aria-live="polite"
+              >
+                {signUpPage ? "Sign Up" : "Login"}
               </button>
+              <p className="my-1">
+                {signUpPage ? "Go to login" : "Don’t have an account yet?"}{" "}
+                <button
+                  className="text-center text-sky-400"
+                  onClick={(e) => {
+                    setSignUpPage(signUpPage ? false : true);
+                    e.preventDefault();
+                  }}
+                >
+                  {signUpPage ? "Login" : "Sign Up"}
+                </button>
+              </p>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
