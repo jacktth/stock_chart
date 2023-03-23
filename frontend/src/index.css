@@ -18,7 +18,9 @@
     height: 90%;
     width: 100%;
   }
-
+  .login-input {
+    @apply border-2  border-stone-500	 bg-stone-200 
+  }
   .input {
     height: 5%;
     width: 100%;

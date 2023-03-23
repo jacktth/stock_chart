@@ -19,7 +19,6 @@ export default function Auth() {
           password: password,
         });
         if (sigUpAction.error) throw sigUpAction.error;
-      
 
         alert("Check your email for the login link!");
       } catch (error) {
@@ -45,47 +44,64 @@ export default function Auth() {
   };
 
   return (
-    <div className="row flex-center flex">
-      <div className="col-6 form-widget" aria-live="polite">
-        <h1 className="header">Supabase + React</h1>
-        <p className="description">
-          Sign in via magic link with your email below
-        </p>
-        {loading ? (
-          signUpPage ? (
-            "Sending magic link..."
+    <div className=" flex bg-gray-100 justify-center  h-screen w-screen">
+      <div className="bg-white border-4 self-center justify-center flex flex-col w-7/12 h-3/6 ">
+        <div className="self-center justify-self-center" aria-live="polite">
+          <h1 className="header">Supabase + React</h1>
+
+          <p className="description">Sign in to your account</p>
+          {loading ? (
+            signUpPage ? (
+              "Sending magic link..."
+            ) : (
+              "logging in"
+            )
           ) : (
-            "logging in"
-          )
-        ) : (
-          <div>
-            <form onSubmit={handleLogin}>
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                className="inputField"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                id="password"
-                className="inputField"
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button className="button block" aria-live="polite">
-                {signUpPage ? "Sign Up" : "Login"}
+            <div className="flex">
+              <form onSubmit={handleLogin}>
+                <div
+                  className="flex-col
+                  justify-center
+                "
+                >
+                  <div>
+                    <label htmlFor="email">Your email</label>
+                    <br />
+                    <input
+                      id="email"
+                      className="inputField login-input"
+                      type="email"
+                      placeholder="Your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div></div>
+
+                  <label htmlFor="password">Password</label>
+                  <br />
+
+                  <input
+                    id="password"
+                    className="inputField login-input"
+                    type="password"
+                    placeholder="Your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <button className="button block" aria-live="polite">
+                  {signUpPage ? "Sign Up" : "Login"}
+                </button>
+              </form>
+
+            </div>
+          )}
+        </div>
+        <button className="text-center self-center" onClick={() => setSignUpPage(signUpPage ? false : true)}>
+                {signUpPage ? "Login" : "Go to sign Up"}
               </button>
-            </form>
-            <button onClick={() => setSignUpPage(signUpPage ? false : true)}>
-              {signUpPage ? "Login" : "Go to sign Up"}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
