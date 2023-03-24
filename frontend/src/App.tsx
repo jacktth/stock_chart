@@ -23,7 +23,6 @@ function App() {
       setSession(session)
     })
   }, [])
-  console.log("session",session);
   return !session ?<Auth/> :<QueryClientProvider client={queryClient}><Page session={session} /></QueryClientProvider> ;
 }
 

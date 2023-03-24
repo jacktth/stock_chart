@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import yahooFinance from 'yahoo-finance2';
 import { HistoricalHistoryResult } from 'yahoo-finance2/dist/esm/src/modules/historical';
 import { getDataParam } from './stock-data.controller';
+import { hkQuery } from './utilies';
 
 @Injectable()
 export class StockDataService {
@@ -15,12 +16,9 @@ export class StockDataService {
 
     switch (getDataParam.market) {
       case 'HK':
-        const hkQuery = (getDataBody:getDataParam) =>{
-          const diff = 4 - +(getDataBody.symbol.length) 
-          return  "0".repeat(diff) + getDataBody.symbol + "." + getDataBody.market
-        }
+
         
-        return await yahooFinance.historical(hkQuery(getDataParam), queryOptions);
+        return await yahooFinance.historical(hkQuery(getDataParam.symbol), queryOptions);
       case 'US':
         const query = getDataParam.symbol;
         console.log("this",query," ",Date.now())

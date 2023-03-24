@@ -7,10 +7,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const config = new DocumentBuilder()
-  .setTitle('Your record api')
-  .setDescription('You could ')
-  .setVersion('2.0')
-  .addTag('cats')
+  .setTitle('Api Page')
+  .setDescription('You could get your recorded stock data by below API')
+  .setVersion('1.0')
+  .addTag('Api Guild')
   .build();
   
 const document = SwaggerModule.createDocument(app, config,{include:[UserDataModule]});

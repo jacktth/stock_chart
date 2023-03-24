@@ -38,6 +38,7 @@ export function CategoricalList({ session }: { session: Session }) {
         {
           name: inputCategoryRef.current?.value,
           userId: session.user.id,
+          default:false
         },
         {
           onSuccess(data, variables, context) {
