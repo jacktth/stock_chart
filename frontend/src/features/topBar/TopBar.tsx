@@ -12,6 +12,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { selectedCategory } from "../listingBar/listSlice";
 import { ListingData } from "../listingBar/types";
 import { AllListings } from "../listingBar/ListBar";
+import Fuse from "fuse.js";
 
 export const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
@@ -58,76 +59,104 @@ export const TopBar = ({ session }: { session: Session }) => {
     dispatch(updateSymbol(e.target.value));
     e.preventDefault();
   }
+
+  function clickSuggestion(symbol:Fuse.FuseResult<ListingData>){
+    setSelectedSymbol(symbol.item.symbol);
+    dispatch(updateSymbol(symbol.item.symbol + "." + symbol.item.market));
+    setSymbolInput("")
+    dispatch(
+      updateFocus({
+        min: null,
+        max: null,
+      })
+    );
+  }
   const fetchListings = () =>
-    axios.get<ListingData[]>("http://localhost:3000/listing", {
-      params: {
-        market: globalSelectedCategory,
-      },
-    });
+    axios.get<ListingData[]>("http://localhost:3000/allListings");
 
   //globalSelectedCategory must be in the list of useQuery to refresh data
   const {
     data: listingResponse,
     isLoading: listingIsLoading,
     isSuccess: listingIsSuccess,
-  } = useQuery(["listings", globalSelectedCategory], fetchListings, {});
+  } = useQuery([], fetchListings, {});
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
 
-  // const Suggestions = () => {
-  //   if (listingResponse && symbolInput.length>0) {
-      
-  //     const symbols = listingResponse.data;
-  //     const suggestions:string[] = []
-  //     for(let i of symbols){
-  //       if(suggestions.length>5){break}
-  //       const symbolSliced = i.symbol.slice(0,symbolInput.length).toLowerCase()
-  //     console.log("begin",symbolSliced);
+  const Suggestions = () => {
+    if (listingResponse && symbolInput.length > 0) {
+      const symbols = listingResponse.data;
+      const fuse = new Fuse(symbols, {
+        keys: ["symbol"],
+      });
+      const suggestions = fuse.search(symbolInput);
+      console.log("suggestions", suggestions);
 
-  //       if(symbolSliced.includes(symbolInput)){
-  //         suggestions.push(i.symbol)
-  //       }
-  //     }
-  //     console.log("begin",symbolInput);
-
-  //     const rowVirtualizer = useVirtualizer({
-  //       count: symbols.length,
-  //       getScrollElement: () => parentRef.current,
-  //       estimateSize: (i) => 40,
-  //       overscan: 15,
-  //     });
-  //     return (
-  //       <>
-  //         <div
-  //           ref={parentRef}
-  //           className=""
-  //           style={{
-  //             height: "20vh",
-  //             width: `100%`,
-  //             overflow: "auto",
-  //           }}
-  //         >
-  //           <div
-  //             style={{
-  //               height: `${rowVirtualizer.getTotalSize()}px`,
-  //               width: "100%",
-  //               position: "relative",
-  //             }}
-  //           >
-  //             {rowVirtualizer.getVirtualItems().map((virtualRow) =>{
-  //               return <div></div>
-  //             })
-  //               }
-  //           </div>
-  //         </div>
-  //       </>
-  //     );
-  //   } else{
-  //     return <></>
-  //   }
-  // };
+      const rowVirtualizer = useVirtualizer({
+        count: suggestions.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: (i) => 40,
+        overscan: 15,
+      });
+      return (
+        <>
+          <div
+            ref={parentRef}
+            style={{
+              height: "20vh",
+              width: `100%`,
+              overflow: "auto",
+            }}
+          >
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                return (
+                  <div
+                    key={virtualRow.index}
+                    className={`${
+                      virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
+                    } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
+                      suggestions[virtualRow.index].item.symbol === selectedSymbol
+                        ? "bg-sky-200"
+                        : null
+                    }`}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: `50px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    onClick={() => {
+                      clickSuggestion(suggestions[virtualRow.index])
+                    }}
+                  >
+                    <span className="text-base">
+                      {suggestions[virtualRow.index].item.symbol}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      );
+    } else {
+      return <></>;
+    }
+  };
   return (
     <>
-      <div style={{ height: "7vh" }} className="flex justify-between relative">
+      <div
+        style={{ height: "7vh" }}
+        className="flex justify-between relative z-50"
+      >
         <div>
           <form className=" h-full " onSubmit={handleSubmit}>
             <label>
@@ -139,6 +168,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value)}
               />
+              <Suggestions />
             </label>
           </form>
         </div>

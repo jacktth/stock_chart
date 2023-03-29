@@ -13,4 +13,9 @@ export class ListingController {
   getList(@Query()param:getListingParam) {    
     return this.listingService.getList(param);
   }
+
+  @Get('allListings')
+  getAllLists() {    
+    return this.listingService.getAllLists();
+  }
 }

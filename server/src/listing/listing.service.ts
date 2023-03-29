@@ -4,23 +4,23 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { getListingParam } from './listing.controller';
+import { AllListings } from './types';
 import { usStockNameFilter } from './utils';
 
 type usResponseRow = {
-  symbol:string
-  name:string
-}[]
+  symbol: string;
+  name: string;
+}[];
 
 @Injectable()
 export class ListingService {
   private readonly logger = new Logger(ListingService.name);
   constructor(private readonly httpService: HttpService) {}
   async getList(param: getListingParam) {
+    console.log('marketParam', param);
 
-  console.log("marketParam",param);
-  
-    if(param.market === "US market"){
-      console.log("US market");
+    if (param.market === 'US market') {
+      console.log('US market');
 
       const usListingData = async () => {
         const usListingURL =
@@ -33,20 +33,24 @@ export class ListingService {
             }),
           ),
         );
-  
-        const row:usResponseRow = res.data.data.rows;
+
+        const row: usResponseRow = res.data.data.rows;
         const dataContainer = [];
         for (let obj of row) {
           new String(obj.symbol).includes('^')
             ? null
-            : dataContainer.push({ symbol: obj.symbol, engName: usStockNameFilter(obj.name),market:"US" });
+            : dataContainer.push({
+                symbol: obj.symbol,
+                engName: usStockNameFilter(obj.name),
+                market: 'US',
+              });
         }
         return dataContainer;
       };
-      return await usListingData()
-    } else if(param.market === "HK market"){
-      console.log("HK market");
-      
+      return await usListingData();
+    } else if (param.market === 'HK market') {
+      console.log('HK market');
+
       const hkListingData = async () => {
         const hkListingURL =
           'https://www2.hkexnews.hk/-/media/HKEXnews/Homepage/Others/Quick-Link/Homepage/Other-Useful-Information/Hyperlinks-to-Listed-Co.xlsx';
@@ -78,14 +82,82 @@ export class ListingService {
             symbol: ws[`A${n}`]['v'],
             engName: ws[`B${n}`]['v'],
             zhName: ws[`C${n}`]['v'],
-            market:"HK"
+            market: 'HK',
           });
-  
+
           n++;
         }
         return dataContainer;
       };
-      return await hkListingData()
+      return await hkListingData();
     }
+  }
+
+  async getAllLists() {
+    const allListData = async () => {
+      const usListingURL =
+        'https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true';
+      const resUs = await firstValueFrom(
+        this.httpService.get(usListingURL).pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+      );
+
+      const row: usResponseRow = resUs.data.data.rows;
+      const dataContainer: AllListings[] = [];
+
+      for (let obj of row) {
+        new String(obj.symbol).includes('^')
+          ? null
+          : dataContainer.push({
+              symbol: obj.symbol,
+              engName: usStockNameFilter(obj.name),
+              market: 'US',
+            });
+      }
+
+      const hkListingURL =
+        'https://www2.hkexnews.hk/-/media/HKEXnews/Homepage/Others/Quick-Link/Homepage/Other-Useful-Information/Hyperlinks-to-Listed-Co.xlsx';
+      const resHk = await firstValueFrom(
+        this.httpService
+          .get(hkListingURL, { responseType: 'arraybuffer' })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.logger.error(error.response.data);
+              throw 'An error happened!';
+            }),
+          ),
+      );
+      const wb = XLSX.read(resHk.data);
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      let beginRow = 1;
+      //+ 1 is to ensure the max number of row is correct
+      const targetLength = XLSX.utils.decode_range(ws['!ref']).e.r + 1;
+      while (beginRow <= targetLength) {
+        if (ws[`A${beginRow}`] !== undefined) {
+          if (ws[`A${beginRow}`]['v'] === 1) break;
+        }
+        beginRow++;
+      }
+      let n = beginRow;
+      while (n <= targetLength) {
+        dataContainer.push({
+          symbol: ws[`A${n}`]['v'],
+          engName: ws[`B${n}`]['v'],
+          zhName: ws[`C${n}`]['v'],
+          market: 'HK',
+        });
+
+        n++;
+      }
+
+      return dataContainer;
+    };
+console.log("tes");
+
+    return await allListData()
   }
 }
