@@ -1,5 +1,5 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useQueryClient } from "react-query";
 import { Clip } from "../../api/queries/getUserClipQuery";
 import { useAppDispatch } from "../../app/hooks";
@@ -68,7 +68,6 @@ export function UserSymbols({
             overflow: "auto",
           }}
         >
-
           <div
             style={{
               height: `${rowVirtualizer.getTotalSize()}px`,
@@ -76,73 +75,69 @@ export function UserSymbols({
               position: "relative",
             }}
           >
-            {
-            
-            rowVirtualizer.getVirtualItems().map((virtualRow) => 
-            selectedCategory===userSymbols[virtualRow.index].category?
-            (
-              <div
-                key={virtualRow.index}
-                className={`flex justify-between ${
-                  virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
-                }  hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
-                  userSymbols[virtualRow.index].id === selectedSymbolId
-                    ? "bg-sky-200"
-                    : null
-                }`}
-                // style={{
-                //   position: "absolute",
-                //   top: 0,
-                //   left: 0,
-                //   width: "100%",
-                //   height: `70px`,
-                //   transform: `translateY(${virtualRow.start}px)`,
-                // }}
-                onClick={() => {
-                  clickUserSymbol(userSymbols[virtualRow.index]);
-                  userSymbols[virtualRow.index].id
-                    ? setSelectedSymbolId(userSymbols[virtualRow.index].id)
-                    : null;
-                }}
-              >
-                <div>
-                  <span className={"text-base"}>
-                    {userSymbols[virtualRow.index].symbol}
-                  </span>
-
-                  {userSymbols[virtualRow.index].starting &&
-                  userSymbols[virtualRow.index].ending ? (
-                    <div className={"text-xs"}>
-                      <span>{`From ${new Date(
-                        userSymbols[virtualRow.index].starting!
-                      )
-                        .toISOString()
-                        .slice(0, 10)}`}</span>
-                      <br />
-                      <span>{`to ${new Date(
-                        userSymbols[virtualRow.index].ending!
-                      )
-                        .toISOString()
-                        .slice(0, 10)}`}</span>
-                    </div>
-                  ) : null}
-                </div>
-                <button
-                  className="flex h-1"
-                  onClick={() =>
-                    deleteUserSymbol(
-                      session.user.id,
-                      userSymbols[virtualRow.index].id
-                    )
-                  }
+            {rowVirtualizer.getVirtualItems().map((virtualRow) =>
+              selectedCategory === userSymbols[virtualRow.index].category ? (
+                <div
+                  key={virtualRow.index}
+                  className={`flex justify-between ${
+                    virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
+                  }  hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
+                    userSymbols[virtualRow.index].id === selectedSymbolId
+                      ? "bg-sky-200"
+                      : null
+                  }`}
+                  // style={{
+                  //   position: "absolute",
+                  //   top: 0,
+                  //   left: 0,
+                  //   width: "100%",
+                  //   height: `70px`,
+                  //   transform: `translateY(${virtualRow.start}px)`,
+                  // }}
+                  onClick={() => {
+                    clickUserSymbol(userSymbols[virtualRow.index]);
+                    userSymbols[virtualRow.index].id
+                      ? setSelectedSymbolId(userSymbols[virtualRow.index].id)
+                      : null;
+                  }}
                 >
-                  <ClearIcon fontSize="small" className="self-start" />
-                </button>
-              </div>
-            ) : null)}
-          </div>
+                  <div>
+                    <span className={"text-base"}>
+                      {userSymbols[virtualRow.index].symbol}
+                    </span>
 
-          <div></div>
+                    {userSymbols[virtualRow.index].starting &&
+                    userSymbols[virtualRow.index].ending ? (
+                      <div className={"text-xs"}>
+                        <span>{`From ${new Date(
+                          userSymbols[virtualRow.index].starting!
+                        )
+                          .toISOString()
+                          .slice(0, 10)}`}</span>
+                        <br />
+                        <span>{`to ${new Date(
+                          userSymbols[virtualRow.index].ending!
+                        )
+                          .toISOString()
+                          .slice(0, 10)}`}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                  <button
+                    className="flex h-1"
+                    onClick={() =>
+                      deleteUserSymbol(
+                        session.user.id,
+                        userSymbols[virtualRow.index].id
+                      )
+                    }
+                  >
+                    <ClearIcon fontSize="small" className="self-start" />
+                  </button>
+                </div>
+              ) : null
+            )}
+          </div>
         </div>
       </>
     );

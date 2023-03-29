@@ -133,7 +133,7 @@ export function SaveBar({
           >
             {data ? options(data) : null}
           </select>
-          <button className="rounded bg-sky-300" title="Save the selected range of stock data">Save</button>
+          <button className="button" title="Save the selected range of stock data">Save</button>
         </form>
       </div>
     );

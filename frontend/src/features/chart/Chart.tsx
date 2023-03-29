@@ -135,6 +135,7 @@ export function Chart() {
 
     rangeSelector: {
       buttons: [],
+      inputEnabled:false
     },
   });
   useEffect(() => {
