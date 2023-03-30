@@ -32,7 +32,7 @@ export const SwaggerApi = ({ session }: { session: Session }) => {
     if (isLoading) return <>loading...</>;
     if (data) {
       return (
-        <div className="pl-4 leading-normal">
+        <div className="leading-normal " style={{padding:"0 20px", margin:"auto",maxWidth:"1460px",marginTop:"20px"}}>
         <p className="text-3xl text-stone-900 pb-2">
           Your Api Key
         </p>

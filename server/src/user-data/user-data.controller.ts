@@ -1,21 +1,22 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { UserDataService } from './user-data.service';
-import { CreateUserDatumDto } from './dto/create-user-datum.dto';
-import { UpdateUserDatumDto } from './dto/update-user-datum.dto';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('user-data')
 export class UserDataController {
   constructor(private readonly userDataService: UserDataService) {}
 
+  
   @Get('clips')
   @ApiQuery({
-    name: 'categories',
+    name: 'Categories',
     required: false,
-    example: "you could add ['Example record'] while in query's parameter, if you try it out here,only need to input Example record or leave it empty",
+    example:
+      "You could add ['Example record'] in the query's parameter(if you haven't delete the category of Example record) or leave it empty",
     description:
-      'Return all selected stock data which saved in the categories. You can select the specific category to query. If no any categories name provided (empty input), return the selected stock data from all categories.',
-  })
+      'Return all selected stock data which saved in your categories. You can select the specific category to query. If no any categories name provided (empty input), return the stock data from all categories.',
+  
+    })
   @ApiQuery({
     name: 'apiKey',
     required: true,

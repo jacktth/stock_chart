@@ -118,7 +118,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                 return (
                   <div
                     key={virtualRow.index}
-                    className={`${
+                    className={`bg-white ${ 
                       virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
                     } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
                       suggestions[virtualRow.index].item.symbol === selectedSymbol
@@ -130,7 +130,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                       top: 0,
                       left: 0,
                       width: "100%",
-                      height: `50px`,
+                      height: `40px`,
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                     onClick={() => {

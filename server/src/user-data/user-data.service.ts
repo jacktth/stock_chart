@@ -5,8 +5,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Supabase } from 'src/api/supabase';
-import { CreateUserDatumDto } from './dto/create-user-datum.dto';
-import { UpdateUserDatumDto } from './dto/update-user-datum.dto';
 import { Categories, Clip, ClipQueryParams, ClipResult } from './types/types';
 import yahooFinance from 'yahoo-finance2';
 import { hkQuery } from 'src/stock-data/utilies';
@@ -17,9 +15,7 @@ import { ymd } from './utilies';
 @Injectable()
 export class UserDataService {
   constructor(private readonly supabase: Supabase) {}
-  create(createUserDatumDto: CreateUserDatumDto) {
-    return 'This action adds a new userDatum';
-  }
+
 
   async findAllClips(query: ClipQueryParams) {
     const { data: apiUserData, error: apiUserDataError } = await this.supabase
