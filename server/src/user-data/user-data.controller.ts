@@ -6,22 +6,19 @@ import { ApiQuery } from '@nestjs/swagger';
 export class UserDataController {
   constructor(private readonly userDataService: UserDataService) {}
 
-  
   @Get('clips')
-  @ApiQuery({
-    name: 'Categories',
-    required: false,
-    example:
-      "You could add ['Example record'] in the query's parameter(if you haven't delete the category of Example record) or leave it empty",
-    description:
-      'Return all selected stock data which saved in your categories. You can select the specific category to query. If no any categories name provided (empty input), return the stock data from all categories.',
-  
-    })
-  @ApiQuery({
-    name: 'apiKey',
-    required: true,
-    description: 'Your Api key',
-  })
+  // @ApiQuery({
+  //   name: 'Categories',
+  //   required: false,
+  //   example: 'Example record',
+  //   description:
+  //     'Return all selected stock data which saved in your categories. You can select the specific category to query. If no any categories name provided (empty input), return the stock data from all categories.',
+  // })
+  // @ApiQuery({
+  //   name: 'apiKey',
+  //   required: true,
+  //   description: 'Your Api key',
+  // })
   findAllClips(
     @Query('apiKey') apiKey: string,
     @Query('categories') categories: string[],
