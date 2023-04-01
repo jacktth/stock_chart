@@ -103,13 +103,16 @@ export const SwaggerApi = ({ session }: { session: Session }) => {
           ]
         }
         resType={{code:200,description:`symbol: string;
-        date: Date;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
-        adjClose?: number;
-        volume: number;`}}
+        category:string;
+        date:{from:string,to:string};
+        data:{date: Date,
+          open: number,
+          high: number,
+          low: number,
+          close: number,
+          adjClose?: number,
+          volume: number}[];
+        `}}
         />
       </div>
     </>
