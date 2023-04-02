@@ -174,7 +174,7 @@ export const TopBar = ({ session }: { session: Session }) => {
         </div>
         <div>
           <button onClick={() => dispatch(changePage("apiPage"))}>
-            Your record Api
+            Api Page
           </button>
         </div>
         <div className="flex flex-col  w-1/12  ">

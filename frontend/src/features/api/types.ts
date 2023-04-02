@@ -16,3 +16,11 @@ export type ApiResponseType = {
     code:number
     description:string
 }
+
+export type DynamicInputState = {
+    [k: string]: string
+}
+
+export type DynamicQueryParam = {
+    [k: string]: string
+}

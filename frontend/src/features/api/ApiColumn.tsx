@@ -9,7 +9,6 @@ import {
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { spawn } from "child_process";
 export const ApiColumn = ({
   title,
   param,
@@ -44,7 +43,7 @@ export const ApiColumn = ({
     }
     function executeApi() {
       let queryParam: DynamicQueryParam = {};
-      setResponse("")
+      setResponse("");
       for (const [key, value] of Object.entries(inputObj)) {
         queryParam = { ...queryParam, [key]: value };
       }
@@ -112,15 +111,14 @@ export const ApiColumn = ({
         <ul>
           {param.map((e) => (
             <>
-              <li className="flex w-96">
-                <div className="w-4/12">Name</div>
-                <div className="w-8/12">Description</div>
-              </li>
-              <li className="flex w-96">
-                <div className="w-4/12">
+              <li className="flex w-auto px-3 mt-2 mb-7">
+                <div className="w-2/12">
                   <p>
-                    {e.param}
-                    {required(true)}
+                    <span className="font-bold"> {e.param}</span>
+
+                    <span className="text-xs text-red-500 font-bold">
+                      {required(true)}
+                    </span>
                   </p>
 
                   <p>{e.type}</p>
@@ -128,6 +126,7 @@ export const ApiColumn = ({
                 <div className="flex flex-col w-8/12">
                   <p>{e.example}</p>
                   <input
+                    className="border-2 px-2 py-1 border-slate-400 "
                     id={e.param}
                     value={inputObj[e.param]}
                     onChange={(el) => inputChange(el)}
@@ -136,30 +135,45 @@ export const ApiColumn = ({
                   />
                 </div>
               </li>
-              <button onClick={() => executeApi()}>Execute</button>
             </>
           ))}
         </ul>
-        <div>
+        <div className="justify-items-center w-auto grid px-2 pb-4">
+          <button
+            className=" h-8 w-full bg-blue-400 border-solid  border-blue-400 rounded-lg"
+            onClick={() => executeApi()}
+          >
+            Execute
+          </button>
+        </div>
+
+        <div className="bg-white px-2 py-3 border-b-2 border-x-slate-500">
           <span>Responses</span>
         </div>
-        <div >
-          <div className="flex w-96">
+        <div>
+          <div className="flex w-96 pt-6 pb-3 px-3 text-sm font-bold border-b-2 border-slate-300 w-auto">
             <div className="w-4/12">Code</div>
-            <div className="w-8/12">Description</div>
+            <div className="w-11/12">Description</div>
           </div>
 
           <div>{isLoading ? "loading..." : null}</div>
-          <div>
-            {response ? <span>Result</span>:null}
-            <div className="text-xs overflow-auto w-auto" style={{ height: "20vh" }}>
-              {response ? response : null}
-            </div>
+          <div className="px-3 mt-2 mb-7">
+            {response ? (
+              <div className="">
+                <span>Result</span>{" "}
+                <div
+                  className="text-xs overflow-auto w-8/12"
+                  style={{ height: "20vh" }}
+                >
+                  {response ? response : null}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
-        <div className="flex w-96">
+        <div className="flex w-auto px-3 mt-2 mb-7">
           <span className="w-4/12">{resType.code}</span>
-          <span className="w-8/12 text-xs"> {resTypeContent(resType)}</span>
+          <span className="w-11/12 text-xs"> {resTypeContent(resType)}</span>
         </div>
       </>
     );
@@ -170,29 +184,37 @@ export const ApiColumn = ({
       onClick={() => {
         setExpand(expand ? false : true);
       }}
+      className="bg-blue-100 border-solid border-x-2 border-t-2 border-blue-300 mx-4"
     >
       <details className=" ">
-        <summary className="list-none flex justify-between cursor-pointer">
+        <summary className="list-none flex justify-between cursor-pointer  border-blue-300 border-solid border-b-2 p-3">
           <div>
-            <span>
-              {title.method} <span>{title.queryRoute}</span>
+            <span className="bg-blue-400 border-2 rounded-md text-white font-bold px-6 py-2">
+              {title.method}
             </span>
+            <span className="ml-3">{title.queryRoute}</span>
           </div>
 
           {expand ? (
             <div>
-              <ExpandLessIcon className="to-blue-500 " />
+              <ExpandMoreIcon className="to-blue-500 " />
             </div>
           ) : (
             <div>
-              <ExpandMoreIcon className="to-blue-500 " />
+              <ExpandLessIcon className="to-blue-500 " />
             </div>
           )}
         </summary>
-        <div className="">
+        <div className="bg-white px-2 py-3 border-b-2 border-x-slate-500">
           <p>Parameters</p>
         </div>
-        <div>{ContentList(param)}</div>
+        <>
+          <li className="flex w-auto pt-6 pb-3 px-3 text-sm font-bold border-b-2 border-slate-300">
+            <div className="w-4/12">Name</div>
+            <div className="w-11/12">Description</div>
+          </li>
+          {ContentList(param)}
+        </>
       </details>
     </div>
   );
