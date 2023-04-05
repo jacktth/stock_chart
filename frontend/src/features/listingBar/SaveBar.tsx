@@ -21,30 +21,35 @@ import {
   selectMarket,
   selectSelectedData,
   selectSymbol,
+  updateSelectedData,
 } from "../chart/chartSlice";
 import { defaultCategories } from "./defaultCategories";
-import { addClip, selectCategories } from "./listSlice";
+import {
+  addClip,
+  selectCategories,
+  selectedUserCategoryInfo,
+  updateUserCategoryInfo,
+} from "./listSlice";
 
 export type SelectedData = {
   starting: number | null;
   ending: number | null;
 };
 
-export function SaveBar({
-  session,
-}: {
-  session: Session;
-}) {
+export function SaveBar({ session }: { session: Session }) {
   const dispatch = useAppDispatch();
   const globalMarket = useAppSelector(selectMarket);
   const globalSymbol = useAppSelector(selectSymbol);
+  const globalSelectedCategoryInfo = useAppSelector(selectedUserCategoryInfo);
+
   const globalSelectedData = useAppSelector(selectSelectedData);
   const updateClipMutation = useUpdateUserClipMutation();
-  const [selectCategory, setSelectCategory] = useState("123");
+  const [selectCategoryId, setSelectCategoryId] = useState<number>();
+  const [selectCategory, setSelectCategory] = useState("");
   const { data, isLoading } = useCategoriesQuery(session.user.id);
   const queryClient = useQueryClient();
   useEffect(() => {
-    if (data) {
+    if (data && !!selectCategory && !!selectCategoryId) {
       const container: Database["public"]["Tables"]["categories"]["Row"][] = [];
       data.map((cate) => {
         if (defaultCategories().some((defaults) => cate.name === defaults)) {
@@ -54,11 +59,11 @@ export function SaveBar({
         }
       });
       setSelectCategory(container[0].name);
+      setSelectCategoryId(container[0].id)
+      
     }
   }, [data]);
 
-
-  
   function insertClip(e) {
     e.preventDefault();
     console.log("selectCategory", selectCategory);
@@ -69,7 +74,8 @@ export function SaveBar({
       globalSymbol &&
       globalSelectedData.ending !== 0 &&
       globalSelectedData.starting !== 0 &&
-      globalMarket
+      globalMarket &&
+     selectCategoryId
     ) {
       updateClipMutation.mutate({
         selectedData: {
@@ -80,10 +86,12 @@ export function SaveBar({
         category: selectCategory,
         symbol: globalSymbol,
         market: globalMarket,
+        category_id:selectCategoryId
       });
     } else if (
       globalSelectedData.ending == (null || 0) &&
-      globalSelectedData.starting == (null || 0)
+      globalSelectedData.starting == (null || 0) &&
+      selectCategoryId
     ) {
       updateClipMutation.mutate({
         selectedData: {
@@ -94,6 +102,7 @@ export function SaveBar({
         category: selectCategory,
         symbol: globalSymbol,
         market: globalMarket,
+        category_id:selectCategoryId
       });
     } else {
       alert("State error");
@@ -112,28 +121,39 @@ export function SaveBar({
             return;
           } else {
             return (
-              <option key={el.name} value={el.name} >
+              <option
+                key={el.id}
+                value={el.id}
+                label={el.name}
+        
+              >
                 {el.name}
               </option>
             );
           }
         });
     };
-    
+
     return (
       <div className=" border-2 border-sky-500">
         <form className="flex justify-evenly" onSubmit={(e) => insertClip(e)}>
           <select
-          value={selectCategory}
             onChange={(e) => {
-              console.log(e.target.value);
-              
-              setSelectCategory(e.target.value);
+              const categoryId = e.target.options[e.target.options.selectedIndex].value;
+              const categoryName = e.target.options[e.target.options.selectedIndex].label;
+              console.log("name",categoryName," ","id",categoryId);
+              setSelectCategoryId(Number(categoryId))
+              setSelectCategory(categoryName);
             }}
           >
             {data ? options(data) : null}
           </select>
-          <button className="button" title="Save the selected range of stock data">Save</button>
+          <button
+            className="button"
+            title="Save the selected range of stock data"
+          >
+            Save
+          </button>
         </form>
       </div>
     );

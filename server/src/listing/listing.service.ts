@@ -113,7 +113,7 @@ export class ListingService {
         new String(obj.symbol).includes('^')
           ? null
           : dataContainer.push({
-              symbol: obj.symbol,
+              symbol: obj.symbol.trim(),
               engName: usStockNameFilter(obj.name),
               market: 'US',
             });
@@ -156,8 +156,8 @@ export class ListingService {
 
       return dataContainer;
     };
-console.log("tes");
+    console.log('tes');
 
-    return await allListData()
+    return await allListData();
   }
 }

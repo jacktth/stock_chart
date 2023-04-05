@@ -11,12 +11,8 @@ export async function deleteUserCategoryQuery(
     .delete()
     .eq("user_id", userId)
     .eq("name", name);
-  const { status: clip } = await client
-    .from("clip")
-    .delete()
-    .eq("category", name)
-    .eq("user_id", userId);
-console.log("status ",{ clipStatus: categories, categoriesStatus: clip });
 
-  return { clipStatus: categories, categoriesStatus: clip };
+console.log("status ",{ clipStatus: categories });
+
+  return { clipStatus: categories};
 }

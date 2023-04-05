@@ -135,11 +135,11 @@ export function Chart() {
 
     rangeSelector: {
       buttons: [],
-      inputEnabled:false
+      inputEnabled: false,
     },
     credits: {
-      enabled: false
-    }
+      enabled: false,
+    },
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
@@ -191,20 +191,13 @@ export function Chart() {
   }, [selectedData]);
 
   return (
-  
-
-          
-       <HighchartsReact
-            
-            ref={chartComponent}
-            containerProps={{ style:{ height: "95vh" } }}
-            highcharts={Highcharts}
-            constructorType={"stockChart"}
-            // immutable={true}
-            options={options}
-          />
-     
-          
-  
+      <HighchartsReact
+        ref={chartComponent}
+        containerProps={{ style: { height: "95vh" } }}
+        highcharts={Highcharts}
+        constructorType={"stockChart"}
+        // immutable={true}
+        options={options}
+      />
   );
 }

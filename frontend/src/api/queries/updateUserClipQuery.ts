@@ -8,9 +8,19 @@ export function updateUserClipQuery(
   userId: string,
   category: string,
   symbol: string,
-  market: string
+  market: string,
+  category_id: number
 ) {
-  //   console.log("params",params)
+    console.log("params",{
+      starting: selectedData.starting,
+      ending: selectedData.ending,
+      user_id: userId,
+      category: category,
+      symbol: symbol,
+      market: market,
+      category_id: category_id,
+
+    })
   return client
     .from("clip")
     .upsert({
@@ -20,6 +30,8 @@ export function updateUserClipQuery(
       category: category,
       symbol: symbol,
       market: market,
+      category_id: category_id,
+
     })
     .select();
 }

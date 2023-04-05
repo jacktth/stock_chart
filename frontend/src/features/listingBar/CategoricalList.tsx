@@ -13,8 +13,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CategoriesQueryData } from "./types";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import RemoveIcon from "@mui/icons-material/Remove";
 export function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
@@ -38,7 +37,7 @@ export function CategoricalList({ session }: { session: Session }) {
         {
           name: inputCategoryRef.current?.value,
           userId: session.user.id,
-          default:false
+          default: false,
         },
         {
           onSuccess(data, variables, context) {
@@ -63,8 +62,9 @@ export function CategoricalList({ session }: { session: Session }) {
 
   const inputBox = () => {
     return (
-      <div className="flex justify-center  h-6 w-12/12">
+      <div className="flex justify-center w-12/12 items-center">
         <form
+          className="flex w-full justify-between"
           onSubmit={(e) => {
             e.preventDefault();
             setCreating(false);
@@ -73,10 +73,13 @@ export function CategoricalList({ session }: { session: Session }) {
         >
           <input
             ref={inputCategoryRef}
-            className="input justify-self-center self-center text-center"
+            className=" justify-self-center self-center text-center w-3/4"
             placeholder="New category name"
             type="text"
           />
+          <button className="text-sm button w-1/6 " type="submit">
+            <p className="text-center text-xs">Add</p>
+          </button>
         </form>
       </div>
     );
@@ -151,14 +154,17 @@ export function CategoricalList({ session }: { session: Session }) {
         <div>
           <span>Your categories</span>
         </div>
-      
-        <div className="">  <button
-          className=" leading-5  justify-self-end"
-          title="Add new Categories"
-          onClick={() => setCreating(creating ? false : true)}
-        >
-          <AddCircleOutlineIcon />
-        </button></div>
+
+        <div className="">
+          {" "}
+          <button
+            className=" leading-5  justify-self-end"
+            title="Add new Categories"
+            onClick={() => setCreating(creating ? false : true)}
+          >
+            {creating ? <RemoveIcon /> : <AddCircleOutlineIcon />}
+          </button>
+        </div>
       </div>
       {creating ? inputBox() : null}
 

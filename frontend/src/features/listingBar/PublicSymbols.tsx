@@ -1,9 +1,10 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
+import { selectSymbol, selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import { AllListings } from "./ListBar";
 import { ListingData } from "./types";
+import { log } from "console";
 
 export function PublicSymbols({market,data}:{market:string,data:ListingData[]} ) {
   
@@ -11,6 +12,8 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
   const dispatch = useAppDispatch();
   const parentRef = React.useRef(null);
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
+  const globalSymbol = useAppSelector(selectSymbol);
+
   const rowVirtualizer = useVirtualizer({
     count: data.length,
     getScrollElement: () => parentRef.current,
@@ -19,7 +22,8 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
   });
   function clickPublicSymbol(container: AllListings) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
-
+    setSelectedSymbol(container.symbol);
+    console.log(container.symbol , globalSymbol)
     dispatch(
       updateFocus({
         min: null,
@@ -31,7 +35,7 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
       <div
         ref={parentRef}
         style={{
-          height: "65vh",
+          height: "66vh",
           width: "100%",
           overflow: "auto",
         }}
@@ -49,7 +53,7 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
               className={`cursor-pointer ${
                 virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
               } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
-                data[virtualRow.index].symbol === selectedSymbol
+                data[virtualRow.index].symbol == globalSymbol
                   ? "bg-sky-200"
                   : null
               }`}
@@ -63,7 +67,6 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
               }}
               onClick={() => {
                 clickPublicSymbol(data[virtualRow.index]);
-                setSelectedSymbol(data[virtualRow.index].symbol);
               }}
             >
               <span className="text-base">{data[virtualRow.index].symbol}</span>

@@ -34,7 +34,8 @@ export const chartSlice = createSlice({
   reducers: {
     updateSymbol: (state, action: PayloadAction<string>) => {
       const split = action.payload.split(".");
-      state.symbol = split[0];
+      //service unknown error, some US symbols include spaces so clearing them using trim() in frontend
+      state.symbol = split[0].trim();
       state.market = split[1];
     },
     updateViewing: (state, action: PayloadAction<string>) => {

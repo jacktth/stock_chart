@@ -12,7 +12,8 @@ import { changePage } from "../Page/pageSlice";
 import { ApiColumn } from "./ApiColumn";
 import { categoryApiParams, clipsApiParams } from "./utilies";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-export const SwaggerApi = ({ session }: { session: Session }) => {
+
+export const ApiPage = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const client = useSupabase();

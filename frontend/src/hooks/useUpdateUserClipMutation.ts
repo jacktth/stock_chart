@@ -6,27 +6,27 @@ import { addCategories } from "../features/listingBar/listSlice";
 import useSupabase from "./useSupabase";
 
 type updateClipParam = {
-  selectedData: { starting: number|null; ending: number |null};
+  selectedData: { starting: number | null; ending: number | null };
   category: string;
   symbol: string;
   userId: string;
   market: string;
+  category_id: number;
 };
 export function useUpdateUserClipMutation() {
   const queryClient = useQueryClient();
-
+  
   const client = useSupabase();
   return useMutation(
     async (param: updateClipParam) => {
-      
       return updateUserClipQuery(
         client,
         param.selectedData,
         param.userId,
         param.category,
         param.symbol,
-
-        param.market
+        param.market,
+        param.category_id
       ).then((result: any) => {
         console.log("result", result);
         return result.data;

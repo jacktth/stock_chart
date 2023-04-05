@@ -13,12 +13,15 @@ import { selectedCategory } from "../listingBar/listSlice";
 import { ListingData } from "../listingBar/types";
 import { AllListings } from "../listingBar/ListBar";
 import Fuse from "fuse.js";
+import { log } from "console";
 
 export const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const [error, setError] = useState<any>("no error");
-  const [symbolInput, setSymbolInput] = useState<string>("");
+  const [searching, setSearching] = useState(false);
   const globalSymbol = useAppSelector(selectSymbol);
+
+  const [symbolInput, setSymbolInput] = useState<string>(globalSymbol);
   const parentRef = React.useRef(null);
   const queryClient = useQueryClient();
   const globalSelectedCategory = useAppSelector(selectedCategory);
@@ -26,6 +29,13 @@ export const TopBar = ({ session }: { session: Session }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
   };
+useEffect(() => {
+  setSearching(false)
+
+  setSymbolInput(globalSymbol)
+  
+}, [globalSymbol])
+
   function clickPublicSymbol(container: AllListings) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
 
@@ -37,21 +47,7 @@ export const TopBar = ({ session }: { session: Session }) => {
     );
   }
   const handleSubmit = (e) => {
-    // axios
-    //   .post("http://localhost:3000/stock-data", {
-    //     symbol: globalSymbol,
-    //     period1: "2022-02-01",
-    //   })
-    //   .then(
-    //     ({ data, status }) => {
-    //       setError(status);
-    //       const sortedData = dataSorting(data);
-    //       setDateArray(sortedData.date);
-    //     },
-    //     (error) => {
-    //       setError(error);
-    //     }
-    //   );
+
     e.preventDefault();
   };
 
@@ -61,9 +57,13 @@ export const TopBar = ({ session }: { session: Session }) => {
   }
 
   function clickSuggestion(symbol: Fuse.FuseResult<ListingData>) {
+    setSearching(false);
     setSelectedSymbol(symbol.item.symbol);
+    if(symbol.item.market === "HK"){
+      
+    }
     dispatch(updateSymbol(symbol.item.symbol + "." + symbol.item.market));
-    //Executing setSymbolInput can accidentally close the suggest lists which is good
+    console.log(symbol.item.symbol + "." + symbol.item.market)
     setSymbolInput(symbol.item.symbol);
     dispatch(
       updateFocus({
@@ -84,13 +84,13 @@ export const TopBar = ({ session }: { session: Session }) => {
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
 
   const Suggestions = () => {
-    if (listingResponse && symbolInput.length > 0) {
+    if (listingResponse && symbolInput.length > 0 && searching===true ) {
       const symbols = listingResponse.data;
       const fuse = new Fuse(symbols, {
         keys: ["symbol"],
       });
-      const suggestions = fuse.search(symbolInput);
-      console.log("suggestions", suggestions);
+      const suggestions = fuse.search(symbolInput,{limit: 10});
+      // console.log("suggestions", suggestions);
 
       const rowVirtualizer = useVirtualizer({
         count: suggestions.length,
@@ -119,7 +119,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                 return (
                   <div
                     key={virtualRow.index}
-                    className={`bg-white ${
+                    className={`cursor-pointer bg-white ${
                       virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
                     } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
                       suggestions[virtualRow.index].item.symbol ===
@@ -137,6 +137,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                     }}
                     onClick={() => {
                       clickSuggestion(suggestions[virtualRow.index]);
+                      console.log("click");
                     }}
                   >
                     <span className="text-base">
@@ -155,10 +156,7 @@ export const TopBar = ({ session }: { session: Session }) => {
   };
   return (
     <>
-      <div
-        style={{ height: "5vh" }}
-        className="flex  z-50 w-full"
-      >
+      <div style={{ height: "5vh" }} className="flex relative z-50 w-full">
         <div className="mx-3">
           <form className=" h-full " onSubmit={handleSubmit}>
             <label>
@@ -168,16 +166,23 @@ export const TopBar = ({ session }: { session: Session }) => {
                 name="name"
                 placeholder="Symbol"
                 value={symbolInput}
-                onChange={(e) => setSymbolInput(e.target.value)}
-                // onBlur={()=>setSymbolInput("")}
+                onChange={(e) => {
+                  setSymbolInput(e.target.value); setSearching(true)
+                }}
+                // onFocus={() => setSearching(true)}
+                // onBlur={() => setSearching(false)}
+
               />
-              <Suggestions />
+              <Suggestions/>
             </label>
           </form>
         </div>
 
         <div className="flex place-content-end place-self-start   w-full ">
-          <button className="menuButton" onClick={() => dispatch(changePage("apiPage"))}>
+          <button
+            className="menuButton"
+            onClick={() => dispatch(changePage("apiPage"))}
+          >
             Api Page
           </button>
           <button className="menuButton" onClick={signOut}>

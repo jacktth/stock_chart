@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
+import { Database } from "../../api/types/supabase";
 
 // Define a type for the slice state
 interface listState {
   categories: string[];
   clip: Clip[];
   selectedCategory: string;
+  UserCategoryInfo?:Database["public"]["Tables"]["categories"]["Row"][]
 }
 
 type Clip = {
@@ -40,7 +42,8 @@ export type ResponseClipArray = {
 const initialState: listState = {
   categories: [],
   clip: [],
-  selectedCategory:"US market"
+  selectedCategory:"US market",
+  
 };
 
 export const listSlice = createSlice({
@@ -79,6 +82,10 @@ export const listSlice = createSlice({
     changeCategory: (state, action: PayloadAction<string>) => {
       state.selectedCategory = action.payload
     },
+    updateUserCategoryInfo: (state, action: PayloadAction<Database["public"]["Tables"]["categories"]["Row"][]>) => {
+
+      state.UserCategoryInfo = action.payload
+    },
   },
 });
 
@@ -88,6 +95,7 @@ export const {
   addClip,
   initCategories,
   initClip,
+  updateUserCategoryInfo,
   changeCategory
 } = listSlice.actions;
 
@@ -95,5 +103,7 @@ export const {
 export const selectClip = (state: RootState) => state.list.clip;
 export const selectCategories = (state: RootState) => state.list.categories;
 export const selectedCategory = (state: RootState) => state.list.selectedCategory;
+export const selectedUserCategoryInfo = (state: RootState) => state.list.UserCategoryInfo;
+
 
 export default listSlice.reducer;

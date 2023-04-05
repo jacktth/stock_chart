@@ -1,11 +1,11 @@
 import { Session } from "@supabase/supabase-js";
 import React from "react";
 import { useAppSelector } from "../../app/hooks";
-import { SwaggerApi } from "../api/SwaggerApi";
 import { Chart } from "../chart/Chart";
 import { ListingBar } from "../listingBar/ListBar";
 import { TopBar } from "../topBar/TopBar";
 import { selectPage } from "./pageSlice";
+import { ApiPage } from "../api/ApiPage";
 
 export const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
@@ -23,16 +23,14 @@ export const Page = ({ session }: { session: Session }) => {
     );
   };
 
-  const ApiPage = () => {
-    return <SwaggerApi session={session} />;
-  };
+ 
 
   function renderPage() {
     switch (globalSelect) {
       case "chartPage":
         return ChartPage();
       case "apiPage":
-        return ApiPage();
+        return <ApiPage session={session} />
     }
   }
   return <>{renderPage()}</>;
