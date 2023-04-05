@@ -137,6 +137,9 @@ export function Chart() {
       buttons: [],
       inputEnabled:false
     },
+    credits: {
+      enabled: false
+    }
   });
   useEffect(() => {
     //this hook is to update the selected data range on the chart
@@ -194,7 +197,7 @@ export function Chart() {
        <HighchartsReact
             
             ref={chartComponent}
-            containerProps={{ style:{ height: "93vh" } }}
+            containerProps={{ style:{ height: "95vh" } }}
             highcharts={Highcharts}
             constructorType={"stockChart"}
             // immutable={true}

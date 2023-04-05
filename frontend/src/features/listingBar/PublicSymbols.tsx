@@ -46,7 +46,7 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
           {rowVirtualizer.getVirtualItems().map((virtualRow) => (
             <div
               key={virtualRow.index}
-              className={`${
+              className={`cursor-pointer ${
                 virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
               } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
                 data[virtualRow.index].symbol === selectedSymbol

@@ -6,23 +6,15 @@
   .view-full {
     @apply h-full w-full;
   }
-  .chartContainer {
-    height: 95%;
-    width: 85%;
+  .menuButton {
+    @apply p-2 rounded mx-3 font-bold  hover:bg-sky-100 ;
   }
-  .SearchBar {
-    height: 100%;
-    width: 15%;
-  }
-  .listingBar {
-    height: 90%;
-    width: 100%;
-  }
+
   .button {
-    @apply rounded bg-sky-200 border-2 pr-1 pl-1
+    @apply rounded bg-sky-200 border-2 pr-1 pl-1;
   }
   .auth-input {
-    @apply border-2 mt-1 px-3 py-2  border-stone-400	 bg-stone-100 rounded-md w-full
+    @apply border-2 mt-1 px-3 py-2  border-stone-400	 bg-stone-100 rounded-md w-full;
   }
   .input {
     height: 5%;

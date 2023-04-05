@@ -79,7 +79,7 @@ export function UserSymbols({
               selectedCategory === userSymbols[virtualRow.index].category ? (
                 <div
                   key={virtualRow.index}
-                  className={`flex justify-between ${
+                  className={`cursor-pointer flex justify-between ${
                     virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
                   }  hover:bg-sky-300 leading-3 border-2 border-solid p-2 ${
                     userSymbols[virtualRow.index].id === selectedSymbolId

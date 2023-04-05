@@ -10,7 +10,8 @@ import { useApiKeyQuery } from "../../hooks/useApiKeyQuery";
 import useSupabase from "../../hooks/useSupabase";
 import { changePage } from "../Page/pageSlice";
 import { ApiColumn } from "./ApiColumn";
-
+import { categoryApiParams, clipsApiParams } from "./utilies";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 export const SwaggerApi = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
@@ -33,15 +34,7 @@ export const SwaggerApi = ({ session }: { session: Session }) => {
     if (isLoading) return <>loading...</>;
     if (data) {
       return (
-        <div
-          className="leading-normal "
-          style={{
-            padding: "0 20px",
-            margin: "auto",
-            maxWidth: "1460px",
-            marginTop: "20px",
-          }}
-        >
+        <div className="leading-normal ">
           <p className="text-3xl text-stone-900 pb-2">Your Api Key</p>
           <div
             className="flex
@@ -72,49 +65,35 @@ export const SwaggerApi = ({ session }: { session: Session }) => {
   };
 
   return (
-    <>
-      <button onClick={() => dispatch(changePage("chartPage"))}>
-        Back to chart
+    <div className="">
+      <button
+        className="flex items-center menuButton"
+        onClick={() => dispatch(changePage("chartPage"))}
+      >
+        <div><KeyboardBackspaceIcon sx={{ fontSize: 30 }} /></div>
+        <div className="font-bold">Back to chart</div>
       </button>
-      <div className="text-stone-900">
-        <KeyUi />
 
-        <SwaggerUI url="http://localhost:3000/api-json" />
+      <div className="text-stone-900 p-4 ">
+        {/* <SwaggerUI url="http://localhost:3000/api-json" /> */}
+        <p className="text-4xl mx-4 my-4">API Page</p>
+        <p className="text-2xl mx-4 my-4">You could test the below API</p>
+
+        <div className="mx-4 my-10">
+          <KeyUi />
+        </div>
+
         <ApiColumn
-          title={{ queryRoute: "/user-data/clips", method: "GET" }}
-          param={[
-            {
-              param: "apiKey",
-              type: "string",
-              isRequired: true,
-              placeholder: "Your apiKey",
-              description: "test",
-              example: "test",
-            },
-            {
-              param: "categories",
-              type: "array[string]",
-              isRequired: true,
-              placeholder: "Your categories",
-              description: "test",
-              example:
-                "Example record; [Example record,Example record 1,Example record 2]",
-            },
-          ]
-        }
-        resType={{code:200,description:`symbol: string;
-        category:string;
-        date:{from:string,to:string};
-        data:{date: Date,
-          open: number,
-          high: number,
-          low: number,
-          close: number,
-          adjClose?: number,
-          volume: number}[];
-        `}}
+          title={clipsApiParams.title}
+          param={clipsApiParams.param}
+          resType={clipsApiParams.resType}
+        />
+        <ApiColumn
+          title={categoryApiParams.title}
+          param={categoryApiParams.param}
+          resType={categoryApiParams.resType}
         />
       </div>
-    </>
+    </div>
   );
 };

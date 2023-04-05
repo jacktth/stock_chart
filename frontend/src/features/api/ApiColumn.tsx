@@ -37,17 +37,18 @@ export const ApiColumn = ({
     const [response, setResponse] = useState("");
 
     function inputChange(e: React.ChangeEvent<HTMLInputElement>) {
-      const id = e.target.id;
-      setInputObj({ ...inputObj, [id]: e.target.value });
-      console.log(inputObj[id]);
+      const name = e.target.name;
+      setInputObj({ ...inputObj, [name]: e.target.value });
+      console.log(inputObj[name]);
     }
+
     function executeApi() {
       let queryParam: DynamicQueryParam = {};
       setResponse("");
       for (const [key, value] of Object.entries(inputObj)) {
         queryParam = { ...queryParam, [key]: value };
       }
-
+      
       const fetchStockData = () =>
         axios.get(`http://localhost:3000${title.queryRoute}`, {
           params: queryParam,
@@ -127,7 +128,7 @@ export const ApiColumn = ({
                   <p>{e.example}</p>
                   <input
                     className="border-2 px-2 py-1 border-slate-400 "
-                    id={e.param}
+                    name={e.param}
                     value={inputObj[e.param]}
                     onChange={(el) => inputChange(el)}
                     type="text"
@@ -171,7 +172,7 @@ export const ApiColumn = ({
             ) : null}
           </div>
         </div>
-        <div className="flex w-auto px-3 mt-2 mb-7">
+        <div className="flex w-auto px-3 mt-2 mb-7 border-b-2  border-blue-300">
           <span className="w-4/12">{resType.code}</span>
           <span className="w-11/12 text-xs"> {resTypeContent(resType)}</span>
         </div>
@@ -184,15 +185,16 @@ export const ApiColumn = ({
       onClick={() => {
         setExpand(expand ? false : true);
       }}
-      className="bg-blue-100 border-solid border-x-2 border-t-2 border-blue-300 mx-4"
+      className="bg-blue-50 border-solid border-x-2 border-t-2  border-blue-300 mx-4 mb-4"
     >
       <details className=" ">
-        <summary className="list-none flex justify-between cursor-pointer  border-blue-300 border-solid border-b-2 p-3">
-          <div>
-            <span className="bg-blue-400 border-2 rounded-md text-white font-bold px-6 py-2">
+        <summary className="list-none flex justify-between cursor-pointer  border-blue-300 border-solid border-b-2 p-1">
+          <div className="flex items-center w-7/12">
+            <div className="bg-blue-400 border-2 rounded-md text-white font-bold px-6 py-2 w-2/12 text-center">
               {title.method}
-            </span>
-            <span className="ml-3">{title.queryRoute}</span>
+            </div>
+            <div className="mx-5 font-bold w-4/12">{title.queryRoute}</div>
+            <div className="mx-2 w-7/12">{title.description}</div>
           </div>
 
           {expand ? (

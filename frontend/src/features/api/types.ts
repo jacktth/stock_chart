@@ -1,6 +1,7 @@
 export type ApiTitle ={
     queryRoute:string
     method:string
+    description:string
 }
 export type ApiQueryParam ={
     param:string
@@ -9,6 +10,7 @@ export type ApiQueryParam ={
     placeholder:string
     description:string
     example:string
+
     
 }
 

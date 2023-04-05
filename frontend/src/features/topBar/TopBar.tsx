@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { supabase } from "../../api/supabaseClient";
 import axios, { AxiosResponse } from "axios";
@@ -60,10 +60,11 @@ export const TopBar = ({ session }: { session: Session }) => {
     e.preventDefault();
   }
 
-  function clickSuggestion(symbol:Fuse.FuseResult<ListingData>){
+  function clickSuggestion(symbol: Fuse.FuseResult<ListingData>) {
     setSelectedSymbol(symbol.item.symbol);
     dispatch(updateSymbol(symbol.item.symbol + "." + symbol.item.market));
-    setSymbolInput("")
+    //Executing setSymbolInput can accidentally close the suggest lists which is good
+    setSymbolInput(symbol.item.symbol);
     dispatch(
       updateFocus({
         min: null,
@@ -118,10 +119,11 @@ export const TopBar = ({ session }: { session: Session }) => {
                 return (
                   <div
                     key={virtualRow.index}
-                    className={`bg-white ${ 
+                    className={`bg-white ${
                       virtualRow.index % 2 ? "ListItemOdd" : "ListItemEven"
                     } text-left hover:bg-sky-300 leading-3 border-2 border-solid py-1 ${
-                      suggestions[virtualRow.index].item.symbol === selectedSymbol
+                      suggestions[virtualRow.index].item.symbol ===
+                      selectedSymbol
                         ? "bg-sky-200"
                         : null
                     }`}
@@ -134,7 +136,7 @@ export const TopBar = ({ session }: { session: Session }) => {
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                     onClick={() => {
-                      clickSuggestion(suggestions[virtualRow.index])
+                      clickSuggestion(suggestions[virtualRow.index]);
                     }}
                   >
                     <span className="text-base">
@@ -154,10 +156,10 @@ export const TopBar = ({ session }: { session: Session }) => {
   return (
     <>
       <div
-        style={{ height: "7vh" }}
-        className="flex justify-between relative z-50"
+        style={{ height: "5vh" }}
+        className="flex  z-50 w-full"
       >
-        <div>
+        <div className="mx-3">
           <form className=" h-full " onSubmit={handleSubmit}>
             <label>
               <input
@@ -167,21 +169,18 @@ export const TopBar = ({ session }: { session: Session }) => {
                 placeholder="Symbol"
                 value={symbolInput}
                 onChange={(e) => setSymbolInput(e.target.value)}
+                // onBlur={()=>setSymbolInput("")}
               />
               <Suggestions />
             </label>
           </form>
         </div>
-        <div>
-          <button onClick={() => dispatch(changePage("apiPage"))}>
+
+        <div className="flex place-content-end place-self-start   w-full ">
+          <button className="menuButton" onClick={() => dispatch(changePage("apiPage"))}>
             Api Page
           </button>
-        </div>
-        <div className="flex flex-col  w-1/12  ">
-          <button className="">
-            <AccountCircleIcon />
-          </button>
-          <button className="text-xs" onClick={signOut}>
+          <button className="menuButton" onClick={signOut}>
             <span>log out</span>{" "}
           </button>
         </div>
