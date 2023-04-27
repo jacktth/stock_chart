@@ -77,8 +77,8 @@ export function CategoricalList({ session }: { session: Session }) {
             placeholder="New category name"
             type="text"
           />
-          <button className="text-sm button w-1/6 " type="submit">
-            <p className="text-center text-xs">Add</p>
+          <button className="text-sm button w-1/4 " type="submit">
+            <p className="text-center ">Add</p>
           </button>
         </form>
       </div>
