@@ -9,7 +9,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Session } from "@supabase/supabase-js";
 type UserSymbolData = Omit<Clip, "user_id" | "created_at" | "category">;
 
-export function UserSymbols({
+export function UsersSymbols({
   selectedCategory,
   userSymbols,
   session,

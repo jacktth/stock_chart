@@ -7,8 +7,8 @@ import { Session } from "@supabase/supabase-js";
 import axios from "axios";
 import { PublicSymbols } from "./PublicSymbols";
 import { ListingData } from "./types";
-import { UserSymbols } from "./UserSymbols";
 import { selectedCategory } from "./listSlice";
+import { UsersSymbols } from "./UsersSymbols";
 
 export function SymbolList({ session }: { session: Session }) {
   // UsHkData: AxiosResponse<ListingResponse, any> | undefined
@@ -46,7 +46,7 @@ export function SymbolList({ session }: { session: Session }) {
   } else if (!defaultCategories().includes(globalSelectedCategory)) {
     if (userSymbolsLoading) return <>loading...</>;
     if (userSymbols && userSymbols.data) {
-      return <UserSymbols selectedCategory={globalSelectedCategory} userSymbols={userSymbols.data} session={session}/>;
+      return <UsersSymbols selectedCategory={globalSelectedCategory} userSymbols={userSymbols.data} session={session}/>;
     }
   }
 
