@@ -50,7 +50,7 @@ export const ApiColumn = ({
       }
       
       const fetchStockData = () =>
-        axios.get(`http://localhost:3000${title.queryRoute}`, {
+        axios.get(`${import.meta.env.VITE_SERVER + title.queryRoute}`, {
           params: queryParam,
         });
       setIsLoading(true);

@@ -76,7 +76,6 @@ export const ApiPage = ({ session }: { session: Session }) => {
       </button>
 
       <div className="text-stone-900 p-4 ">
-        {/* <SwaggerUI url="http://localhost:3000/api-json" /> */}
         <p className="text-4xl mx-4 my-4">API Page</p>
         <p className="text-2xl mx-4 my-4">You could test the below API</p>
 

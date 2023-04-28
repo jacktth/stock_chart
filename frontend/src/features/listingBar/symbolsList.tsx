@@ -17,18 +17,18 @@ export function SymbolList({ session }: { session: Session }) {
   const queryClient = useQueryClient();
 
   const fetchListings = () =>
-    axios.get<ListingData[]>("http://localhost:3000/listing", {
+    axios.get<ListingData[]>(`${import.meta.env.VITE_SERVER}listing`, {
       params: {
         market: globalSelectedCategory,
       },
     });
-
   //globalSelectedCategory must be in the list of useQuery to refresh data
   const {
     data: listingResponse,
     isLoading: listingIsLoading,
     isSuccess: listingIsSuccess,
   } = useQuery(["listings", globalSelectedCategory], fetchListings, {});
+  console.log("listingResponse",listingResponse)
 
   const { data: userSymbols, isLoading: userSymbolsLoading } = useClipsQuery(
     session.user.id

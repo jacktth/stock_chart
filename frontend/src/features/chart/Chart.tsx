@@ -39,7 +39,6 @@ annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
-
 export function Chart() {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
@@ -50,7 +49,7 @@ export function Chart() {
   // const { data } = useUserQuery();
   const chartComponent = useRef<HighchartsReact.RefObject>(null);
   const fetchStockData = () =>
-    axios.get("http://localhost:3000/stock-data", {
+    axios.get(`${import.meta.env.VITE_SERVER }` + "stock-data", {
       params: {
         symbol: globalSymbol,
         market: globalMarket,

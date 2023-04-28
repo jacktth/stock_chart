@@ -73,7 +73,7 @@ useEffect(() => {
     );
   }
   const fetchListings = () =>
-    axios.get<ListingData[]>("http://localhost:3000/allListings");
+    axios.get<ListingData[]>(`${import.meta.env.VITE_SERVER}listing`);
 
   //globalSelectedCategory must be in the list of useQuery to refresh data
   const {
