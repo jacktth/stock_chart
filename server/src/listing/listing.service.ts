@@ -5,7 +5,7 @@ import { catchError, firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { getListingParam } from './listing.controller';
 import { AllListings } from './types';
-import { usStockNameFilter } from './utils';
+import { usStockNameFilter } from './utilies';
 
 type usResponseRow = {
   symbol: string;
@@ -17,10 +17,8 @@ export class ListingService {
   private readonly logger = new Logger(ListingService.name);
   constructor(private readonly httpService: HttpService) {}
   async getList(param: getListingParam) {
-    console.log('marketParam', param);
 
     if (param.market === 'US market') {
-      console.log('US market');
 
       const usListingData = async () => {
         const usListingURL =
@@ -49,7 +47,6 @@ export class ListingService {
       };
       return await usListingData();
     } else if (param.market === 'HK market') {
-      console.log('HK market');
 
       const hkListingData = async () => {
         const hkListingURL =
@@ -156,7 +153,6 @@ export class ListingService {
 
       return dataContainer;
     };
-    console.log('tes');
 
     return await allListData();
   }

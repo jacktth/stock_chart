@@ -8,14 +8,13 @@ import { Supabase } from 'src/api/supabase';
 import { Categories, Clip, ClipQueryParams, ClipResult } from './types/types';
 import yahooFinance from 'yahoo-finance2';
 import { hkQuery } from 'src/stock-data/utilies';
-import { error } from 'console';
+import { error, log } from 'console';
 import { response } from 'express';
-import { ymd } from './utilies';
+import { filterDefaultCategories, ymd } from './utilies';
 
 @Injectable()
 export class UserDataService {
   constructor(private readonly supabase: Supabase) {}
-
 
   async findAllClips(query: ClipQueryParams) {
     const { data: apiUserData, error: apiUserDataError } = await this.supabase
@@ -23,6 +22,7 @@ export class UserDataService {
       .from('apikeys')
       .select()
       .eq('api_key', query.apikey);
+    console.log('findAllClips', query, ' ', apiUserDataError);
 
     if (apiUserDataError) return apiUserDataError;
     if (apiUserData.length === 0)
@@ -66,15 +66,11 @@ export class UserDataService {
               date: { from: ymd(clip.starting), to: ymd(clip.ending) },
               data: data,
             });
-
-            console.log('data', clipsContainer.length);
           });
         } catch (error) {
           throw error;
         }
       }
-
-      console.log('data', clipsContainer.length);
 
       return clipsContainer;
     } else if (query.categories.length > 0) {
@@ -100,8 +96,6 @@ export class UserDataService {
                 date: { from: ymd(clip.starting), to: ymd(clip.ending) },
                 data: data,
               });
-
-              console.log('data', clipsContainer.length);
             });
           } catch (error) {
             throw error;
@@ -114,8 +108,6 @@ export class UserDataService {
     return 'no';
   }
   async findAllCategories(apiKey: string) {
-    console.log(apiKey, '1');
-
     const { data, error } = await this.supabase
       .getClient()
       .from('apikeys')
@@ -124,8 +116,6 @@ export class UserDataService {
     if (!!error) {
       return error;
     } else {
-      console.log(data);
-
       const userId = data[0].user_id;
       const { data: categoriesQueryData, error } = await this.supabase
         .getClient()
@@ -134,7 +124,9 @@ export class UserDataService {
         .eq('user_id', userId);
       const categories: Categories = [];
       categoriesQueryData.forEach((data) => {
-        categories.push(data.name);
+        if (filterDefaultCategories().includes(data.name) === false) {
+          categories.push(data.name);
+        }
       });
       return categories;
     }

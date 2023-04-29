@@ -21,7 +21,6 @@ export class StockDataService {
         return await yahooFinance.historical(hkQuery(getDataParam.symbol), queryOptions);
       case 'US':
         const query = getDataParam.symbol;
-        console.log("this",query," ",Date.now())
 
         return await yahooFinance.historical(query, queryOptions);
     }
