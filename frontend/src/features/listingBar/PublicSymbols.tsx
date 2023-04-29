@@ -23,7 +23,6 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
   function clickPublicSymbol(container: AllListings) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
     setSelectedSymbol(container.symbol);
-    console.log(container.symbol , globalSymbol)
     dispatch(
       updateFocus({
         min: null,

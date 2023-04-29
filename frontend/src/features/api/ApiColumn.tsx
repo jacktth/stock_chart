@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { LoadingComponent } from "../commonUI/Loading";
 export const ApiColumn = ({
   title,
   param,
@@ -39,7 +40,6 @@ export const ApiColumn = ({
     function inputChange(e: React.ChangeEvent<HTMLInputElement>) {
       const name = e.target.name;
       setInputObj({ ...inputObj, [name]: e.target.value });
-      console.log(inputObj[name]);
     }
 
     function executeApi() {
@@ -48,65 +48,18 @@ export const ApiColumn = ({
       for (const [key, value] of Object.entries(inputObj)) {
         queryParam = { ...queryParam, [key]: value };
       }
-      
+
       const fetchStockData = () =>
         axios.get(`${import.meta.env.VITE_SERVER + title.queryRoute}`, {
           params: queryParam,
         });
       setIsLoading(true);
       fetchStockData().then((e) => {
-        console.log(e);
         setResponse(JSON.stringify(e.data));
         setIsLoading(false);
       });
     }
-    const resTypeContent = (resType: ApiResponseType) => {
-      const types = resType.description.split(";");
-      const responseType = (types: string[]) => {
-        return (
-          <>
-            {"{"}
-            {types.map((e) =>
-              e.includes(":{") ? (
-                <div className="">
-                  {e.split(":{").map((e) => (
-                    <>
-                      <p className="ml-6">
-                        {e.includes(":") ? (
-                          e.split(",").map((str) =>
-                            str.includes("}") ? (
-                              <>
-                                <p className="ml-16">
-                                  {str.includes("}[]")
-                                    ? str.replace("}[]", "")
-                                    : str.replace("}", "")}
-                                </p>
-                                <p className="ml-6">{"}"}</p>
-                              </>
-                            ) : (
-                              <p className="ml-16">{str}</p>
-                            )
-                          )
-                        ) : (
-                          <>
-                            <p>{e + ":"}</p>
-                            <p className="ml-6">{"{"}</p>
-                          </>
-                        )}
-                      </p>
-                    </>
-                  ))}
-                </div>
-              ) : (
-                <div className="ml-6">{e}</div>
-              )
-            )}
-            {"}"}
-          </>
-        );
-      };
-      return <>{responseType(types)}</>;
-    };
+
     return (
       <>
         <ul>
@@ -118,7 +71,7 @@ export const ApiColumn = ({
                     <span className="font-bold"> {e.param}</span>
 
                     <span className="text-xs text-red-500 font-bold">
-                      {required(true)}
+                      {required(e.isRequired)}
                     </span>
                   </p>
 
@@ -152,12 +105,12 @@ export const ApiColumn = ({
           <span>Responses</span>
         </div>
         <div>
-          <div className="flex w-96 pt-6 pb-3 px-3 text-sm font-bold border-b-2 border-slate-300 w-auto">
+          <div className="flex w-96 pt-6 pb-3 px-3 text-sm font-bold border-b-2 border-slate-300 ">
             <div className="w-4/12">Code</div>
             <div className="w-11/12">Description</div>
           </div>
 
-          <div>{isLoading ? "loading..." : null}</div>
+          <div>{isLoading ? <LoadingComponent /> : null}</div>
           <div className="px-3 mt-2 mb-7">
             {response ? (
               <div className="">
@@ -174,7 +127,9 @@ export const ApiColumn = ({
         </div>
         <div className="flex w-auto px-3 mt-2 mb-7 border-b-2  border-blue-300">
           <span className="w-4/12">{resType.code}</span>
-          <span className="w-11/12 text-xs"> {resTypeContent(resType)}</span>
+          <span className="w-11/12 text-xs">
+            {resType.description}
+          </span>
         </div>
       </>
     );
@@ -193,7 +148,7 @@ export const ApiColumn = ({
             <div className="bg-blue-400 border-2 rounded-md text-white font-bold px-6 py-2 w-2/12 text-center">
               {title.method}
             </div>
-            <div className="mx-5 font-bold w-4/12">{title.queryRoute}</div>
+            <div className="mx-5 font-bold w-4/12">{title.queryDisplay}</div>
             <div className="mx-2 w-7/12">{title.description}</div>
           </div>
 

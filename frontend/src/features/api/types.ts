@@ -1,5 +1,6 @@
 export type ApiTitle ={
     queryRoute:string
+    queryDisplay:string
     method:string
     description:string
 }

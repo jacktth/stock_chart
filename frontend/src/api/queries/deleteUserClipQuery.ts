@@ -11,7 +11,6 @@ export async function deleteUserClipQuery(
     .delete()
     .eq("id", id)
     .eq("user_id", userId);
-  console.log("status ", { clipStatus: clipStatus });
 
   return { clipStatus: clipStatus };
 }

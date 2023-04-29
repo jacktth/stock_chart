@@ -11,16 +11,7 @@ export function updateUserClipQuery(
   market: string,
   category_id: number
 ) {
-    console.log("params",{
-      starting: selectedData.starting,
-      ending: selectedData.ending,
-      user_id: userId,
-      category: category,
-      symbol: symbol,
-      market: market,
-      category_id: category_id,
-
-    })
+   
   return client
     .from("clip")
     .upsert({

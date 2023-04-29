@@ -20,7 +20,6 @@ export const ApiPage = ({ session }: { session: Session }) => {
   const { data, error, isLoading } = useApiKeyQuery(session.user.id);
 
   async function updateApiKey() {
-    console.log("sssss", session.user.id);
 
     const { data: res } = await client.rpc("update_user_api_key");
 
@@ -59,10 +58,6 @@ export const ApiPage = ({ session }: { session: Session }) => {
     } else {
       return <>Server error, please contact the admin</>;
     }
-  };
-
-  const SwaggerApiUi = () => {
-    // if (error) return <>Server error, please contact the admin</>;
   };
 
   return (

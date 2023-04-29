@@ -12,7 +12,6 @@ export async function deleteUserCategoryQuery(
     .eq("user_id", userId)
     .eq("name", name);
 
-console.log("status ",{ clipStatus: categories });
 
   return { clipStatus: categories};
 }

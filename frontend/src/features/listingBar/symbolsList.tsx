@@ -28,7 +28,6 @@ export function SymbolList({ session }: { session: Session }) {
     isLoading: listingIsLoading,
     isSuccess: listingIsSuccess,
   } = useQuery(["listings", globalSelectedCategory], fetchListings, {});
-  console.log("listingResponse",listingResponse)
 
   const { data: userSymbols, isLoading: userSymbolsLoading } = useClipsQuery(
     session.user.id

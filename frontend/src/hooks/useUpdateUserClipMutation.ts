@@ -28,7 +28,6 @@ export function useUpdateUserClipMutation() {
         param.market,
         param.category_id
       ).then((result: any) => {
-        console.log("result", result);
         return result.data;
       });
     },

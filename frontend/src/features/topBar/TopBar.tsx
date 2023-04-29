@@ -63,7 +63,6 @@ useEffect(() => {
       
     }
     dispatch(updateSymbol(symbol.item.symbol + "." + symbol.item.market));
-    console.log(symbol.item.symbol + "." + symbol.item.market)
     setSymbolInput(symbol.item.symbol);
     dispatch(
       updateFocus({
@@ -90,7 +89,6 @@ useEffect(() => {
         keys: ["symbol"],
       });
       const suggestions = fuse.search(symbolInput,{limit: 10});
-      // console.log("suggestions", suggestions);
 
       const rowVirtualizer = useVirtualizer({
         count: suggestions.length,
@@ -137,7 +135,6 @@ useEffect(() => {
                     }}
                     onClick={() => {
                       clickSuggestion(suggestions[virtualRow.index]);
-                      console.log("click");
                     }}
                   >
                     <span className="text-base">

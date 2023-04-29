@@ -50,7 +50,6 @@ export function SaveBar({ session }: { session: Session }) {
   const { data, isLoading } = useCategoriesQuery(session.user.id);
   const queryClient = useQueryClient();
   useEffect(() => {
-    console.log("effect");
     
     if (data ) {
       const container: Database["public"]["Tables"]["categories"]["Row"][] = [];
@@ -66,11 +65,9 @@ export function SaveBar({ session }: { session: Session }) {
       container.forEach((cate) => {
         if (cate.name === selectCategory) {
           exist = true;
-          console.log(cate.name," ",selectCategory)
         }
       });
       if (exist === false) {
-        console.log("false exist");
 
         setSelectCategory(container[0].name);
         setSelectCategoryId(container[0].id);
@@ -83,7 +80,6 @@ export function SaveBar({ session }: { session: Session }) {
 
   function insertClip(e) {
     e.preventDefault();
-    console.log("selectCategory", selectCategory);
 
     if (
       session.user.id &&
@@ -156,7 +152,6 @@ export function SaveBar({ session }: { session: Session }) {
                 e.target.options[e.target.options.selectedIndex].value;
               const categoryName =
                 e.target.options[e.target.options.selectedIndex].label;
-              console.log("name", categoryName, " ", "id", categoryId);
               setSelectCategoryId(Number(categoryId));
               setSelectCategory(categoryName);
             }}
