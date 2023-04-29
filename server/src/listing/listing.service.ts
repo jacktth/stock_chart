@@ -97,7 +97,7 @@ export class ListingService {
       const resUs = await firstValueFrom(
         this.httpService.get(usListingURL).pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response.data);
+            this.logger.error(error);
             throw 'An error happened!';
           }),
         ),
