@@ -13,3 +13,8 @@ export type ListingData = {
 
 
 export type CategoriesQueryData = Database["public"]["Tables"]["categories"]["Row"]
+
+export type CategoriesMutationResponse = {
+        success:string
+        fail:string
+}

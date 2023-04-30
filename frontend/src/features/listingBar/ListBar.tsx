@@ -22,7 +22,7 @@ import { SaveBar } from "./SaveBar";
 
 export function ListingBar({ session }: { session: Session }) {
   return (
-    <div className="">
+    <div className="h-full">
         <CategoricalList session={session} />
         <SaveBar session={session}  />
         <SymbolList session={session} />

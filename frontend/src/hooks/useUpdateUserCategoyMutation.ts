@@ -12,17 +12,18 @@ export type insertCategoryQueryParam = {
 export function useUpdateUserCategoryMutation() {
   const queryClient = useQueryClient();
 
-  const client = useSupabase();
+  const client =  useSupabase();
   return useMutation(
     async (params: insertCategoryQueryParam) => {
-      return updateCategoriesQuery(client, params).then((result) => {
-        return result.data;
-      });
+      return updateCategoriesQuery(client, params)
     },
     {
-      //check: this may be repeated
-      onSuccess() {
+      onSuccess(data) {
         queryClient.invalidateQueries({ queryKey:["categories"] });
+        if(data?.message != null){
+          alert(data.message)
+        }
+        
       },
     }
   );

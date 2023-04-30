@@ -33,18 +33,18 @@ export function CategoricalList({ session }: { session: Session }) {
     e.preventDefault();
 
     if (inputCategoryRef.current?.value && session.user.id) {
-      updateCategoryMutation.mutate(
+      const response = updateCategoryMutation.mutate(
         {
           name: inputCategoryRef.current?.value,
           userId: session.user.id,
           default: false,
         },
-        {
-          onSuccess(data, variables, context) {
-            queryClient.invalidateQueries({ queryKey: ["categories"] });
-          },
-        }
       );
+
+    }
+
+    if(!inputCategoryRef.current?.value){
+      alert("Empty name is not accept")
     }
   }
   function deleteCategory(userId: string, categoryName: string) {
@@ -62,7 +62,7 @@ export function CategoricalList({ session }: { session: Session }) {
 
   const inputBox = () => {
     return (
-      <div className="flex justify-center w-12/12 items-center">
+      <div className="flex  justify-center items-center ">
         <form
           className="flex w-full justify-between"
           onSubmit={(e) => {
@@ -73,11 +73,11 @@ export function CategoricalList({ session }: { session: Session }) {
         >
           <input
             ref={inputCategoryRef}
-            className=" justify-self-center self-center text-center w-3/4"
+            className=" justify-self-center self-center text-center w-full"
             placeholder="New category name"
             type="text"
           />
-          <button className="text-sm button w-1/4 " type="submit">
+          <button className="text-sm button  " type="submit">
             <p className="text-center ">Add</p>
           </button>
         </form>
@@ -152,7 +152,7 @@ export function CategoricalList({ session }: { session: Session }) {
       <div className="w-full flex justify-between border-2 border-sky-500">
         <div></div>
         <div>
-          <span>Your categories</span>
+        {creating ? inputBox() : <span>Your categories</span>}
         </div>
 
         <div className="">
@@ -166,7 +166,7 @@ export function CategoricalList({ session }: { session: Session }) {
           </button>
         </div>
       </div>
-      {creating ? inputBox() : null}
+      
 
       {data ? <CategoriesList data={data} /> : null}
     </>

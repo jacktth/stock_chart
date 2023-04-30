@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { LoadingComponent } from "../commonUI/Loading";
+import { LoadingComponent } from "../commonUI/LoadingComponent";
 export const ApiColumn = ({
   title,
   param,
@@ -140,16 +140,18 @@ export const ApiColumn = ({
       onClick={() => {
         setExpand(expand ? false : true);
       }}
-      className="bg-blue-50 border-solid border-x-2 border-t-2  border-blue-300 mx-4 mb-4"
+      className="bg-blue-50 border-solid border-x-2 border-t-2 
+       border-blue-300 mx-4 mb-4"
     >
       <details className=" ">
-        <summary className="list-none flex justify-between cursor-pointer  border-blue-300 border-solid border-b-2 p-1">
-          <div className="flex items-center w-7/12">
+        <summary className="list-none flex  cursor-pointer 
+         border-blue-300 border-solid border-b-2 p-1 w-full">
+          <div className="flex items-center w-full">
             <div className="bg-blue-400 border-2 rounded-md text-white font-bold px-6 py-2 w-2/12 text-center">
               {title.method}
             </div>
-            <div className="mx-5 font-bold w-4/12">{title.queryDisplay}</div>
-            <div className="mx-2 w-7/12">{title.description}</div>
+            <div className="mx-5 font-bold text-sm ">{title.queryDisplay}</div>
+            <div className="mx-2 ">{title.description}</div>
           </div>
 
           {expand ? (
@@ -162,7 +164,7 @@ export const ApiColumn = ({
             </div>
           )}
         </summary>
-        <div className="bg-white px-2 py-3 border-b-2 border-x-slate-500">
+        <div className="bg-white px-2 py-3 border-b-2 border-x-slate-500 justify-self-end">
           <p>Parameters</p>
         </div>
         <>

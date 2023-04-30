@@ -12,18 +12,20 @@ import { changePage } from "../Page/pageSlice";
 import { ApiColumn } from "./ApiColumn";
 import { categoryApiParams, clipsApiParams } from "./utilies";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { LoadingComponent } from "../commonUI/LoadingComponent";
 
 export const ApiPage = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const client = useSupabase();
+  const [loadingApiKey, setLoadingApiKey] = useState(false);
   const { data, error, isLoading } = useApiKeyQuery(session.user.id);
 
   async function updateApiKey() {
-
     const { data: res } = await client.rpc("update_user_api_key");
 
     queryClient.invalidateQueries({ queryKey: ["apiKey"] });
+    setLoadingApiKey(false);
   }
 
   function copyToClipboard() {
@@ -31,28 +33,38 @@ export const ApiPage = ({ session }: { session: Session }) => {
   }
 
   const KeyUi = () => {
-    if (isLoading) return <>loading...</>;
+    if (isLoading) return <LoadingComponent />;
     if (data) {
       return (
         <div className="leading-normal ">
           <p className="text-3xl text-stone-900 pb-2">Your Api Key</p>
-          <div
-            className="flex
+          {loadingApiKey ? (
+            <LoadingComponent />
+          ) : (
+            <div
+              className="flex
         space-x-5"
-          >
-            <input
-              className="bg-slate-500"
-              type="password"
-              value={data[0].api_key}
-              disabled
-            ></input>
-            <button className="button" onClick={() => copyToClipboard()}>
-              Copy
-            </button>
-            <button className="button" onClick={() => updateApiKey()}>
-              Generate new Api key
-            </button>
-          </div>
+            >
+              <input
+                className="bg-slate-500"
+                type="password"
+                value={data[0].api_key}
+                disabled
+              ></input>
+              <button className="button" onClick={() => copyToClipboard()}>
+                Copy
+              </button>
+              <button
+                className="button"
+                onClick={() => {
+                  updateApiKey();
+                  setLoadingApiKey(true);
+                }}
+              >
+                Generate new Api key
+              </button>
+            </div>
+          )}
         </div>
       );
     } else {
@@ -66,7 +78,9 @@ export const ApiPage = ({ session }: { session: Session }) => {
         className="flex items-center menuButton"
         onClick={() => dispatch(changePage("chartPage"))}
       >
-        <div><KeyboardBackspaceIcon sx={{ fontSize: 30 }} /></div>
+        <div>
+          <KeyboardBackspaceIcon sx={{ fontSize: 30 }} />
+        </div>
         <div className="font-bold">Back to chart</div>
       </button>
 

@@ -59,6 +59,8 @@ export function Chart() {
   //globalSymbol in useQuery is necessary
   useQuery(["stockData", globalSymbol], fetchStockData, {
     onSuccess(data) {
+      //reset selected date from _ _ to _ _ while change symbol
+      setSelectedData({ starting: 0, ending: 0 });
       setDateArray(dataSorting(data.data).date);
       setOptions({
         ...options,

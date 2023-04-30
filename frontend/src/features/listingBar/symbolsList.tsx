@@ -9,7 +9,7 @@ import { PublicSymbols } from "./PublicSymbols";
 import { ListingData } from "./types";
 import { selectedCategory } from "./listSlice";
 import { UsersSymbols } from "./UsersSymbols";
-
+import { LoadingComponent } from "../commonUI/LoadingComponent";
 export function SymbolList({ session }: { session: Session }) {
   // UsHkData: AxiosResponse<ListingResponse, any> | undefined
   const dispatch = useAppDispatch();
@@ -34,7 +34,7 @@ export function SymbolList({ session }: { session: Session }) {
   );
 
   if (defaultCategories().includes(globalSelectedCategory)) {
-    if (listingIsLoading) return <>loading...</>;
+    if (listingIsLoading) return <LoadingComponent/>;
     if (listingResponse && defaultCategories().includes(globalSelectedCategory))
       return (
         <PublicSymbols
@@ -43,7 +43,7 @@ export function SymbolList({ session }: { session: Session }) {
         />
       );
   } else if (!defaultCategories().includes(globalSelectedCategory)) {
-    if (userSymbolsLoading) return <>loading...</>;
+    if (userSymbolsLoading) return <LoadingComponent/>;
     if (userSymbols && userSymbols.data) {
       return <UsersSymbols selectedCategory={globalSelectedCategory} userSymbols={userSymbols.data} session={session}/>;
     }

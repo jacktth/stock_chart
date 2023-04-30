@@ -4,7 +4,7 @@ export const clipsApiParams = {
   title: {
     //queryDisplay is for displaying in the page, as the actual route is without /
     //in the beginning so we have queryRoute for real api fetching
-    queryDisplay: "/user-data/clips",
+    queryDisplay: "https://stock-chart-server.onrender.com/user-data/clips",
     queryRoute: "user-data/clips",
     method: "GET",
     description: "Return the stock data stored by user in the categories",
@@ -72,7 +72,7 @@ export const clipsApiParams = {
 
 export const categoryApiParams = {
   title: {
-    queryDisplay: "/user-data/categories",
+    queryDisplay: "https://stock-chart-server.onrender.com/user-data/categories",
     queryRoute: "user-data/categories",
     method: "GET",
     description: "Return the categories name created by user",
