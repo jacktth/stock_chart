@@ -4,13 +4,10 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { getListingParam } from './listing.controller';
-import { AllListings } from './types';
+import { AllListings, UsStockListData } from './types';
 import { usStockNameFilter } from './utilies';
 
-type usResponseRow = {
-  symbol: string;
-  name: string;
-}[];
+
 
 @Injectable()
 export class ListingService {
@@ -21,18 +18,20 @@ export class ListingService {
     if (param.market === 'US market') {
 
       const usListingData = async () => {
+        // const usListingURL =
+        //   'https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true';
         const usListingURL =
-          'https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true';
-        const res = await firstValueFrom(
-          this.httpService.get(usListingURL).pipe(
+        'https://raw.githubusercontent.com/rreichel3/US-Stock-Symbols/main/nasdaq/nasdaq_full_tickers.json';
+        const resUs  = await firstValueFrom(
+          this.httpService.get<UsStockListData>(usListingURL).pipe(
             catchError((error: AxiosError) => {
               this.logger.error(error);
               throw 'An error happened!';
             }),
           ),
         );
-
-        const row: usResponseRow = res.data.data.rows;
+  
+        const row:UsStockListData = resUs.data;
         const dataContainer = [];
         for (let obj of row) {
           new String(obj.symbol).includes('^')
@@ -93,9 +92,9 @@ export class ListingService {
   async getAllLists() {
     const allListData = async () => {
       const usListingURL =
-        'https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true';
-      const resUs = await firstValueFrom(
-        this.httpService.get(usListingURL).pipe(
+        'https://raw.githubusercontent.com/rreichel3/US-Stock-Symbols/main/nasdaq/nasdaq_full_tickers.json';
+      const resUs  = await firstValueFrom(
+        this.httpService.get<UsStockListData>(usListingURL).pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error);
             throw 'An error happened!';
@@ -103,7 +102,8 @@ export class ListingService {
         ),
       );
 
-      const row: usResponseRow = resUs.data.data.rows;
+      const row:UsStockListData = resUs.data;
+      
       const dataContainer: AllListings[] = [];
 
       for (let obj of row) {
