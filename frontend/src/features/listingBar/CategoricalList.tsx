@@ -1,7 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import React, { useRef, useState } from "react";
 import { useQueryClient } from "react-query";
-import { FixedSizeList as List } from "react-window";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
 import { useDeleteUserCategoriesMutation } from "../../hooks/useDeleteUserCategoriesMutation";
@@ -33,7 +32,7 @@ export function CategoricalList({ session }: { session: Session }) {
     e.preventDefault();
 
     if (inputCategoryRef.current?.value && session.user.id) {
-      const response = updateCategoryMutation.mutate(
+      updateCategoryMutation.mutate(
         {
           name: inputCategoryRef.current?.value,
           userId: session.user.id,
@@ -62,9 +61,9 @@ export function CategoricalList({ session }: { session: Session }) {
 
   const inputBox = () => {
     return (
-      <div className="flex  justify-center items-center ">
+      <div className=" ">
         <form
-          className="flex w-full justify-between"
+          className="flex w-full "
           onSubmit={(e) => {
             e.preventDefault();
             setCreating(false);
@@ -73,7 +72,7 @@ export function CategoricalList({ session }: { session: Session }) {
         >
           <input
             ref={inputCategoryRef}
-            className=" justify-self-center self-center text-center w-full"
+            className="   text-center w-full text-sm"
             placeholder="New category name"
             type="text"
           />
@@ -151,7 +150,7 @@ export function CategoricalList({ session }: { session: Session }) {
     <>
       <div className="w-full flex justify-between border-2 border-sky-500">
         <div></div>
-        <div>
+        <div className="w-full text-center">
         {creating ? inputBox() : <span>Your categories</span>}
         </div>
 

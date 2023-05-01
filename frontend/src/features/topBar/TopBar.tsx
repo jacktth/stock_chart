@@ -13,13 +13,14 @@ import { selectedCategory } from "../listingBar/listSlice";
 import { ListingData } from "../listingBar/types";
 import { AllListings } from "../listingBar/ListBar";
 import Fuse from "fuse.js";
-import { log } from "console";
-
+import HelpIcon from '@mui/icons-material/Help';
+import { selectTopBar, startTutorial } from "./topBarSlice";
 export const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
-  const [error, setError] = useState<any>("no error");
+
   const [searching, setSearching] = useState(false);
   const globalSymbol = useAppSelector(selectSymbol);
+
 
   const [symbolInput, setSymbolInput] = useState<string>(globalSymbol);
   const parentRef = React.useRef(null);
@@ -153,7 +154,7 @@ useEffect(() => {
   };
   return (
     <>
-      <div style={{ height: "5vh" }} className="flex relative z-50 w-full">
+      <div style={{ height: "5vh" }} className="flex relative z-10 w-full">
         <div className="mx-3">
           <form className=" h-full " onSubmit={handleSubmit}>
             <label>
@@ -176,6 +177,14 @@ useEffect(() => {
         </div>
 
         <div className="flex place-content-end place-self-start   w-full ">
+
+        <button
+            className="menuButton"
+            onClick={() => dispatch(startTutorial(true))}
+          >
+            <HelpIcon/>
+            
+          </button>
           <button
             className="menuButton"
             onClick={() => dispatch(changePage("apiPage"))}

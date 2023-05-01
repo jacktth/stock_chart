@@ -3,6 +3,7 @@ import chartReducer from '../features/chart/chartSlice'
 import authReducer from '../features/auth/authSlice'
 import listReducer from '../features/listingBar/listSlice'
 import pageReducer from '../features/Page/pageSlice'
+import topBarReducer from '../features/topBar/topBarSlice'
 
 
 
@@ -12,7 +13,8 @@ export const store = configureStore({
    chart:chartReducer,
    auth:authReducer,
    list:listReducer,
-   page:pageReducer
+   page:pageReducer,
+   topBar:topBarReducer
   }
 })
 
