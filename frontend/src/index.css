@@ -33,3 +33,19 @@
   width: 100%;
   height: 100%;
 }
+
+@keyframes radar {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+.animate-radar {
+  animation-name: radar;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}

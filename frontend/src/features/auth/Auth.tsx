@@ -45,8 +45,9 @@ export default function Auth() {
 
   return (
     <div className=" flex bg-gray-100 justify-center  h-screen w-screen">
+      <div className=""></div>
       <div
-        className=" bg-white border-4  w-5/12 h-5/6 self-center flex justify-center"
+        className=" bg-white border-4  w-5/12 h-5/6 self-center flex justify-center "
         aria-live="polite"
       >
         {loading ? (
@@ -58,11 +59,10 @@ export default function Auth() {
         ) : (
           <div className="flex flex-col self-center w-4/5 ">
             <div className="">
-              <h1 className="header">Supabase + React</h1>
+              <h1 className="header">Stock Chart</h1>
 
               <p className="description font-bold text-lg">
-                {signUpPage ?"Sign up" : "Sign in to your account"}
-                
+                {signUpPage ? "Sign up" : "Sign in to your account"}
               </p>
             </div>
 
@@ -84,7 +84,7 @@ export default function Auth() {
                 <br />
                 <div>
                   <label htmlFor="password">Password</label>
-                <br />
+                  <br />
 
                   <input
                     id="password"
@@ -98,15 +98,19 @@ export default function Auth() {
               </div>
               <br />
               <button
-                className="button block bg-sky-400 text-white border-sky-200 rounded-md p-1 w-full"
+                className={`${
+                  signUpPage ? "bg-purple-600 hover:bg-purple-500" : "bg-sky-400 hover:bg-sky-300"
+                }  block  text-white border-sky-200 border-2 rounded-md p-1 w-full`}
                 aria-live="polite"
               >
                 {signUpPage ? "Sign Up" : "Login"}
               </button>
               <p className="my-1">
-                {signUpPage ? "Go to login" : "Don’t have an account yet?"}{" "}
+                {signUpPage ? "Go to " : "Don’t have an account yet?"}{" "}
                 <button
-                  className="text-center text-sky-400"
+                  className={`text-center ${
+                    signUpPage ? "text-purple-600 " : "text-sky-400"
+                  }`}
                   onClick={(e) => {
                     setSignUpPage(signUpPage ? false : true);
                     e.preventDefault();
