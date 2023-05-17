@@ -45,9 +45,8 @@ export default function Auth() {
 
   return (
     <div className=" flex bg-gray-100 justify-center  h-screen w-screen">
-      <div className=""></div>
       <div
-        className=" bg-white border-4  w-5/12 h-5/6 self-center flex justify-center "
+        className=" bg-white border-4 max-h-[700px] max-w-[800px] w-4/6 h-5/6 self-center flex justify-center "
         aria-live="polite"
       >
         {loading ? (
