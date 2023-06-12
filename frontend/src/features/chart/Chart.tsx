@@ -17,7 +17,6 @@ import {
   updateSymbol,
 } from "./chartSlice";
 import axios from "axios";
-import dataSorting from "./dataSorting";
 import { ListingBar } from "../listingBar/ListBar";
 import "../../index.css";
 import indicatorsAll from "highcharts/indicators/indicators-all";
@@ -32,7 +31,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
 import { createPortal } from "react-dom";
-import { dateDiff, ymd } from "./utils";
+import { dateDiff, stockPriceDataSorting, ymd } from "./utils";
 import { TopBar } from "../topBar/TopBar";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
@@ -61,7 +60,7 @@ export function Chart() {
     onSuccess(data) {
       //reset selected date from _ _ to _ _ while change symbol
       setSelectedData({ starting: 0, ending: 0 });
-      setDateArray(dataSorting(data.data).date);
+      setDateArray(stockPriceDataSorting(data.data).date);
       setOptions({
         ...options,
         xAxis: {
@@ -71,7 +70,7 @@ export function Chart() {
         series: [
           {
             type: "candlestick",
-            data: dataSorting(data.data).stockData,
+            data: stockPriceDataSorting(data.data).stockData,
             allowPointSelect: true,
           },
         ],
@@ -84,8 +83,8 @@ export function Chart() {
         chart.xAxis[0].setExtremes(
           globalFocus.min
             ? globalFocus.min
-            : dataSorting(data.data).date.at(-100),
-          globalFocus.max ? globalFocus.max : dataSorting(data.data).date.at(-1)
+            : stockPriceDataSorting(data.data).date.at(-100),
+          globalFocus.max ? globalFocus.max : stockPriceDataSorting(data.data).date.at(-1)
         );
       }
     },

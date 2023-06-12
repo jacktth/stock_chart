@@ -1,15 +1,18 @@
 import React from "react";
 import { useState } from "react";
 import { supabase } from "../../api/supabaseClient";
-
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signUpPage, setSignUpPage] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleSignUpAndLogin = async (e) => {
     e.preventDefault();
+    // this fn is to handle the login and sign up event. Depending on 
+    //the state of signUpPage. if true, using signUp method of supabase. 
+    //Otherwise, using signInWithPassword to login.
     if (signUpPage) {
       try {
         setLoading(true);
@@ -42,7 +45,21 @@ export default function Auth() {
       }
     }
   };
-
+  async function visitorLogin() {
+    try {
+      setLoading(true);
+      // const { error } = await supabase.auth.signInWithOtp({ email });
+      const sigUpAction = await supabase.auth.signInWithPassword({
+        email: `${import.meta.env.VITE_Vistor_email}`,
+        password: `${import.meta.env.VITE_Vistor_Password}`,
+      });
+      if (sigUpAction.error) throw sigUpAction.error;
+    } catch (error) {
+      alert(error.error_description || error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className=" flex bg-gray-100 justify-center  h-screen w-screen">
       <div
@@ -66,7 +83,7 @@ export default function Auth() {
             </div>
 
             <br />
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSignUpAndLogin}>
               <div className="flex flex-col ">
                 <div className="">
                   <label htmlFor="email">Your email</label>
@@ -98,7 +115,9 @@ export default function Auth() {
               <br />
               <button
                 className={`${
-                  signUpPage ? "bg-purple-600 hover:bg-purple-500" : "bg-sky-400 hover:bg-sky-300"
+                  signUpPage
+                    ? "bg-purple-600 hover:bg-purple-500"
+                    : "bg-sky-400 hover:bg-sky-300"
                 }  block  text-white border-sky-200 border-2 rounded-md p-1 w-full`}
                 aria-live="polite"
               >
@@ -118,6 +137,24 @@ export default function Auth() {
                   {signUpPage ? "Login" : "Sign Up"}
                 </button>
               </p>
+              {signUpPage ? null : (
+                <p>
+                  Use{" "}
+                  <>
+                    <button
+                      title="Hi! I'm tooltip"
+                      onClick={visitorLogin}
+                      className="text-sky-400"
+                    >
+                      Public Visitor Mode{" "}
+
+                    </button>
+                    <span title="This mode allow you to login in by a public account. All the data in the account could be shared, viewed and changed by anyone.">
+                        <HelpOutlineIcon />
+                      </span>
+                  </>
+                </p>
+              )}
             </form>
           </div>
         )}

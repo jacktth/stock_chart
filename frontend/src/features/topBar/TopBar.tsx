@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { supabase } from "../../api/supabaseClient";
 import axios, { AxiosResponse } from "axios";
-import dataSorting from "../chart/dataSorting";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectSymbol, updateFocus, updateSymbol } from "../chart/chartSlice";
 import { Session } from "@supabase/supabase-js";
