@@ -50,7 +50,7 @@ export default function Auth() {
       setLoading(true);
       // const { error } = await supabase.auth.signInWithOtp({ email });
       const sigUpAction = await supabase.auth.signInWithPassword({
-        email: `${import.meta.env.VITE_Vistor_email}`,
+        email: `${import.meta.env.VITE_Vistor_Email}`,
         password: `${import.meta.env.VITE_Vistor_Password}`,
       });
       if (sigUpAction.error) throw sigUpAction.error;
