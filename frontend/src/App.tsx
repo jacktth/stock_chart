@@ -2,8 +2,8 @@ import { AuthError, Session } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { supabase } from "./api/supabaseClient";
-import Auth from "./features/auth/auth";
 import Page from "./features/Page/Page";
+import Auth from "./features/auth/Auth";
 const queryClient = new QueryClient();
 function App() {
   const [session, setSession] = useState<Session | null>(null);
