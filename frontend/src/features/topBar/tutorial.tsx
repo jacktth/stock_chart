@@ -5,6 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Hidden } from "@mui/material";
+
 export const Tutorial = () => {
   const dispatch = useAppDispatch();
   const photos = ["/basicOperation.svg", "/selectData.svg"];
