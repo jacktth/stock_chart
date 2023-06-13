@@ -14,7 +14,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import ApiColumn from "./apiColumn";
 import LoadingComponent from "../commonUI/loadingComponent";
 
-const ApiPage = ({ session }: { session: Session }) => {
+const UserApiPage = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const client = useSupabase();
@@ -106,4 +106,4 @@ const ApiPage = ({ session }: { session: Session }) => {
     </div>
   );
 };
-export default ApiPage;
+export default UserApiPage;
