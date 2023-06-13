@@ -7,7 +7,7 @@ import { selectPage } from "./pageSlice";
 import { ApiPage } from "../api/ApiPage";
 import { selectTopBar } from "../topBar/topBarSlice";
 import { ListingBar } from "../listingBar/ListingBar";
-import { Tutorial } from "../topBar/Tutorial";
+import { TutorialWindow } from "../topBar/TutorialWindow";
 
 export const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
@@ -16,7 +16,7 @@ export const Page = ({ session }: { session: Session }) => {
   const ChartPage = () => {
     return (
       <div className="flex ">
-        {globalTutorial.startTutorial===true ?<Tutorial/> :null}
+        {globalTutorial.startTutorial===true ?<TutorialWindow/> :null}
 
         <div className="w-2/12 ">
           <ListingBar session={session} />
