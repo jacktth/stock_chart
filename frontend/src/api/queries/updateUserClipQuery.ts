@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { SelectedData } from "../../features/listingBar/saveBar";
+import { SelectedData } from "../../features/listingBar/SaveBar";
 
 //This place should be use object to replace because the wrong input rank of the variables will cause mismatching
 export function updateUserClipQuery(

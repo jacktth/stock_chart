@@ -25,7 +25,7 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import {  SelectedData } from "../listingBar/saveBar";
+import {  SelectedData } from "../listingBar/SaveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
