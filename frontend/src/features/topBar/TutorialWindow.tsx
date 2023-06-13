@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-export const TutorialWindow = () => {
+const TutorialWindow = () => {
   const dispatch = useAppDispatch();
   const photos = ["/basicOperation.svg", "/selectData.svg"];
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -75,3 +75,6 @@ export const TutorialWindow = () => {
     </div>
   );
 };
+
+
+export default TutorialWindow;

@@ -7,7 +7,7 @@ import { selectPage } from "./pageSlice";
 import { ApiPage } from "../api/ApiPage";
 import { selectTopBar } from "../topBar/topBarSlice";
 import { ListingBar } from "../listingBar/ListingBar";
-import { TutorialWindow } from "../topBar/TutorialWindow";
+import TutorialWindow from "../topBar/TutorialWindow";
 
 export const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
