@@ -6,8 +6,8 @@ import { selectTopBar } from "../topBar/topBarSlice";
 import TutorialWindow from "../topBar/TutorialWindow";
 import ListingBar from "../listingBar/ListingBar";
 import Chart from "../chart/Chart";
-import ApiPage from "../api/apiPage";
 import TopBar from "../topBar/topBar";
+import ApiPage from "../api/apiPage";
 
 const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
@@ -33,7 +33,7 @@ const Page = ({ session }: { session: Session }) => {
   function renderPage() {
     switch (globalSelect) {
       case "chartPage":
-        return ChartPage();
+        return <ChartPage/>;
       case "apiPage":
         return <ApiPage session={session} />;
     }
