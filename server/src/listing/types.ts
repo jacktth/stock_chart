@@ -5,7 +5,7 @@ export type AllListings = {
   zhName?: string;
 };
 
-export type UsStockListData = {
+export type UsStockListInfo = {
   symbol: string;
   name: string;
   lastsale: string;
@@ -19,3 +19,10 @@ export type UsStockListData = {
   sector: string;
   url: string;
 }[];
+
+export type HkStockListInfo = {
+  symbol: string;
+  engName?: string;
+  market: string;
+  zhName?: string;
+};
