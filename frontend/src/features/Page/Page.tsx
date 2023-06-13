@@ -2,12 +2,12 @@ import { Session } from "@supabase/supabase-js";
 import React from "react";
 import { useAppSelector } from "../../app/hooks";
 import { selectPage } from "./pageSlice";
-import  ApiPage  from "../api/apiPage";
 import { selectTopBar } from "../topBar/topBarSlice";
 import TutorialWindow from "../topBar/TutorialWindow";
 import ListingBar from "../listingBar/ListingBar";
 import Chart from "../chart/Chart";
 import TopBar from "../topBar/topBar";
+import ApiPage from "../api/apiPage";
 
  const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
