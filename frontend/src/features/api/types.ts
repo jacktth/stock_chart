@@ -17,7 +17,7 @@ export type ApiQueryParam ={
 
 export type ApiResponseType = {
     code:number
-    description:string
+    description:JSX.Element
 }
 
 export type DynamicInputState = {

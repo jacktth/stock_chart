@@ -4,12 +4,12 @@ import { useClipsQuery } from "../../hooks/useClipsQuery";
 import { useQuery, useQueryClient } from "react-query";
 import { Session } from "@supabase/supabase-js";
 import axios from "axios";
-import { PublicSymbols } from "./PublicSymbols";
 import { ListingData } from "./types";
 import { selectedCategory } from "./listSlice";
-import { UsersSymbols } from "./UsersSymbols";
-import { LoadingComponent } from "../commonUI/LoadingComponent";
 import { defaultCategories } from "./utilities";
+import PublicSymbols from "./PublicSymbols";
+import UsersSymbols from "./UsersSymbols";
+import LoadingComponent from "../commonUI/loadingComponent";
 
 function SymbolsList({ session }: { session: Session }) {
   //This is a fn to separate PublicSymbols and UsersSymbols

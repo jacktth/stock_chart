@@ -31,6 +31,7 @@ const TutorialWindow = () => {
           {photos.map((e, i) => {
             return (
               <div
+              key={e[i]}
                 className={`w-3 h-3 rounded-full mr-2
             ${
               photos[photoIndex] === e ? "bg-slate-500" : "bg-slate-200"

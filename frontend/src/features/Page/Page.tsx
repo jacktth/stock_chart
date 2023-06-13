@@ -1,15 +1,15 @@
 import { Session } from "@supabase/supabase-js";
 import React from "react";
 import { useAppSelector } from "../../app/hooks";
-import { Chart } from "../chart/Chart";
-import { TopBar } from "../topBar/TopBar";
 import { selectPage } from "./pageSlice";
-import { ApiPage } from "../api/ApiPage";
+import  ApiPage  from "../api/apiPage";
 import { selectTopBar } from "../topBar/topBarSlice";
-import { ListingBar } from "../listingBar/ListingBar";
 import TutorialWindow from "../topBar/TutorialWindow";
+import ListingBar from "../listingBar/ListingBar";
+import Chart from "../chart/Chart";
+import TopBar from "../topBar/topBar";
 
-export const Page = ({ session }: { session: Session }) => {
+ const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
   const globalTutorial = useAppSelector(selectTopBar);
 
@@ -25,6 +25,7 @@ export const Page = ({ session }: { session: Session }) => {
 
           <TopBar session={session} />
           <Chart />
+
         </div>
       </div>
     );
@@ -42,3 +43,5 @@ export const Page = ({ session }: { session: Session }) => {
   }
   return <>{renderPage()}</>;
 };
+
+export default Page;

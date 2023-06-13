@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { supabase } from "../../api/supabaseClient";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-export default function Auth() {
+const  Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -162,3 +162,5 @@ export default function Auth() {
     </div>
   );
 }
+
+export default Auth;

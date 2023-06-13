@@ -9,8 +9,8 @@ import {
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { LoadingComponent } from "../commonUI/LoadingComponent";
-export const ApiColumn = ({
+import LoadingComponent from "../commonUI/loadingComponent";
+ const ApiColumn = ({
   title,
   param,
   resType,
@@ -178,3 +178,5 @@ export const ApiColumn = ({
     </div>
   );
 };
+
+export default ApiColumn;

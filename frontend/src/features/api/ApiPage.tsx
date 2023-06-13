@@ -9,12 +9,12 @@ import { useAppDispatch } from "../../app/hooks";
 import { useApiKeyQuery } from "../../hooks/useApiKeyQuery";
 import useSupabase from "../../hooks/useSupabase";
 import { changePage } from "../Page/pageSlice";
-import { ApiColumn } from "./ApiColumn";
 import { categoryApiParams, clipsApiParams } from "./utilies";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { LoadingComponent } from "../commonUI/LoadingComponent";
+import ApiColumn from "./apiColumn";
+import LoadingComponent from "../commonUI/loadingComponent";
 
-export const ApiPage = ({ session }: { session: Session }) => {
+const ApiPage = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const client = useSupabase();
@@ -106,3 +106,4 @@ export const ApiPage = ({ session }: { session: Session }) => {
     </div>
   );
 };
+export default ApiPage;

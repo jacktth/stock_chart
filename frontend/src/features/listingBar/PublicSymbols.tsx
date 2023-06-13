@@ -5,7 +5,7 @@ import { selectSymbol, selectViewing, updateFocus, updateSymbol } from "../chart
 import { ListingData } from "./types";
 import { log } from "console";
 
-export function PublicSymbols({market,data}:{market:string,data:ListingData[]} ) {
+const PublicSymbols = ({market,data}:{market:string,data:ListingData[]} ) => {
   
   const globalViewing = useAppSelector(selectViewing);
   const dispatch = useAppDispatch();
@@ -74,3 +74,5 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
       </div>
   );
 }
+
+export default PublicSymbols;

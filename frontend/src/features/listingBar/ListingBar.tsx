@@ -1,11 +1,11 @@
 import React from "react";
 
 import { Session } from "@supabase/supabase-js";
-import { SaveBar } from "./SaveBar";
 import SymbolsList from "./symbolsList";
 import CategoricalList from "./CategoricalList";
+import SaveBar from "./saveBar";
 
-export function ListingBar({ session }: { session: Session }) {
+const ListingBar= ({ session }: { session: Session }) => {
   //this is the parent component and the left side bar
   return (
     <div className="h-full">
@@ -15,3 +15,5 @@ export function ListingBar({ session }: { session: Session }) {
     </div>
   );
 }
+
+export default ListingBar;

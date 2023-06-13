@@ -13,7 +13,7 @@ import { ListingData } from "../listingBar/types";
 import Fuse from "fuse.js";
 import HelpIcon from '@mui/icons-material/Help';
 import { selectTopBar, startTutorial } from "./topBarSlice";
-export const TopBar = ({ session }: { session: Session }) => {
+ const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
 
   const [searching, setSearching] = useState(false);
@@ -197,3 +197,5 @@ useEffect(() => {
     </>
   );
 };
+
+export default TopBar;

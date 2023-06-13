@@ -37,8 +37,7 @@ export type SelectedData = {
   ending: number | null;
 };
 
-export function SaveBar({ session }: { session: Session }) {
-  const dispatch = useAppDispatch();
+const SaveBar = ({ session }: { session: Session }) => {
   const globalMarket = useAppSelector(selectMarket);
   const globalSymbol = useAppSelector(selectSymbol);
   const globalSelectedCategoryInfo = useAppSelector(selectedUserCategoryInfo);
@@ -169,3 +168,5 @@ export function SaveBar({ session }: { session: Session }) {
     );
   }
 }
+
+export default SaveBar;

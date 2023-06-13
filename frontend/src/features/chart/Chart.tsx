@@ -17,7 +17,6 @@ import {
   updateSymbol,
 } from "./chartSlice";
 import axios from "axios";
-import { ListingBar } from "../listingBar/ListingBar";
 import "../../index.css";
 import indicatorsAll from "highcharts/indicators/indicators-all";
 import annotationsAdvanced from "highcharts/modules/annotations-advanced";
@@ -26,19 +25,19 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import { SaveBar, SelectedData } from "../listingBar/SaveBar";
+import {  SelectedData } from "../listingBar/saveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
 import { createPortal } from "react-dom";
 import { dateDiff, stockPriceDataSorting, ymd } from "./utilites";
-import { TopBar } from "../topBar/TopBar";
+import { TopBar } from "../topBar/topBar";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
-export function Chart() {
+ function Chart() {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
@@ -201,3 +200,5 @@ export function Chart() {
     />
   );
 }
+
+export default Chart;

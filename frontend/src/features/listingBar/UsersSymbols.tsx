@@ -9,7 +9,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Session } from "@supabase/supabase-js";
 type UserSymbolData = Omit<Clip, "user_id" | "created_at" | "category">;
 
-export function UsersSymbols({
+const UsersSymbols = ({
   selectedCategory,
   userSymbols,
   session,
@@ -17,7 +17,7 @@ export function UsersSymbols({
   userSymbols: Clip[];
   session: Session;
   selectedCategory: string;
-}) {
+}) =>{
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const deleteUserClip = useDeleteUserClipMutation();
@@ -145,3 +145,5 @@ export function UsersSymbols({
 
   return <Symbols />;
 }
+
+export default UsersSymbols;
