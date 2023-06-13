@@ -6,8 +6,8 @@ import { selectTopBar } from "../topBar/topBarSlice";
 import TutorialWindow from "../topBar/TutorialWindow";
 import ListingBar from "../listingBar/ListingBar";
 import Chart from "../chart/Chart";
-import { TopBar } from "../topBar/topBar";
 import UserApiPage from "../api/userApiPage";
+import TopToolBar from "../topBar/topToolBar";
 
 const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
@@ -23,7 +23,7 @@ const Page = ({ session }: { session: Session }) => {
           <ListingBar session={session} />
         </div>
         <div style={{ height: "100vh" }} className="w-10/12 ">
-          <TopBar session={session} />
+          <TopToolBar session={session} />
 
           <Chart />
         </div>

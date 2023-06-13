@@ -12,7 +12,7 @@ import { ListingData } from "../listingBar/types";
 import Fuse from "fuse.js";
 import HelpIcon from "@mui/icons-material/Help";
 import {  startTutorial } from "./topBarSlice";
-export const TopBar = ({ session }: { session: Session }) => {
+ const TopToolBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
 
   const [searching, setSearching] = useState(false);
@@ -190,3 +190,4 @@ export const TopBar = ({ session }: { session: Session }) => {
   );
 };
 
+export default TopToolBar;
