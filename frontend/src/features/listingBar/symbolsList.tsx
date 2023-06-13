@@ -10,7 +10,7 @@ import { selectedCategory } from "./listSlice";
 import { UsersSymbols } from "./UsersSymbols";
 import { LoadingComponent } from "../commonUI/LoadingComponent";
 import { defaultCategories } from "./utilities";
-export function SymbolList({ session }: { session: Session }) {
+export default function SymbolList({ session }: { session: Session }) {
   //This is a fn to separate PublicSymbols and UsersSymbols
   const globalSelectedCategory = useAppSelector(selectedCategory);
 

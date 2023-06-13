@@ -14,7 +14,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { defaultCategories } from "./utilities";
 //This the component for the categories which is "Your categories"
-export function CategoricalList({ session }: { session: Session }) {
+export default function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
   const inputCategoryRef = useRef<HTMLInputElement>(null);

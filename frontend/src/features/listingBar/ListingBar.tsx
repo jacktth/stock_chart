@@ -1,8 +1,8 @@
 import React from "react";
 
 import { Session } from "@supabase/supabase-js";
-import { CategoricalList } from "./CategoricalList";
-import { SymbolList } from "./SymbolsList";
+import CategoricalList from "./CategoricalList";
+import SymbolList from "./SymbolsList";
 import { SaveBar } from "./SaveBar";
 
 export function ListingBar({ session }: { session: Session }) {
