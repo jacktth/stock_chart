@@ -10,7 +10,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useQuery, useQueryClient } from "react-query";
 import { selectedCategory } from "../listingBar/listSlice";
 import { ListingData } from "../listingBar/types";
-import { AllListings } from "../listingBar/ListBar";
 import Fuse from "fuse.js";
 import HelpIcon from '@mui/icons-material/Help';
 import { selectTopBar, startTutorial } from "./topBarSlice";
@@ -36,7 +35,7 @@ useEffect(() => {
   
 }, [globalSymbol])
 
-  function clickPublicSymbol(container: AllListings) {
+  function clickPublicSymbol(container: ListingData) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
 
     dispatch(

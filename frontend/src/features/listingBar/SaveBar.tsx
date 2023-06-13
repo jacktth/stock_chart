@@ -23,7 +23,6 @@ import {
   selectSymbol,
   updateSelectedData,
 } from "../chart/chartSlice";
-import { defaultCategories } from "./defaultCategories";
 import {
   addClip,
   selectCategories,
@@ -31,6 +30,7 @@ import {
   updateUserCategoryInfo,
 } from "./listSlice";
 import { log } from "console";
+import { defaultCategories } from "./utilities";
 
 export type SelectedData = {
   starting: number | null;

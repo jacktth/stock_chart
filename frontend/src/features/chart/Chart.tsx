@@ -17,7 +17,7 @@ import {
   updateSymbol,
 } from "./chartSlice";
 import axios from "axios";
-import { ListingBar } from "../listingBar/ListBar";
+import { ListingBar } from "../listingBar/ListingBar";
 import "../../index.css";
 import indicatorsAll from "highcharts/indicators/indicators-all";
 import annotationsAdvanced from "highcharts/modules/annotations-advanced";
@@ -31,7 +31,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
 import { createPortal } from "react-dom";
-import { dateDiff, stockPriceDataSorting, ymd } from "./utils";
+import { dateDiff, stockPriceDataSorting, ymd } from "./utilites";
 import { TopBar } from "../topBar/TopBar";
 indicatorsAll(Highcharts);
 annotationsAdvanced(Highcharts);
@@ -42,19 +42,17 @@ export function Chart() {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
-  const globalAuth = useAppSelector(selectAuth);
   const globalFocus = useAppSelector(selectFocus);
-  const queryClient = useQueryClient();
-  // const { data } = useUserQuery();
   const chartComponent = useRef<HighchartsReact.RefObject>(null);
-  const fetchStockData = () =>
-    axios.get(`${import.meta.env.VITE_SERVER }` + "stock-data", {
+  function fetchStockData() {
+    return axios.get(`${import.meta.env.VITE_SERVER}` + "stock-data", {
       params: {
         symbol: globalSymbol,
         market: globalMarket,
         period1: "2022-02-01",
       },
     });
+  }
   //globalSymbol in useQuery is necessary
   useQuery(["stockData", globalSymbol], fetchStockData, {
     onSuccess(data) {
@@ -84,7 +82,9 @@ export function Chart() {
           globalFocus.min
             ? globalFocus.min
             : stockPriceDataSorting(data.data).date.at(-100),
-          globalFocus.max ? globalFocus.max : stockPriceDataSorting(data.data).date.at(-1)
+          globalFocus.max
+            ? globalFocus.max
+            : stockPriceDataSorting(data.data).date.at(-1)
         );
       }
     },
@@ -191,13 +191,13 @@ export function Chart() {
   }, [selectedData]);
 
   return (
-      <HighchartsReact
-        ref={chartComponent}
-        containerProps={{ style: { height: "95vh" } }}
-        highcharts={Highcharts}
-        constructorType={"stockChart"}
-        // immutable={true}
-        options={options}
-      />
+    <HighchartsReact
+      ref={chartComponent}
+      containerProps={{ style: { height: "95vh" } }}
+      highcharts={Highcharts}
+      constructorType={"stockChart"}
+      // immutable={true}
+      options={options}
+    />
   );
 }

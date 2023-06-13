@@ -2,7 +2,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectSymbol, selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
-import { AllListings } from "./ListBar";
 import { ListingData } from "./types";
 import { log } from "console";
 
@@ -20,7 +19,7 @@ export function PublicSymbols({market,data}:{market:string,data:ListingData[]} )
     estimateSize: (i)=>50,
     overscan: 15,
   });
-  function clickPublicSymbol(container: AllListings) {
+  function clickPublicSymbol(container: ListingData) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
     setSelectedSymbol(container.symbol);
     dispatch(

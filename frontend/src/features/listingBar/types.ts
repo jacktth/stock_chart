@@ -4,7 +4,7 @@ export type ListingData = {
 
         symbol: string;
         engName: string;
-        zhNAme?: string;
+        zhName?: string;
         market:string
  
 

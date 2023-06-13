@@ -2,7 +2,6 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useClipsQuery } from "../../hooks/useClipsQuery";
 import { useQuery, useQueryClient } from "react-query";
-import { defaultCategories } from "./defaultCategories";
 import { Session } from "@supabase/supabase-js";
 import axios from "axios";
 import { PublicSymbols } from "./PublicSymbols";
@@ -10,18 +9,17 @@ import { ListingData } from "./types";
 import { selectedCategory } from "./listSlice";
 import { UsersSymbols } from "./UsersSymbols";
 import { LoadingComponent } from "../commonUI/LoadingComponent";
+import { defaultCategories } from "./utilities";
 export function SymbolList({ session }: { session: Session }) {
-  // UsHkData: AxiosResponse<ListingResponse, any> | undefined
-  const dispatch = useAppDispatch();
+  //This is a fn to separate PublicSymbols and UsersSymbols
   const globalSelectedCategory = useAppSelector(selectedCategory);
-  const queryClient = useQueryClient();
 
-  const fetchListings = () =>
-    axios.get<ListingData[]>(`${import.meta.env.VITE_SERVER}listing`, {
+  function fetchListings(){
+    return axios.get<ListingData[]>(`${import.meta.env.VITE_SERVER}listing`, {
       params: {
         market: globalSelectedCategory,
       },
-    });
+    });}
   //globalSelectedCategory must be in the list of useQuery to refresh data
   const {
     data: listingResponse,

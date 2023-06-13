@@ -6,47 +6,49 @@ import { useCategoriesQuery } from "../../hooks/useCategoriesQuery";
 import { useDeleteUserCategoriesMutation } from "../../hooks/useDeleteUserCategoriesMutation";
 import { useUpdateUserCategoryMutation } from "../../hooks/useUpdateUserCategoyMutation";
 import { selectViewing, updateViewing } from "../chart/chartSlice";
-import { defaultCategories } from "./defaultCategories";
 import { changeCategory } from "./listSlice";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CategoriesQueryData } from "./types";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { defaultCategories } from "./utilities";
+//This the component for the categories which is "Your categories"
 export function CategoricalList({ session }: { session: Session }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [creating, setCreating] = useState(false);
-  const queryClient = useQueryClient();
-
-  const dispatch = useAppDispatch();
-  const globalViewing = useAppSelector(selectViewing);
   const inputCategoryRef = useRef<HTMLInputElement>(null);
 
+  //redux hooks
+  const dispatch = useAppDispatch();
+  const globalViewing = useAppSelector(selectViewing);
+
+  //Custom hooks
   const { data } = useCategoriesQuery(session.user.id);
   const deleteCategoriesQuery = useDeleteUserCategoriesMutation();
   const updateCategoryMutation = useUpdateUserCategoryMutation();
+
   function updateSelectedCategory(name: string) {
     dispatch(changeCategory(name));
   }
-  function insertCategory(e: React.FormEvent<HTMLFormElement>) {
+  function createCategory(e: React.FormEvent<HTMLFormElement>) {
+    //this fn is to create user's custom category
     e.preventDefault();
 
     if (inputCategoryRef.current?.value && session.user.id) {
-      updateCategoryMutation.mutate(
-        {
-          name: inputCategoryRef.current?.value,
-          userId: session.user.id,
-          default: false,
-        },
-      );
-
+      updateCategoryMutation.mutate({
+        name: inputCategoryRef.current?.value,
+        userId: session.user.id,
+        default: false,
+      });
     }
 
-    if(!inputCategoryRef.current?.value){
-      alert("Empty name is not accept")
+    if (!inputCategoryRef.current?.value) {
+      alert("Empty name is not accept");
     }
   }
   function deleteCategory(userId: string, categoryName: string) {
+    //this fn is to delete user's custom category
     if (window.confirm(`Are you sure to delete ${categoryName} category?`)) {
       deleteCategoriesQuery.mutate(
         { userId, categoryName },
@@ -60,6 +62,7 @@ export function CategoricalList({ session }: { session: Session }) {
   }
 
   const inputBox = () => {
+    //the element for the input box to input name of the custom category
     return (
       <div className=" ">
         <form
@@ -67,7 +70,7 @@ export function CategoricalList({ session }: { session: Session }) {
           onSubmit={(e) => {
             e.preventDefault();
             setCreating(false);
-            insertCategory(e);
+            createCategory(e);
           }}
         >
           <input
@@ -85,6 +88,7 @@ export function CategoricalList({ session }: { session: Session }) {
   };
 
   const CategoriesList = ({ data }: { data: CategoriesQueryData[] }) => {
+    //the component for displaying all the categories
     const parentRef = React.useRef(null);
 
     // The virtualizer
@@ -151,7 +155,7 @@ export function CategoricalList({ session }: { session: Session }) {
       <div className="w-full flex justify-between border-2 border-sky-500">
         <div></div>
         <div className="w-full text-center">
-        {creating ? inputBox() : <span>Your categories</span>}
+          {creating ? inputBox() : <span>Your categories</span>}
         </div>
 
         <div className="">
@@ -165,7 +169,6 @@ export function CategoricalList({ session }: { session: Session }) {
           </button>
         </div>
       </div>
-      
 
       {data ? <CategoriesList data={data} /> : null}
     </>

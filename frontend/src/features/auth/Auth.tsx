@@ -8,7 +8,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [signUpPage, setSignUpPage] = useState(false);
 
-  const handleSignUpAndLogin = async (e) => {
+  async function handleSignUpAndLogin (e)  {
     e.preventDefault();
     // this fn is to handle the login and sign up event. Depending on 
     //the state of signUpPage. if true, using signUp method of supabase. 
