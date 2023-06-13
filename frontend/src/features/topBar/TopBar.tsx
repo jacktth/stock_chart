@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { supabase } from "../../api/supabaseClient";
 import axios, { AxiosResponse } from "axios";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -11,14 +10,13 @@ import { useQuery, useQueryClient } from "react-query";
 import { selectedCategory } from "../listingBar/listSlice";
 import { ListingData } from "../listingBar/types";
 import Fuse from "fuse.js";
-import HelpIcon from '@mui/icons-material/Help';
-import { selectTopBar, startTutorial } from "./topBarSlice";
- const TopBar = ({ session }: { session: Session }) => {
+import HelpIcon from "@mui/icons-material/Help";
+import {  startTutorial } from "./topBarSlice";
+export const TopBar = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();
 
   const [searching, setSearching] = useState(false);
   const globalSymbol = useAppSelector(selectSymbol);
-
 
   const [symbolInput, setSymbolInput] = useState<string>(globalSymbol);
   const parentRef = React.useRef(null);
@@ -28,12 +26,11 @@ import { selectTopBar, startTutorial } from "./topBarSlice";
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
   };
-useEffect(() => {
-  setSearching(false)
+  useEffect(() => {
+    setSearching(false);
 
-  setSymbolInput(globalSymbol)
-  
-}, [globalSymbol])
+    setSymbolInput(globalSymbol);
+  }, [globalSymbol]);
 
   function clickPublicSymbol(container: ListingData) {
     dispatch(updateSymbol(container.symbol + "." + container.market));
@@ -46,7 +43,6 @@ useEffect(() => {
     );
   }
   const handleSubmit = (e) => {
-
     e.preventDefault();
   };
 
@@ -58,8 +54,7 @@ useEffect(() => {
   function clickSuggestion(symbol: Fuse.FuseResult<ListingData>) {
     setSearching(false);
     setSelectedSymbol(symbol.item.symbol);
-    if(symbol.item.market === "HK"){
-      
+    if (symbol.item.market === "HK") {
     }
     dispatch(updateSymbol(symbol.item.symbol + "." + symbol.item.market));
     setSymbolInput(symbol.item.symbol);
@@ -82,12 +77,12 @@ useEffect(() => {
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
 
   const Suggestions = () => {
-    if (listingResponse && symbolInput.length > 0 && searching===true ) {
+    if (listingResponse && symbolInput.length > 0 && searching === true) {
       const symbols = listingResponse.data;
       const fuse = new Fuse(symbols, {
         keys: ["symbol"],
       });
-      const suggestions = fuse.search(symbolInput,{limit: 10});
+      const suggestions = fuse.search(symbolInput, { limit: 10 });
 
       const rowVirtualizer = useVirtualizer({
         count: suggestions.length,
@@ -163,25 +158,23 @@ useEffect(() => {
                 placeholder="Symbol"
                 value={symbolInput}
                 onChange={(e) => {
-                  setSymbolInput(e.target.value); setSearching(true)
+                  setSymbolInput(e.target.value);
+                  setSearching(true);
                 }}
                 // onFocus={() => setSearching(true)}
                 // onBlur={() => setSearching(false)}
-
               />
-              <Suggestions/>
+              <Suggestions />
             </label>
           </form>
         </div>
 
         <div className="flex place-content-end place-self-start   w-full ">
-
-        <button
+          <button
             className="menuButton"
             onClick={() => dispatch(startTutorial(true))}
           >
-            <HelpIcon/>
-            
+            <HelpIcon />
           </button>
           <button
             className="menuButton"
@@ -198,4 +191,3 @@ useEffect(() => {
   );
 };
 
-export default TopBar;

@@ -6,14 +6,15 @@ import { selectTopBar } from "../topBar/topBarSlice";
 import TutorialWindow from "../topBar/TutorialWindow";
 import ListingBar from "../listingBar/ListingBar";
 import Chart from "../chart/Chart";
-import TopBar from "../topBar/topBar";
 import ApiPage from "../api/apiPage";
+import { TopBar } from "../topBar/topBar";
 
 const Page = ({ session }: { session: Session }) => {
   const globalSelect = useAppSelector(selectPage);
   const globalTutorial = useAppSelector(selectTopBar);
 
   const ChartPage = () => {
+    //This is the main chart page combined different components
     return (
       <div className="flex ">
         {globalTutorial.startTutorial === true ? <TutorialWindow /> : null}
@@ -30,7 +31,7 @@ const Page = ({ session }: { session: Session }) => {
     );
   };
 
-  function renderPage() {
+  const  RenderPage=()=> {
     switch (globalSelect) {
       case "chartPage":
         return <ChartPage/>;
@@ -38,7 +39,7 @@ const Page = ({ session }: { session: Session }) => {
         return <ApiPage session={session} />;
     }
   }
-  return <>{renderPage()}</>;
+  return <RenderPage/>;
 };
 
 export default Page;
