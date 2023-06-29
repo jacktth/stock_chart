@@ -1,14 +1,4 @@
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Button,
-  Autocomplete,
-  TextField,
-} from "@mui/material";
+//The file name must be upper case because of unknown issues of rollup.js
 import { Session } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
 import { useQueryClient } from "react-query";

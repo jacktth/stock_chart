@@ -25,7 +25,7 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import {  SelectedData } from "../listingBar/SaveBar";
+import {  SelectedData } from "../listingBar/saveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
@@ -110,6 +110,7 @@ stockTools(Highcharts);
           return false; // returning false will disable the default zooming function while dragging on the chart
         },
         click: () => {
+          //click the chart will clear the range of selected data
           setSelectedData({ starting: 0, ending: 0 });
         },
       },
