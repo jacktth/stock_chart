@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectSymbol, selectViewing, updateFocus, updateSymbol } from "../chart/chartSlice";
 import { ListingData } from "./types";
-import { log } from "console";
 
 const PublicSymbols = ({market,data}:{market:string,data:ListingData[]} ) => {
   

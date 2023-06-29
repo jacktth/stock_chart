@@ -7,8 +7,8 @@ import axios from "axios";
 import { ListingData } from "./types";
 import { selectedCategory } from "./listSlice";
 import { defaultCategories } from "./utilities";
-import PublicSymbols from "./PublicSymbols";
-import UsersSymbols from "./UsersSymbols";
+import PublicSymbols from "./publicSymbols";
+import UsersSymbols from "./usersSymbols";
 import LoadingComponent from "../commonUI/loadingComponent";
 
 function SymbolsList({ session }: { session: Session }) {
