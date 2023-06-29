@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import LoadingComponent from "../commonUI/LoadingComponent";
+import LoadingComponent from "../commonUI/loadingComponent";
  const ApiColumn = ({
   title,
   param,

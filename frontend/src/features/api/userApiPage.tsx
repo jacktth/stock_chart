@@ -11,8 +11,8 @@ import useSupabase from "../../hooks/useSupabase";
 import { changePage } from "../Page/pageSlice";
 import { categoryApiParams, clipsApiParams } from "./utilies";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import ApiColumn from "./ApiColumn";
-import LoadingComponent from "../commonUI/LoadingComponent";
+import ApiColumn from "./apiColumn";
+import LoadingComponent from "../commonUI/loadingComponent";
 
 const UserApiPage = ({ session }: { session: Session }) => {
   const dispatch = useAppDispatch();

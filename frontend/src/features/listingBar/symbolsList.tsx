@@ -9,7 +9,7 @@ import { selectedCategory } from "./listSlice";
 import { defaultCategories } from "./utilities";
 import PublicSymbols from "./PublicSymbols";
 import UsersSymbols from "./UsersSymbols";
-import LoadingComponent from "../commonUI/LoadingComponent";
+import LoadingComponent from "../commonUI/loadingComponent";
 
 function SymbolsList({ session }: { session: Session }) {
   //This is a fn to separate PublicSymbols and UsersSymbols
