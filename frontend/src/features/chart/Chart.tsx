@@ -25,7 +25,7 @@ import fullScreen from "highcharts/modules/full-screen";
 import stockTools from "highcharts/modules/stock-tools";
 import { supabase } from "../../api/supabaseClient";
 import { selectAuth, updateAuth } from "../auth/authSlice";
-import {  SelectedData } from "../listingBar/saveBar";
+import { SelectedData } from "../listingBar/saveBar";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Session } from "@supabase/supabase-js";
@@ -37,7 +37,8 @@ annotationsAdvanced(Highcharts);
 priceIndicator(Highcharts);
 fullScreen(Highcharts);
 stockTools(Highcharts);
- function Chart() {
+
+ function MainChart() {
   const dispatch = useAppDispatch();
   const globalSymbol = useAppSelector(selectSymbol);
   const globalMarket = useAppSelector(selectMarket);
@@ -202,4 +203,4 @@ stockTools(Highcharts);
   );
 }
 
-export default Chart;
+export default MainChart
